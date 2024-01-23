@@ -2,7 +2,14 @@
 
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
-This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses. You can include the connector by simply:
+This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
+
+Install the connector via pip (once only):
+```
+pip install gguf-connector
+```
+
+Include the connector by:
 
 ```
 import gguf_connector 
