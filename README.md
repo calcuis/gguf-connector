@@ -22,5 +22,7 @@ Pull any (pre-trained model) GGUF file(s) along with the Python code and it will
 
 With this version, you can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
 
+[<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
+
 ### Reference
 https://github.com/calcuis/chatgpt-model-selector
