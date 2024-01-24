@@ -27,10 +27,6 @@ if gguf_files:
         root.columnconfigure([0, 1, 2], minsize=150)
         root.rowconfigure(0, weight=2)
         root.rowconfigure(1, weight=1)
-        
-        # if os.path.isfile("logo.png"):
-        #     icon = PhotoImage(file = "logo.png")
-        #     root.iconphoto(False, icon)
 
         icon = PhotoImage(file = os.path.join(os.path.dirname(__file__), "logo.png"))
         root.iconphoto(False, icon)
@@ -40,7 +36,7 @@ if gguf_files:
 
         def submit(i):
             root.title("Processing...")
-            output = llm("Q: "+str(i.get()), max_tokens=4096, echo=True)
+            output = llm("Q: "+str(i.get()), max_tokens=2048, echo=True)
             answer = output['choices'][0]['text']
             print(answer)
             o.insert(INSERT, answer+"\n\n")
