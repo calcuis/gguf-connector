@@ -29,7 +29,7 @@ With this version, you can even choose which connector (either ctransformers or 
 For a standalone lazy version please refer to the repository in the reference list (below).
 
 #### Reference
-https://github.com/calcuis/chatgpt-model-selector
+[model-selector](https://github.com/calcuis/chatgpt-model-selector)
 
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
