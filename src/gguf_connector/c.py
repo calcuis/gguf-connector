@@ -27,10 +27,6 @@ if gguf_files:
         root.columnconfigure([0, 1, 2], minsize=150)
         root.rowconfigure(0, weight=2)
         root.rowconfigure(1, weight=1)
-        
-        # if os.path.isfile("logo.png"):
-        #     icon = PhotoImage(file = "logo.png")
-        #     root.iconphoto(False, icon)
 
         icon = PhotoImage(file = os.path.join(os.path.dirname(__file__), "logo.png"))
         root.iconphoto(False, icon)
