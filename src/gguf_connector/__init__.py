@@ -8,4 +8,4 @@ elif choice=="2":
 else:
     print("Not a valid number.")
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
