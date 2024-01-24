@@ -8,9 +8,11 @@ Install the connector via pip (once only):
 ```
 pip install gguf-connector
 ```
-
+Update the connector (if previous version installed) by:
+```
+pip install gguf-connector --upgrade
+```
 Include the connector by:
-
 ```
 import gguf_connector 
 ```
