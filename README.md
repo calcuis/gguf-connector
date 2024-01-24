@@ -30,3 +30,7 @@ For a standalone lazy version please refer to the repository in the reference li
 
 #### Reference
 https://github.com/calcuis/chatgpt-model-selector
+
+#### Resources
+[ctransformers](https://github.com/marella/ctransformers)
+[llama.cpp](https://github.com/ggerganov/llama.cpp)
