@@ -26,10 +26,10 @@ With this version, you can even choose which connector (either ctransformers or 
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
-For a standalone lazy version please refer to the repository in the reference list (below).
+For standalone version please refer to the repository in the reference list (below).
 
 #### Reference
-[model-selector](https://github.com/calcuis/chatgpt-model-selector)
+[model selector](https://github.com/calcuis/chatgpt-model-selector)
 
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
