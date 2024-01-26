@@ -30,11 +30,11 @@ gguf-c
 ### Command Line Interface (CLI)
 Select model(s) with ctransformers connector:
 ```
-gguf-cx
+gguf-g
 ```
 Select model(s) with llama.cpp connector:
 ```
-gguf-cpx
+gguf-gpp
 ```
 
 You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
