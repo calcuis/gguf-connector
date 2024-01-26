@@ -37,6 +37,7 @@ Select model(s) with llama.cpp connector:
 gguf-gpp
 ```
 
+### Import as a module
 You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
 
 Include/import the connector selection menu to your code by:
