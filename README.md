@@ -12,17 +12,36 @@ Update the connector (if previous version installed) by:
 ```
 pip install gguf-connector --upgrade
 ```
-Include the connector by:
-```
-import gguf_connector 
-```
 
-Pull any (pre-trained model) GGUF file(s) along with the Python code and it will automatically be detected by the module.
+With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 
+### Graphical User Interface (GUI)
+Select model(s) with ctransformers connector:
+```
+gguf-c
+```
+Select model(s) with llama.cpp connector:
+```
+gguf-cpp
+```
+### Command Line Interface (CLI)
+Select model(s) with ctransformers connector:
+```
+gguf-cx
+```
+Select model(s) with llama.cpp connector:
+```
+gguf-cpx
+```
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo.gif)
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
 
-With this version, you can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
+You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
+
+Include/import the connector selection menu to the code by:
+```
+from gguf_connector import __main__
+```
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
