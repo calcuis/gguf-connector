@@ -16,22 +16,22 @@ pip install gguf-connector --upgrade
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 
 ### Graphical User Interface (GUI)
-Select model(s) with ctransformers connector:
-```
-gguf-c
-```
 Select model(s) with llama.cpp connector:
 ```
 gguf-cpp
 ```
-### Command Line Interface (CLI)
 Select model(s) with ctransformers connector:
 ```
-gguf-cx
+gguf-c
 ```
+### Command Line Interface (CLI)
 Select model(s) with llama.cpp connector:
 ```
 gguf-cpx
+```
+Select model(s) with ctransformers connector:
+```
+gguf-cx
 ```
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo.gif)
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
