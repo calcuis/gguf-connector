@@ -39,7 +39,7 @@ gguf-gpp
 
 You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
 
-Include/import the connector selection menu to the code by:
+Include/import the connector selection menu to your code by:
 ```
 from gguf_connector import __main__
 ```
