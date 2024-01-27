@@ -20,7 +20,7 @@ Select model(s) with llama.cpp connector:
 ```
 gguf-cpp
 ```
-Select model(s) with ctransformers connector:
+Select model(s) with ctransformers:
 ```
 gguf-c
 ```
@@ -28,7 +28,7 @@ gguf-c
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
 
 ### Command Line Interface (CLI)
-Select model(s) with ctransformers connector:
+Select model(s) with ctransformers:
 ```
 gguf-g
 ```
