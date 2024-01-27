@@ -14,7 +14,6 @@ pip install gguf-connector --upgrade
 ```
 
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
-
 ### Graphical User Interface (GUI)
 Select model(s) with llama.cpp connector:
 ```
@@ -50,10 +49,8 @@ from gguf_connector import menu
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
 For standalone version please refer to the repository in the reference list (below).
-
 #### Reference
 [model selector](https://github.com/calcuis/chatgpt-model-selector)
-
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
