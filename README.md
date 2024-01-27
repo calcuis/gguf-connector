@@ -18,11 +18,11 @@ With this version, you can interact straight with the GGUF file(s) available in 
 ### Graphical User Interface (GUI)
 Select model(s) with llama.cpp connector:
 ```
-gguf-cpp
+gguf cpp
 ```
 Select model(s) with ctransformers:
 ```
-gguf-c
+gguf c
 ```
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo.gif)
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
@@ -30,19 +30,21 @@ gguf-c
 ### Command Line Interface (CLI)
 Select model(s) with ctransformers:
 ```
-gguf-g
+gguf g
 ```
 Select model(s) with llama.cpp connector:
 ```
-gguf-gpp
+gguf gpp
+```
+You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
+```
+gguf m
 ```
 
 ### Import as a module
-You can even choose which connector (either ctransformers or llama.cpp) to be used at the very beginning.
-
-Include/import the connector selection menu to your code by:
+Include the connector selection menu to your code by:
 ```
-from gguf_connector import __main__
+from gguf_connector import menu
 ```
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
