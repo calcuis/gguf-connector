@@ -1,1 +1,1 @@
-import gguf_connector
+from gguf_connector import menu
