@@ -52,7 +52,7 @@ from gguf_connector import menu
 
 For standalone version please refer to the repository in the reference list (below).
 #### Reference
-[model selector](https://github.com/calcuis/chatgpt-model-selector)
+[model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version)
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
