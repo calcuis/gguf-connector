@@ -1,4 +1,4 @@
-## GGUF Connector
+## GGUF connector
 
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
