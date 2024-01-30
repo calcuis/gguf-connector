@@ -51,8 +51,10 @@ from gguf_connector import menu
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
 For standalone version please refer to the repository in the reference list (below).
-#### Reference
-[model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version)
+#### References
+[model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version; installable package)
+
+[cgg](https://github.com/calcuis/cgg) (cmd-based tool)
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
