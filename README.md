@@ -52,7 +52,7 @@ from gguf_connector import menu
 
 For standalone version please refer to the repository in the reference list (below).
 #### References
-[model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version; installable package)
+[model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version; [installable package](https://github.com/calcuis/chatgpt-model-selector/releases))
 
 [cgg](https://github.com/calcuis/cgg) (cmd-based tool)
 #### Resources
