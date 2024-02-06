@@ -1,14 +1,14 @@
 [
     {
-        "name":"chat.gguf [2GB]",
+        "name":"chat.gguf [1.9GB; for general purpose]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
     },
     {
-        "name":"code.gguf [3GB]",
+        "name":"code.gguf [3.3GB; for coding assistance]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/code.gguf"
     },
     {
-        "name":"medi.gguf [3GB]",
+        "name":"medi.gguf [3.3GB; for medical/health advice]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/medi.gguf"
     }
 ]
