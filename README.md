@@ -40,7 +40,7 @@ Select model(s) with llama.cpp connector:
 gguf gpp
 ```
 ### Menu
-Enter the main menu for selecting a connector or getting pre-trained trial model(s)
+Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
 gguf m
 ```
