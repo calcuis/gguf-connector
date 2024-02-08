@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-0.6.2-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-0.6.3-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/pack-0.1.3-green?logo=microsoft)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -21,11 +21,11 @@ With this version, you can interact straight with the GGUF file(s) available in 
 ### Graphical User Interface (GUI)
 Select model(s) with llama.cpp connector:
 ```
-gguf cpp
+ggc cpp
 ```
 Select model(s) with ctransformers:
 ```
-gguf c
+ggc c
 ```
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo.gif)
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
@@ -33,16 +33,16 @@ gguf c
 ### Command Line Interface (CLI)
 Select model(s) with ctransformers:
 ```
-gguf g
+ggc g
 ```
 Select model(s) with llama.cpp connector:
 ```
-gguf gpp
+ggc gpp
 ```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
-gguf m
+ggc m
 ```
 #### Import as a module
 Include the connector selection menu to your code by:
