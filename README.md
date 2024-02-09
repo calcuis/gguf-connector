@@ -2,7 +2,7 @@
 
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
-[<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
+[<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/callgg.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
 [![Static Badge](https://img.shields.io/badge/version-0.6.3-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/pack-0.1.3-green?logo=microsoft)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
