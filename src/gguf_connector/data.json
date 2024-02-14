@@ -1,6 +1,6 @@
 [
     {
-        "name":"chat.gguf [1.98GB; for general purpose]",
+        "name":"chat.gguf [1.9GB; for general purpose]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
     },
     {
