@@ -12,7 +12,11 @@
         "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
     },
     {
-        "name":"tiny.gguf [551MB; good for testing pdf analyzor]",
+        "name":"phi2.gguf [1.4GB; for technical problem]",
+        "url":"https://huggingface.co/calcuis/phi2_mini/resolve/main/phi2.gguf"
+    },
+    {
+        "name":"tiny.gguf [551MB; for testing pdf analyzor]",
         "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
     }
 ]
