@@ -5,10 +5,14 @@
     },
     {
         "name":"code.gguf [3.3GB; for coding assistance]",
-        "url":"https://huggingface.co/calcuis/chat/resolve/main/code.gguf"
+        "url":"https://huggingface.co/calcuis/code_mini/resolve/main/code.gguf"
     },
     {
         "name":"medi.gguf [3.3GB; for medical/health advice]",
-        "url":"https://huggingface.co/calcuis/chat/resolve/main/medi.gguf"
+        "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
+    },
+    {
+        "name":"tiny.gguf [551MB; good for pdf analyzor]",
+        "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
     }
 ]
