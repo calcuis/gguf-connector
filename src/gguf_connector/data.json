@@ -1,6 +1,6 @@
 [
     {
-        "name":"chat.gguf [1.9GB; for general purpose]",
+        "name":"chat.gguf [1.98GB; for general purpose]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
     },
     {
@@ -12,7 +12,7 @@
         "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
     },
     {
-        "name":"tiny.gguf [551MB; good for pdf analyzor]",
+        "name":"tiny.gguf [551MB; good for testing pdf analyzor]",
         "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
     }
 ]
