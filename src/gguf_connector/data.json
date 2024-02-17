@@ -1,38 +1,38 @@
 [
     {
-        "name":"chat.gguf    [1.9GB; for general purpose]",
+        "name":"chat.gguf     [1.9GB; for general purpose]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
     },
     {
-        "name":"code.gguf    [3.3GB; for coding assistance]",
+        "name":"code.gguf     [3.3GB; for coding assistance]",
         "url":"https://huggingface.co/calcuis/code_mini/resolve/main/code.gguf"
     },
     {
-        "name":"medi.gguf    [3.3GB; for medical/health advice]",
+        "name":"medi.gguf     [3.3GB; for medical/health advice]",
         "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
     },
     {
-        "name":"law.gguf     [3.3GB; for law/legal opinion]",
+        "name":"law.gguf      [3.3GB; for law/legal opinion]",
         "url":"https://huggingface.co/calcuis/law_mini/resolve/main/law.gguf"
     },
     {
-        "name":"finance.gguf [3.3GB; for wealth/financial plan]",
+        "name":"finance.gguf  [3.3GB; for wealth/financial plan]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/finance.gguf"
     },
     {
-        "name":"coder.gguf   [1.4GB; for simple coding issue]",
+        "name":"coder.gguf    [1.4GB; for simple coding issue]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/coder.gguf"
     },
     {
-        "name":"phi2.gguf    [1.4GB; for technical problem]",
+        "name":"phi2.gguf     [1.4GB; for technical problem]",
         "url":"https://huggingface.co/calcuis/phi2_mini/resolve/main/phi2.gguf"
     },
     {
-        "name":"lam2.gguf    [3.3GB; for long/detailed response]",
+        "name":"lam2.gguf     [3.3GB; for long/detailed response]",
         "url":"https://huggingface.co/calcuis/lam2_mini/resolve/main/lam2.gguf"
     },
     {
-        "name":"hermes.gguf  [3.5GB; for general/basic consultation]",
+        "name":"hermes.gguf   [3.5GB; for general/basic consultation]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/hermes.gguf"
     },
     {
