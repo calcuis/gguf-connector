@@ -12,8 +12,32 @@
         "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
     },
     {
+        "name":"law.gguf [3.3GB; for law/legal opinion]",
+        "url":"https://huggingface.co/calcuis/law_mini/resolve/main/law.gguf"
+    },
+    {
+        "name":"finance.gguf [3.3GB; for wealth/financial plan]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/finance.gguf"
+    },
+    {
+        "name":"lam2.gguf [3.3GB; for long/detailed response]",
+        "url":"https://huggingface.co/calcuis/lam2_mini/resolve/main/lam2.gguf"
+    },
+    {
         "name":"phi2.gguf [1.4GB; for technical problem]",
         "url":"https://huggingface.co/calcuis/phi2_mini/resolve/main/phi2.gguf"
+    },
+    {
+        "name":"coder.gguf [1.4GB; for simple coding issue]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/coder.gguf"
+    },
+    {
+        "name":"hermes.gguf [3.5GB; for general/basic consultation]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/hermes.gguf"
+    },
+    {
+        "name":"dolphin.gguf [3.5GB; for problem solving]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/dolphin.gguf"
     },
     {
         "name":"tiny.gguf [551MB; for testing pdf analyzor]",
