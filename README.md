@@ -39,7 +39,7 @@ Select model(s) with llama.cpp connector:
 ```
 ggc gpp
 ```
-### Metadata reader (CLI only)
+#### Metadata reader (CLI only)
 Select model(s) with metadata reader:
 ```
 ggc r
