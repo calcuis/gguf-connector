@@ -32,7 +32,15 @@
         "url":"https://huggingface.co/calcuis/lam2_mini/resolve/main/lam2.gguf"
     },
     {
-        "name":"hermes.gguf   [3.5GB; for general/basic consultation]",
+        "name":"tiny2.gguf    [783MB; for fast/rapid response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/tiny2.gguf"
+    },
+    {
+        "name":"stable.gguf  [1.7GB; for code review]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/stable.gguf"
+    },
+    {
+        "name":"hermes.gguf  [3.5GB; for general/basic consultation]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/hermes.gguf"
     },
     {
