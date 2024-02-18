@@ -1,62 +1,66 @@
 [
     {
-        "name":"chat.gguf     [1.9GB; for general purpose]",
+        "name":"chat.gguf      [1.9GB; for general purpose]",
         "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
     },
     {
-        "name":"code.gguf     [3.3GB; for coding assistance]",
+        "name":"code.gguf      [3.3GB; for coding assistance]",
         "url":"https://huggingface.co/calcuis/code_mini/resolve/main/code.gguf"
     },
     {
-        "name":"medi.gguf     [3.3GB; for medical/health advice]",
+        "name":"medi.gguf      [3.3GB; for medical/health advice]",
         "url":"https://huggingface.co/calcuis/medi_mini/resolve/main/medi.gguf"
     },
     {
-        "name":"law.gguf      [3.3GB; for law/legal opinion]",
+        "name":"law.gguf       [3.3GB; for law/legal opinion]",
         "url":"https://huggingface.co/calcuis/law_mini/resolve/main/law.gguf"
     },
     {
-        "name":"finance.gguf  [3.3GB; for wealth/financial plan]",
+        "name":"finance.gguf   [3.3GB; for wealth/financial plan]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/finance.gguf"
     },
     {
-        "name":"coder.gguf    [1.4GB; for simple coding issue]",
+        "name":"coder.gguf     [1.4GB; for simple coding issue]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/coder.gguf"
     },
     {
-        "name":"phi2.gguf     [1.4GB; for technical problem]",
+        "name":"phi2.gguf      [1.4GB; for technical problem]",
         "url":"https://huggingface.co/calcuis/phi2_mini/resolve/main/phi2.gguf"
     },
     {
-        "name":"lam2.gguf     [3.3GB; for long/detailed response]",
+        "name":"lam2.gguf      [3.3GB; for long/detailed response]",
         "url":"https://huggingface.co/calcuis/lam2_mini/resolve/main/lam2.gguf"
     },
     {
-        "name":"tiny2.gguf    [783MB; for fast/rapid response]",
+        "name":"tiny2.gguf     [783MB; for fast/rapid response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/tiny2.gguf"
     },
     {
-        "name":"stable.gguf  [1.7GB; for code review]",
+        "name":"stable.gguf   [1.7GB; for code review]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/stable.gguf"
     },
     {
-        "name":"hermes.gguf  [3.5GB; for general/basic consultation]",
+        "name":"hermes.gguf   [3.5GB; for general/basic consultation]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/hermes.gguf"
     },
     {
-        "name":"dolphin.gguf [3.5GB; for problem solving]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/dolphin.gguf"
+        "name":"doublee.gguf  [1.4GB; for electrical engineering]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/doublee.gguf"
     },
     {
-        "name":"wizard.gguf  [3.3GB; for uncensored content]",
+        "name":"samantha.gguf [2.9GB; for medical student]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/samantha.gguf"
+    },
+    {
+        "name":"wizard.gguf   [3.3GB; for uncensored content]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/wizard.gguf"
     },
     {
-        "name":"solar.gguf   [4.5GB; for uncensored content]",
+        "name":"solar.gguf    [4.5GB; for uncensored content]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/solar.gguf"
     },
     {
-        "name":"tiny.gguf    [551MB; for testing pdf analyzor]",
+        "name":"tiny.gguf     [551MB; for testing pdf analyzor]",
         "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
     }
 ]
