@@ -48,6 +48,14 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/dolphin.gguf"
     },
     {
+        "name":"wizard.gguf  [3.3GB; for uncensored content]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/wizard.gguf"
+    },
+    {
+        "name":"solar.gguf   [4.5GB; for uncensored content]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/solar.gguf"
+    },
+    {
         "name":"tiny.gguf    [551MB; for testing pdf analyzor]",
         "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
     }
