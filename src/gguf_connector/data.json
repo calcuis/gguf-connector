@@ -44,12 +44,32 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/hermes.gguf"
     },
     {
+        "name":"samantha.gguf [2.9GB; for medical student]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/samantha.gguf"
+    },
+    {
         "name":"doublee.gguf  [1.4GB; for electrical engineering]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/doublee.gguf"
     },
     {
-        "name":"samantha.gguf [2.9GB; for medical student]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/samantha.gguf"
+        "name":"math.gguf     [3.1GB; for math/calculation]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/math.gguf"
+    },
+    {
+        "name":"yarn.gguf     [3.1GB; for problem solving]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/yarn.gguf"
+    },
+    {
+        "name":"mistral.gguf  [3.1GB; for instructional enquiry]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/mistral.gguf"
+    },
+    {
+        "name":"llama2.gguf   [2.8GB; for comprehensive response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama2.gguf"
+    },
+    {
+        "name":"guanaco.gguf  [2.8GB; for uncensored content]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/guanaco.gguf"
     },
     {
         "name":"wizard.gguf   [3.3GB; for uncensored content]",
@@ -58,6 +78,18 @@
     {
         "name":"solar.gguf    [4.5GB; for uncensored content]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/solar.gguf"
+    },
+    {
+        "name":"alice.gguf    [2.7GB; for adult (18+) only]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/alice.gguf"
+    },
+    {
+        "name":"masha.gguf    [2.7GB; for adult (18+) only]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/masha.gguf"
+    },
+    {
+        "name":"maid.gguf     [3.1GB; for adult (18+) only]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/maid.gguf"
     },
     {
         "name":"tiny.gguf     [551MB; for testing pdf analyzor]",
