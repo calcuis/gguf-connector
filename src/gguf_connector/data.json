@@ -56,6 +56,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/math.gguf"
     },
     {
+        "name":"python.gguf   [3.3GB; for coding python]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/python.gguf"
+    },
+    {
         "name":"yarn.gguf     [3.1GB; for problem solving]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/yarn.gguf"
     },
@@ -80,15 +84,7 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/solar.gguf"
     },
     {
-        "name":"alice.gguf    [2.7GB; for adult (18+) only]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/alice.gguf"
-    },
-    {
-        "name":"masha.gguf    [2.7GB; for adult (18+) only]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/masha.gguf"
-    },
-    {
-        "name":"maid.gguf     [3.1GB; for adult (18+) only]",
+        "name":"maid.gguf     [3.1GB; for adult/18+ nsfw]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/maid.gguf"
     },
     {
