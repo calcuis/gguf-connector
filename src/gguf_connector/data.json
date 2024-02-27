@@ -64,6 +64,14 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/yarn.gguf"
     },
     {
+        "name":"karen.gguf    [2.7GB; for drafting letter/paper]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/karen.gguf"
+    },
+    {
+        "name":"orca.gguf     [4.1GB; for multiple response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
+    },
+    {
         "name":"mistral.gguf  [3.1GB; for instructional enquiry]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/mistral.gguf"
     },
