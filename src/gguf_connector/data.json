@@ -64,6 +64,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/yarn.gguf"
     },
     {
+        "name":"dolphin.gguf  [3.0GB; for solving problem]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/dolphin.gguf"
+    },
+    {
         "name":"karen.gguf    [2.7GB; for drafting letter/paper]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/karen.gguf"
     },
