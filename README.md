@@ -59,8 +59,7 @@ Enter the main menu for selecting a connector or getting pre-trained trial model
 ```
 ggc m
 ```
-[<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo1.gif" width="300" height="230">](https://github.com/calcuis/gguf-connector/blob/main/demo1.gif)
-[<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo2.gif" width="350" height="230">](https://github.com/calcuis/gguf-connector/blob/main/demo2.gif)
+[<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo1.gif" width="350" height="300">](https://github.com/calcuis/gguf-connector/blob/main/demo1.gif)
 
 #### Import as a module
 Include the connector selection menu to your code by:
