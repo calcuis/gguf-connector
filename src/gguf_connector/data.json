@@ -72,6 +72,22 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/karen.gguf"
     },
     {
+        "name":"beagle.gguf   [3.5GB; for genearl response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/beagle.gguf"
+    },
+    {
+        "name":"garrulus.gguf [2.7GB; for specific response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/garrulus.gguf"
+    },
+    {
+        "name":"westlake.gguf [2.7GB; for common information]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/westlake.gguf"
+    },
+    {
+        "name":"openchat.gguf [3.0GB; for most purpose]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/openchat.gguf"
+    },
+    {
         "name":"orca.gguf     [4.1GB; for multiple response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
     },
