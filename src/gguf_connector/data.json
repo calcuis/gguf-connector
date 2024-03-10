@@ -88,6 +88,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/openchat.gguf"
     },
     {
+        "name":"zephyr.gguf   [3.0GB; for multilayer response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/zephyr.gguf"
+    },
+    {
         "name":"orca.gguf     [4.1GB; for multiple response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
     },
