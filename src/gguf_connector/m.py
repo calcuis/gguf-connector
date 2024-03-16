@@ -1,26 +1,31 @@
 import json, os.path, urllib.request
-from tqdm import tqdm
+from rich.progress import Progress
 
 def get_file_size(url):
     with urllib.request.urlopen(url) as response:
         size = int(response.headers['Content-Length'])
     return size
 
+def format_size(size_bytes):
+    return f"{size_bytes / (1024 * 1024):.2f} MB"
+
 def clone_file(url):
     try:
         file_size = get_file_size(url)
         filename = os.path.basename(url)
-        with urllib.request.urlopen(url) as response, \
-            open(filename, 'wb') as file, \
-            tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024, desc=f'Downloading {filename}') as pbar:
-            chunk_size = 1024
-            while True:
-                chunk = response.read(chunk_size)
-                if not chunk:
-                    break
-                file.write(chunk)
-                pbar.update(len(chunk))
-        print(f"\nFile cloned successfully and saved as '{filename}' in the current directory.")
+        with Progress(transient=True) as progress:
+            task = progress.add_task(f"Downloading {filename}", total=file_size)
+            with urllib.request.urlopen(url) as response, open(filename, 'wb') as file:
+                chunk_size = 1024
+                downloaded = 0
+                while True:
+                    chunk = response.read(chunk_size)
+                    if not chunk:
+                        break
+                    file.write(chunk)
+                    downloaded += len(chunk)
+                    progress.update(task, completed=downloaded, description=f"Downloading {filename} [green][{format_size(downloaded)} / {format_size(file_size)}]")
+        print(f"File cloned successfully and saved as '{filename}'({format_size(file_size)}) in the current directory.")
     except Exception as e:
         print(f"Error: {e}")
 
