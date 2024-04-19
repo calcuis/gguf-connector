@@ -1,6 +1,6 @@
+import os
 
 def pdf_handler():
-    import os
 
     pdf_files = [file for file in os.listdir() if file.endswith('.pdf')]
 
@@ -49,7 +49,6 @@ def pdf_handler():
         print("No PDF files are available in the current directory.")
         input("--- Press ENTER To Exit ---")
 
-import os
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
 if gguf_files:
