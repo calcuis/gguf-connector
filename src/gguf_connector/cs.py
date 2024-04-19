@@ -1,6 +1,6 @@
+import os
 
 def wav_handler():
-    import os
 
     wav_files = [file for file in os.listdir() if file.endswith('.wav')]
 
@@ -38,9 +38,6 @@ def wav_handler():
     else:
         print("No WAV files are available in the current directory.")
         input("--- Press ENTER To Exit ---")
-
-
-import os
 
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
