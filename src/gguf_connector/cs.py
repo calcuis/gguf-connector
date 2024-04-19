@@ -5,7 +5,7 @@ def wav_handler():
     wav_files = [file for file in os.listdir() if file.endswith('.wav')]
 
     if wav_files:
-        print("GGUF file(s) available. Select which one to use:")
+        print("WAV file(s) available. Select which one to use:")
         
         for index, file_name in enumerate(wav_files, start=1):
             print(f"{index}. {file_name}")
