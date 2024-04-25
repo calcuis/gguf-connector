@@ -62,7 +62,7 @@ Prompt WAV(s) into a model with llama.cpp connector:
 ```
 ggc ps
 ```
-#### Speech recognizor (online)
+#### Speech recognizor (via Google api; online)
 Prompt WAV(s) into a model with ctransformers:
 ```
 ggc cg
