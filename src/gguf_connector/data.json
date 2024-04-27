@@ -108,6 +108,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama3.gguf"
     },
     {
+        "name":"phi3.gguf     [2.3GB; for technical problem (3rd)]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.gguf"
+    },
+    {
         "name":"guanaco.gguf  [2.8GB; for uncensored content]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/guanaco.gguf"
     },
