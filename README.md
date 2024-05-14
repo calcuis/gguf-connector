@@ -101,6 +101,6 @@ For standalone version please refer to the repository in the reference list (bel
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
 #### Website
-[gguf.io](https://www.gguf.io) (i/o or us)
+[gguf.io](https://www.gguf.io) (i/o is a mirror of us)
 
 [gguf.us](https://gguf.us)
