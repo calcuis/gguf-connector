@@ -23,7 +23,7 @@ if gguf_files:
         import tkinter.scrolledtext as st
 
         root = Tk()
-        root.title("chatGPT")
+        root.title("chatPIG")
         root.columnconfigure([0, 1, 2], minsize=150)
         root.rowconfigure(0, weight=2)
         root.rowconfigure(1, weight=1)
@@ -40,7 +40,7 @@ if gguf_files:
             print(str(i.get()), answer)
             o.insert(INSERT, str(i.get())+answer+"\n\n")
             i.delete(0, END)
-            root.title("chatGPT")
+            root.title("chatPIG")
 
         btn = Button(text = "Submit", command = lambda: submit(i))
         i.grid(row=1, columnspan=2, sticky="nsew")
