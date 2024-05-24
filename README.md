@@ -100,6 +100,9 @@ For standalone version please refer to the repository in the reference list (bel
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
+#### Article
+[Understanding GGUF and the GGUF-Connector: A Comprehensive Guide](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
+
 #### Website
 [gguf.io](https://www.gguf.io) (i/o is a mirror of us)
 
