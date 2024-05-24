@@ -92,16 +92,19 @@ from gguf_connector import menu
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
 For standalone version please refer to the repository in the reference list (below).
+
 #### References
 [model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version: [installable package](https://github.com/calcuis/chatgpt-model-selector/releases))
 
 [cgg](https://github.com/calcuis/cgg) (cmd-based tool)
+
+#### Article
+[Understanding GGUF and the GGUF-Connector: A Comprehensive Guide](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
+
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
-#### Article
-[Understanding GGUF and the GGUF-Connector: A Comprehensive Guide](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
 
 #### Website
 [gguf.io](https://www.gguf.io) (i/o is a mirror of us)
