@@ -98,13 +98,12 @@ For standalone version please refer to the repository in the reference list (bel
 
 [cgg](https://github.com/calcuis/cgg) (cmd-based tool)
 
-#### Article
-[Understanding GGUF and the GGUF-Connector: A Comprehensive Guide](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
-
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
+#### Article
+[understanding gguf and the gguf-connector](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
 
 #### Website
 [gguf.io](https://www.gguf.io) (i/o is a mirror of us)
