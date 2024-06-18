@@ -101,7 +101,6 @@ class GGUFReader:
         return (
             self.data[offset:end_offs]
             .view(dtype = dtype)[:count]
-            .newbyteorder(override_order or self.byte_order)
         )
 
     def _push_field(self, field: ReaderField, skip_sum: bool = False) -> int:
