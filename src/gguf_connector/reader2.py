@@ -1,4 +1,3 @@
-
 import struct
 
 class ReaderError(Exception):
