@@ -100,7 +100,7 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/mistral.gguf"
     },
     {
-        "name":"gpt2.gguf     [330MB; for general response]",
+        "name":"gpt2.gguf     [1.6GB; for general response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/gpt2.gguf"
     },
     {
