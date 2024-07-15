@@ -110,10 +110,6 @@ class Keys:
         MIDDLE_ID            = "tokenizer.ggml.middle_token_id"
         EOT_ID               = "tokenizer.ggml.eot_token_id"
 
-#
-# recommended mapping of model tensor names for storage in gguf
-#
-
 class MODEL_ARCH(IntEnum):
     LLAMA        = auto()
     FALCON       = auto()
@@ -1025,10 +1021,6 @@ MODEL_TENSOR_SKIP: dict[MODEL_ARCH, list[MODEL_TENSOR]] = {
     ],
 }
 
-#
-# types
-#
-
 class TokenType(IntEnum):
     NORMAL       = 1
     UNKNOWN      = 2
@@ -1187,8 +1179,6 @@ GGML_QUANT_SIZES: dict[GGMLQuantizationType, tuple[int, int]] = {
     GGMLQuantizationType.IQ1_M:   (256, QK_K // 8 + QK_K // 16  + QK_K // 32),
     GGMLQuantizationType.BF16:    (1, 2),
 }
-
-# Aliases for backward compatibility.
 
 # general
 KEY_GENERAL_ARCHITECTURE         = Keys.General.ARCHITECTURE
