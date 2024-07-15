@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from typing import Callable, Sequence, Any
 from .const import GGML_QUANT_SIZES, GGMLQuantizationType
-
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Any, Callable
 from collections import deque
-
 from numpy.typing import DTypeLike
 import numpy as np
 
