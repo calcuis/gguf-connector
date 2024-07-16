@@ -108,6 +108,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/gpt2.gguf"
     },
     {
+        "name":"gemma2.gguf   [3.4GB; for specific response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/gemma2.gguf"
+    },
+    {
         "name":"llama2.gguf   [2.8GB; for comprehensive response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama2.gguf"
     },
