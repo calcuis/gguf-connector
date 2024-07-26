@@ -96,6 +96,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
     },
     {
+        "name":"claude.gguf   [3.7GB; for comprehensive response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/claude.gguf"
+    },
+    {
         "name":"mistral.gguf  [3.1GB; for instructional enquiry]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/mistral.gguf"
     },
