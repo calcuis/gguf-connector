@@ -39,9 +39,9 @@ def pdf_handler():
 
             print("Processing...")
             
-            output = llm("Q: "+inject, max_tokens=32768, echo=True)
-            answer = output['choices'][0]['text']
-            print(answer+"\n")
+            output = llm("Q: "+inject, max_tokens=32768, echo=False)
+            ans = output['choices'][0]['text']
+            print(inject+"\n\nOutput:"+ans)
 
         except (ValueError, IndexError):
             print("Invalid choice. Please enter a valid number.")
