@@ -39,7 +39,7 @@ def pdf_handler():
             print("Processing...")
           
             ans = llm(inject)
-            print(inject+ans)
+            print(inject+"\n\nOutput:"+ans)
 
         except (ValueError, IndexError):
             print("Invalid choice. Please enter a valid number.")
