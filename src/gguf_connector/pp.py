@@ -34,7 +34,6 @@ def pdf_handler():
             inject = f"analyze the content below: "+output_text
 
             print(f"\nPDF cotent extracted as below:\n\n"+text)
-            # ask = input("Enter a Question (Q for quit): ")
             input("---Enter to analyze the PDF content above---")
 
             print("Processing...")
