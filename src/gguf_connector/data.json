@@ -92,6 +92,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/zephyr.gguf"
     },
     {
+        "name":"mamba.gguf    [2.1GB; for quick/fast enquiry]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/mamba.gguf"
+    },
+    {
         "name":"orca.gguf     [4.1GB; for multiple response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
     },
