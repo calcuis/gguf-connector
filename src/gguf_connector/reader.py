@@ -6,7 +6,6 @@ from typing import Any, Literal, NamedTuple, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
-
 from .quant import quant_shape_to_byte_shape
 
 if __name__ == "__main__":
