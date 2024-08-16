@@ -30,12 +30,11 @@ def wav_handler():
                 output = llm("Q: "+text, max_tokens=4096, echo=True)
                 answer = output['choices'][0]['text']
                 print(answer+"\n")
-                ###########################################
                 
                 # # # ctransformers
                 # ans = llm(r.recognize_sphinx(audio))
                 # print(r.recognize_sphinx(audio)+ans)
-                # # ###########################################
+                # # ##################################
 
             except sr.UnknownValueError:
                 print("Could not understand audio")
