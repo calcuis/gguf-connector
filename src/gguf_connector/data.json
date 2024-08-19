@@ -60,6 +60,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/python.gguf"
     },
     {
+        "name":"bloom.gguf    [1.6GB; for quick response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/bloom.gguf"
+    },
+    {
         "name":"yarn.gguf     [3.1GB; for problem solving]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/yarn.gguf"
     },
