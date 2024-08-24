@@ -28,10 +28,6 @@
         "url":"https://huggingface.co/calcuis/phi2_mini/resolve/main/phi2.gguf"
     },
     {
-        "name":"phi3.5.gguf   [2.0GB; for technical problem (3.5)]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.5.gguf"
-    },
-    {
         "name":" lam2.gguf     [3.3GB; for long/detailed response]",
         "url":"https://huggingface.co/calcuis/lam2_mini/resolve/main/lam2.gguf"
     },
@@ -138,6 +134,10 @@
     {
         "name":"phi3.gguf     [2.3GB; for technical problem (3rd)]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.gguf"
+    },
+    {
+        "name":"phi3.5.gguf   [2.0GB; for technical problem (3.5)]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.5.gguf"
     },
     {
         "name":"guanaco.gguf  [2.8GB; for uncensored content]",
