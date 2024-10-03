@@ -124,20 +124,20 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/gemma2.gguf"
     },
     {
-        "name":"llama2.gguf   [2.8GB; for comprehensive response]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama2.gguf"
-    },
-    {
-        "name":"llama3.gguf   [3.6GB; for comprehensive response (3rd)]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama3.gguf"
-    },
-    {
         "name":"phi3.gguf     [2.3GB; for technical problem (3rd)]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.gguf"
     },
     {
         "name":"phi3.5.gguf   [2.0GB; for technical problem (3.5)]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.5.gguf"
+    },
+    {
+        "name":"llama2.gguf   [2.8GB; for comprehensive response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama2.gguf"
+    },
+    {
+        "name":"llama3.gguf   [3.6GB; for comprehensive response (3rd)]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama3.gguf"
     },
     {
         "name":"llama3.2.gguf [1.7GB; for uncensored content]",
