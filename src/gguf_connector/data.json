@@ -140,6 +140,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.5.gguf"
     },
     {
+        "name":"llama3.2.gguf [1.7GB; for uncensored content]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama3.2.gguf"
+    },
+    {
         "name":"guanaco.gguf  [2.8GB; for uncensored content]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/guanaco.gguf"
     },
