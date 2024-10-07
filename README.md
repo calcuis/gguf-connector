@@ -110,6 +110,6 @@ For standalone version please refer to the repository in the reference list (bel
 [understanding gguf and the gguf-connector](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
 
 #### Website
-[gguf.io](https://www.gguf.io) (i/o is a mirror of us)
+[gguf.io](https://gguf.io) (i/o is a mirror of us)
 
 [gguf.us](https://gguf.us)
