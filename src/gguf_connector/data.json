@@ -1,7 +1,7 @@
 [
     {
         "name":" chat.gguf     [1.9GB; for general purpose]",
-        "url":"https://huggingface.co/calcuis/chat/resolve/main/chat.gguf"
+        "url":"https://github.com/calcuis/chatgpt-ai-model/releases/download/0.1/chat.gguf"
     },
     {
         "name":" code.gguf     [3.3GB; for coding assistance]",
