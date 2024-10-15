@@ -113,7 +113,7 @@
     },
     {
         "name":"gpt.gguf      [330MB; for general response]",
-        "url":"https://huggingface.co/calcuis/gguf/resolve/main/gpt.gguf"
+        "url":"https://github.com/calcuis/chatgpt-ai-model/releases/download/0.2/gpt.gguf"
     },
     {
         "name":"gpt2.gguf     [1.6GB; for general response (2nd)]",
@@ -161,6 +161,6 @@
     },
     {
         "name":"tiny.gguf     [551MB; for testing pdf analyzor]",
-        "url":"https://huggingface.co/calcuis/tiny/resolve/main/tiny.gguf"
+        "url":"https://github.com/calcuis/chatgpt-ai-model/releases/download/0.2/tiny.gguf"
     }
 ]
