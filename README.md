@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-0.8.3-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-0.8.4-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -80,7 +80,11 @@ Launch to page/container:
 ```
 ggc w
 ```
-
+#### Comfy
+Download comfy pack via:
+```
+ggc y
+```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
@@ -96,19 +100,15 @@ from gguf_connector import menu
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
 For standalone version please refer to the repository in the reference list (below).
-
 #### References
 [model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version: [installable package](https://github.com/calcuis/chatgpt-model-selector/releases))
 
 [cgg](https://github.com/calcuis/cgg) (cmd-based tool)
-
 #### Resources
 [ctransformers](https://github.com/marella/ctransformers)
 [llama.cpp](https://github.com/ggerganov/llama.cpp)
-
 #### Article
 [understanding gguf and the gguf-connector](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
-
 #### Website
 [gguf.io](https://gguf.io) (i/o is a mirror of us)
 
