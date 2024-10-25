@@ -56,6 +56,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/math.gguf"
     },
     {
+        "name":"math2.gguf    [3.6GB; for math/calculation (2nd)]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/math2.gguf"
+    },
+    {
         "name":"python.gguf   [3.3GB; for coding python]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/python.gguf"
     },
