@@ -1,6 +1,6 @@
 
 import torch
-from writer import GGUFWriter, GGMLQuantizationType
+from .writer import GGUFWriter, GGMLQuantizationType
 from .quant import quantize, QuantError
 from .const import GGML_QUANT_VERSION, LlamaFileType
 from safetensors.torch import load_file
@@ -220,5 +220,5 @@ if safetensors_files:
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
 else:
-    print("No GGUF files are available in the current directory.")
+    print("No safetensors files are available in the current directory.")
     input("--- Press ENTER To Exit ---")
