@@ -115,6 +115,6 @@ For standalone version please refer to the repository in the reference list (bel
 #### Article
 [understanding gguf and the gguf-connector](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
 #### Website
-[gguf.io](https://gguf.io) (i/o is a mirror of us)
+[gguf.io](https://gguf.io) (i/o is a mirror of us; note: this web3 domain might be restricted access in some regions/by some service providers, if so, visit the one below instead, exactly the same)
 
 [gguf.us](https://gguf.us)
