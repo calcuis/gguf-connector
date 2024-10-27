@@ -208,14 +208,14 @@ if safetensors_files:
             out_path = f"{os.path.splitext(path)[0]}-f16.gguf"
             writer.add_file_type(LlamaFileType.MOSTLY_F16)
             # out_path = args.dst or out_path
-            if os.path.isfile(out_path):
-                input("Output exists enter to continue or ctrl+c to abort!")
-            # handle_tensors(path, writer, state_dict, model_arch)
-            handle_tensors(path, writer, state_dict, model_arch)
-            writer.write_header_to_file(path=out_path)
-            writer.write_kv_data_to_file()
-            writer.write_tensors_to_file(progress=True)
-            writer.close()
+        if os.path.isfile(out_path):
+            input("Output exists enter to continue or ctrl+c to abort!")
+        # handle_tensors(path, writer, state_dict, model_arch)
+        handle_tensors(path, writer, state_dict, model_arch)
+        writer.write_header_to_file(path=out_path)
+        writer.write_kv_data_to_file()
+        writer.write_tensors_to_file(progress=True)
+        writer.close()
 
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
