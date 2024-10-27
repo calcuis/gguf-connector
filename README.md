@@ -86,7 +86,7 @@ Convert safetensors to gguf (beta; optional: need torch to use it; pip install t
 ggc t
 ```
 #### Comfy
-Download comfy pack (user guide [here)(https://pypi.org/project/gguf-comfy)) via:
+Download comfy pack (user guide [here](https://pypi.org/project/gguf-comfy)) via:
 ```
 ggc y
 ```
