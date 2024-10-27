@@ -80,8 +80,8 @@ Launch to page/container:
 ```
 ggc w
 ```
-#### Convertor
-Convert safetensors to gguf (beta; optional: need torch to use it; pip install torch):
+#### Convertor (beta feature)
+Convert safetensors to gguf (optional: need torch to work; pip install torch):
 ```
 ggc t
 ```
