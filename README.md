@@ -44,7 +44,7 @@ Select model(s) with metadata reader:
 ```
 ggc r
 ```
-Select model(s) with metadata reader (beta):
+Select model(s) with metadata fast reader (beta):
 ```
 ggc r2
 ```
