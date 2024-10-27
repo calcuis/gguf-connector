@@ -1,5 +1,5 @@
 
-import torch
+import torch # optional (if you want this conversion tool; pip install torch)
 from .writer import GGUFWriter, GGMLQuantizationType
 from .quant import quantize, QuantError
 from .const import GGML_QUANT_VERSION, LlamaFileType
@@ -55,7 +55,6 @@ class ModelSD1(ModelTemplate):
         ), # Non-diffusers
     ]
 
-# The architectures are checked in order and the first successful match terminates the search.
 arch_list = [ModelFlux, ModelSD3, ModelSDXL, ModelSD1]
 
 def is_model_arch(model, state_dict):
@@ -124,7 +123,6 @@ def handle_tensors(args, writer, state_dict, model_arch):
         n_dims = len(data.shape)
         data_shape = data.shape
         data_qtype = getattr(
-            # gguf.GGMLQuantizationType,
             GGMLQuantizationType,
             "BF16" if old_dtype == torch.bfloat16 else "F16"
         )
@@ -146,16 +144,12 @@ def handle_tensors(args, writer, state_dict, model_arch):
 
         if old_dtype in (torch.float32, torch.bfloat16):
             if n_dims == 1:
-                # one-dimensional tensors should be kept in f32
-                # data_qtype = gguf.GGMLQuantizationType.F32
                 data_qtype = GGMLQuantizationType.F32
 
             elif n_params <= QUANTIZATION_THRESHOLD:
-                # data_qtype = gguf.GGMLQuantizationType.F32
                 data_qtype = GGMLQuantizationType.F32
 
             elif ".weight" in key and any(x in key for x in blacklist):
-                # data_qtype = gguf.GGMLQuantizationType.F32
                 data_qtype = GGMLQuantizationType.F32
 
         if (model_arch.shape_fix
@@ -169,13 +163,9 @@ def handle_tensors(args, writer, state_dict, model_arch):
             writer.add_array(f"comfy.gguf.orig_shape.{key}", tuple(int(dim) for dim in orig_shape))
 
         try:
-            # data = gguf.quants.quantize(data, data_qtype)
             data = quantize(data, data_qtype)
-        # except (AttributeError, gguf.QuantError) as e:
         except (AttributeError, QuantError) as e:
             tqdm.write(f"falling back to F16: {e}")
-            # data_qtype = gguf.GGMLQuantizationType.F16
-            # data = gguf.quants.quantize(data, data_qtype)
             data_qtype = GGMLQuantizationType.F16
             data = quantize(data, data_qtype)
 
@@ -207,10 +197,8 @@ if safetensors_files:
         else:
             out_path = f"{os.path.splitext(path)[0]}-f16.gguf"
             writer.add_file_type(LlamaFileType.MOSTLY_F16)
-            # out_path = args.dst or out_path
         if os.path.isfile(out_path):
             input("Output exists enter to continue or ctrl+c to abort!")
-        # handle_tensors(path, writer, state_dict, model_arch)
         handle_tensors(path, writer, state_dict, model_arch)
         writer.write_header_to_file(path=out_path)
         writer.write_kv_data_to_file()
