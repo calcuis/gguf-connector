@@ -66,7 +66,7 @@ class LazyMeta(ABCMeta):
 
         return super().__new__(cls, name, bases, namespace, **kwargs)
 
-# Tree of lazy tensors
+# Tree of lazy tensors (it will be taken away as individual module in the upcoming update)
 class LazyBase(ABC, metaclass=LazyMeta):
     _tensor_type: type
     _meta: Any
