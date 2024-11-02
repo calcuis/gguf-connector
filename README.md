@@ -16,7 +16,6 @@ Update the connector (if previous version installed) by:
 ```
 pip install gguf-connector --upgrade
 ```
-
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 ### Graphical User Interface (GUI)
 Select model(s) with llama.cpp connector:
@@ -43,6 +42,7 @@ Select model(s) with vision connector:
 ```
 ggc v
 ```
+Opt a clip handler then opt a vision model; prompt your picture link to process.
 #### Metadata reader (CLI only)
 Select model(s) with metadata reader:
 ```
