@@ -42,7 +42,7 @@ Select model(s) with vision connector:
 ```
 ggc v
 ```
-Opt a clip handler then opt a vision model; prompt your picture link to process.
+Opt a clip handler then opt a vision model; prompt your picture link to process (see [example](https://huggingface.co/calcuis/llava-gguf))
 #### Metadata reader (CLI only)
 Select model(s) with metadata reader:
 ```
