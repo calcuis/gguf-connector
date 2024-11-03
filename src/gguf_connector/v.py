@@ -3,11 +3,10 @@ import os
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
 if gguf_files:
-    print("GGUF file(s) available. Select which one to use as Clip Handler:") # i.e., mmproj-*.gguf
+    print("GGUF file(s) available. Select which one to use as Clip Handler:")
     
     for index, file_name in enumerate(gguf_files, start=1):
         print(f"{index}. {file_name}")
-
     choice1 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
 
     try:
@@ -18,12 +17,10 @@ if gguf_files:
 
         from llama_cpp.llama_chat_format import Llava15ChatHandler
         chat_handler = Llava15ChatHandler(clip_model_path)
-
-        print("GGUF file(s) available. Select which one to use as Vision Model:") # i.e., llava-*.gguf
+        print("GGUF file(s) available. Select which one to use as Vision Model:")
         
         for index, file_name in enumerate(gguf_files, start=1):
             print(f"{index}. {file_name}")
-
         choice2 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
 
         try:
@@ -41,10 +38,7 @@ if gguf_files:
             
             while True:
                 ask = input("Provide a picture URL (Q for quit): ")
-                # sample prompt below:
-                # https://raw.githubusercontent.com/calcuis/comfy/master/sd3.5g.png
-                # https://raw.githubusercontent.com/calcuis/suko-puzzle/master/demo.png
-                # https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif
+                # sample prompt: https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif
               
                 if ask.lower() == 'q':
                     break
@@ -52,7 +46,6 @@ if gguf_files:
                 from rich.progress import Progress
                 with Progress(transient=True) as progress:
                     task = progress.add_task("Processing", total=None)
-            
                     response = llm.create_chat_completion(
                         messages = [
                             {
@@ -60,14 +53,11 @@ if gguf_files:
                                 "content": [
                                     {"type" : "text", "text": "What's in this image?"},
                                     {"type": "image_url", "image_url": {"url": ask } }
-
                                 ]
                             }
                         ]
                     )
-
                     print(response["choices"][0]["message"]["content"])
-
         except (ValueError, IndexError):
             print("Invalid choice. Please enter a valid number.")
     except (ValueError, IndexError):
@@ -75,5 +65,4 @@ if gguf_files:
 else:
     print("No GGUF files are available in the current directory.")
     input("--- Press ENTER To Exit ---")
-
 print("Goodbye!")
