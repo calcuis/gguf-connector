@@ -57,7 +57,7 @@ if gguf_files:
                             }
                         ]
                     )
-                    print(response["choices"][0]["message"]["content"])
+                    print("\nOutput:"+response["choices"][0]["message"]["content"]+"\n")
         except (ValueError, IndexError):
             print("Invalid choice. Please enter a valid number.")
     except (ValueError, IndexError):
