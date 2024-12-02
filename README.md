@@ -122,3 +122,5 @@ For standalone version please refer to the repository in the reference list (bel
 [gguf.io](https://gguf.io) (i/o is a mirror of us; note: this web3 domain might be restricted access in some regions/by some service providers, if so, visit the one below instead, exactly the same)
 
 [gguf.us](https://gguf.us)
+
+[gguf.org](https://gguf.org)
