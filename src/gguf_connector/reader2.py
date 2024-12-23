@@ -19,7 +19,6 @@ class GGUFReader:
         12: "d",  # FLOAT64
     }
     TENSOR_TYPES = {
-
         0: "GGML_TYPE_F32",
         1: "GGML_TYPE_F16",#            = 1   # except 1d tensors
         2: "GGML_TYPE_Q4_0",#           = 2   # except 1d tensors
