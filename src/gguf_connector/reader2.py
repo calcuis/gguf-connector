@@ -19,34 +19,40 @@ class GGUFReader:
         12: "d",  # FLOAT64
     }
     TENSOR_TYPES = {
+
         0: "GGML_TYPE_F32",
-        1: "GGML_TYPE_F16",
-        2: "GGML_TYPE_Q4_0",
-        3: "GGML_TYPE_Q4_1",
-        6: "GGML_TYPE_Q5_0",
-        7: "GGML_TYPE_Q5_1",
-        8: "GGML_TYPE_Q8_0",
-        9: "GGML_TYPE_Q8_1",
-        10: "GGML_TYPE_Q2_K",
-        11: "GGML_TYPE_Q3_K",
-        12: "GGML_TYPE_Q4_K",
-        13: "GGML_TYPE_Q5_K",
-        14: "GGML_TYPE_Q6_K",
-        15: "GGML_TYPE_Q8_K",
-        16: "GGML_TYPE_IQ2_XXS",
-        17: "GGML_TYPE_IQ2_XS",
-        18: "GGML_TYPE_IQ3_XXS",
-        19: "GGML_TYPE_IQ1_S",
-        20: "GGML_TYPE_IQ4_NL",
-        21: "GGML_TYPE_IQ3_S",
-        22: "GGML_TYPE_IQ2_S",
-        23: "GGML_TYPE_IQ4_XS",
-        24: "GGML_TYPE_I8",
-        25: "GGML_TYPE_I16",
-        26: "GGML_TYPE_I32",
-        27: "GGML_TYPE_I64",
-        28: "GGML_TYPE_F64",
-        29: "GGML_TYPE_IQ1_M",
+        1: "GGML_TYPE_F16",#            = 1   # except 1d tensors
+        2: "GGML_TYPE_Q4_0",#           = 2   # except 1d tensors
+        3: "GGML_TYPE_Q4_1",#           = 3   # except 1d tensors
+        4: "GGML_TYPE_Q4_1_SOME_F16",#  = 4   # tok_embeddings.weight and output.weight are F16
+        # GGML_TYPE_Q4_2                = 5   # support has been removed
+        # GGML_TYPE_Q4_3                = 6   # support has been removed
+        7: "GGML_TYPE_Q8_0",#           = 7   # except 1d tensors
+        8: "GGML_TYPE_Q5_0",#           = 8   # except 1d tensors
+        9: "GGML_TYPE_Q5_1",#           = 9   # except 1d tensors
+        10: "GGML_TYPE_Q2_K",#          = 10  # except 1d tensors
+        11: "GGML_TYPE_Q3_K_S",#        = 11  # except 1d tensors
+        12: "GGML_TYPE_Q3_K_M",#        = 12  # except 1d tensors
+        13: "GGML_TYPE_Q3_K_L",#        = 13  # except 1d tensors
+        14: "GGML_TYPE_Q4_K_S",#        = 14  # except 1d tensors
+        15: "GGML_TYPE_Q4_K_M",#        = 15  # except 1d tensors
+        16: "GGML_TYPE_Q5_K_S",#        = 16  # except 1d tensors
+        17: "GGML_TYPE_Q5_K_M",#        = 17  # except 1d tensors
+        18: "GGML_TYPE_Q6_K",#          = 18  # except 1d tensors
+        19: "GGML_TYPE_IQ2_XXS",#       = 19  # except 1d tensors
+        20: "GGML_TYPE_IQ2_XS",#        = 20  # except 1d tensors
+        21: "GGML_TYPE_Q2_K_S",#        = 21  # except 1d tensors
+        22: "GGML_TYPE_IQ3_XS",#        = 22  # except 1d tensors
+        23: "GGML_TYPE_IQ3_XXS",#       = 23  # except 1d tensors
+        24: "GGML_TYPE_IQ1_S",#         = 24  # except 1d tensors
+        25: "GGML_TYPE_IQ4_NL",#        = 25  # except 1d tensors
+        26: "GGML_TYPE_IQ3_S",#         = 26  # except 1d tensors
+        27: "GGML_TYPE_IQ3_M",#         = 27  # except 1d tensors
+        28: "GGML_TYPE_IQ2_S",#         = 28  # except 1d tensors
+        29: "GGML_TYPE_IQ2_M",#         = 29  # except 1d tensors
+        30: "GGML_TYPE_IQ4_XS",#        = 30  # except 1d tensors
+        31: "GGML_TYPE_IQ1_M",#         = 31  # except 1d tensors
+        32: "GGML_TYPE_BF16",#          = 32  # except 1d tensors
     }
 
     def __init__(self, file_path):
