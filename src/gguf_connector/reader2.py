@@ -24,8 +24,8 @@ class GGUFReader:
         2: "GGML_TYPE_Q4_0",#           = 2   # except 1d tensors
         3: "GGML_TYPE_Q4_1",#           = 3   # except 1d tensors
         4: "GGML_TYPE_Q4_1_SOME_F16",#  = 4   # tok_embeddings.weight and output.weight are F16
-        # GGML_TYPE_Q4_2                = 5   # support has been removed
-        # GGML_TYPE_Q4_3                = 6   # support has been removed
+        5: "GGML_TYPE_TYPE_Q4_2",#      = 5   # support has been removed
+        6: "GGML_TYPE_Q4_3",#           = 6   # support has been removed
         7: "GGML_TYPE_Q8_0",#           = 7   # except 1d tensors
         8: "GGML_TYPE_Q5_0",#           = 8   # except 1d tensors
         9: "GGML_TYPE_Q5_1",#           = 9   # except 1d tensors
@@ -52,6 +52,11 @@ class GGUFReader:
         30: "GGML_TYPE_IQ4_XS",#        = 30  # except 1d tensors
         31: "GGML_TYPE_IQ1_M",#         = 31  # except 1d tensors
         32: "GGML_TYPE_BF16",#          = 32  # except 1d tensors
+        33: "GGML_TYPE_Q4_0_4_4",#      = 33  # removed from gguf files, use Q4_0 and runtime repack
+        34: "GGML_TYPE_Q4_0_4_8",#      = 34  # removed from gguf files, use Q4_0 and runtime repack
+        35: "GGML_TYPE__Q4_0_8_8",#     = 35  # removed from gguf files, use Q4_0 and runtime repack
+        36: "GGML_TYPE__TQ1_0",#        = 36  # except 1d tensors
+        37: "GGML_TYPE__TQ2_0",#        = 37  # except 1d tensors
     }
 
     def __init__(self, file_path):
