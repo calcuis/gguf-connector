@@ -16,6 +16,13 @@ class ModelTemplate:
     keys_detect = []
     keys_banned = []
 
+class ModelHYVID(ModelTemplate):
+    arch = "hyvid"
+    keys_detect = [
+        ("transformer_blocks.0.attn.norm_added_k.weight",),
+        ("double_blocks.0.img_attn.proj.weight",),
+    ]
+
 class ModelFlux(ModelTemplate):
     arch = "flux"
     keys_detect = [
@@ -73,7 +80,7 @@ class ModelSD1(ModelTemplate):
         ), # Non-diffusers
     ]
 
-arch_list = [ModelFlux, ModelSD3, ModelAura, ModelLTXV, ModelSDXL, ModelSD1]
+arch_list = [ModelFlux, ModelSD3, ModelAura, ModelLTXV, ModelHYVID, ModelSDXL, ModelSD1]
 
 def is_model_arch(model, state_dict):
     matched = False
