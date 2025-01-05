@@ -94,7 +94,7 @@ Download comfy pack (see user guide [here](https://pypi.org/project/gguf-comfy))
 ```
 ggc y
 ```
-#### Node
+#### Node (beta)
 clone node (see user/setup guide [here](https://pypi.org/project/gguf-node)) by:
 ```
 ggc n
