@@ -18,6 +18,7 @@ class LazyMeta(ABCMeta):
                     use_self=self,
                 )
             elif isinstance(meta_attr, self._tensor_type):
+                # e.g. self.T with torch.Tensor should still be wrapped
                 return type(self)._wrap_fn(lambda s: getattr(s, name))(self)
             else:
                 # no need to wrap non-tensor properties,
@@ -25,10 +26,12 @@ class LazyMeta(ABCMeta):
                 return meta_attr
 
         namespace["__getattr__"] = __getattr__
+
         # need to make a builder for the wrapped wrapper to copy the name,
         # or else it fails with very cryptic error messages,
         # because somehow the same string would end up in every closures
         def mk_wrap(op_name: str, *, meta_noop: bool = False):
+            # need to wrap the wrapper to get self
             def wrapped_special_op(self, *args, **kwargs):
                 return type(self)._wrap_fn(
                     getattr(type(self)._tensor_type, op_name),
@@ -146,6 +149,7 @@ class LazyBase(ABC, metaclass=LazyMeta):
                 return _t._data
 
             # NOTE: there's a recursion limit in Python (usually 1000)
+
             assert _t._func is not None
             _t._args = cls._recurse_apply(_t._args, simple_to_eager)
             _t._data = _t._func(*_t._args, **_t._kwargs)
