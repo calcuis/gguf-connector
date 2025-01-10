@@ -14,13 +14,13 @@ def quant_shape_to_byte_shape(shape: Sequence[int], quant_type: GGMLQuantization
         raise ValueError(f"Quantized tensor row size ({shape[-1]}) is not a multiple of {quant_type.name} block size ({block_size})")
     return (*shape[:-1], shape[-1] // block_size * type_size)
 
-
 def quant_shape_from_byte_shape(shape: Sequence[int], quant_type: GGMLQuantizationType) -> tuple[int, ...]:
     block_size, type_size = GGML_QUANT_SIZES[quant_type]
     if shape[-1] % type_size != 0:
         raise ValueError(f"Quantized tensor bytes per row ({shape[-1]}) is not a multiple of {quant_type.name} type size ({type_size})")
     return (*shape[:-1], shape[-1] // type_size * block_size)
 
+# This is faster than np.vectorize and np.apply_along_axis because it works on more than one row at a time
 def _apply_over_grouped_rows(func: Callable[[np.ndarray], np.ndarray], arr: np.ndarray, otype: DTypeLike, oshape: tuple[int, ...]) -> np.ndarray:
     rows = arr.reshape((-1, arr.shape[-1]))
     osize = 1
