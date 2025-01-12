@@ -1,10 +1,8 @@
 
 import torch # optional (if you want this conversion tool; pip install torch)
-# ############################################################################
 from safetensors.torch import load_file, save_file
 from tqdm import tqdm
 
-# Simulate FP8 Quantization (E4M3FN format)
 def quantize_to_fp8(tensor):
     if tensor.dtype != torch.bfloat16:
         raise ValueError("Input tensor must be in BF16 format.")
@@ -18,7 +16,6 @@ def quantize_to_fp8(tensor):
     # Scale tensor to match FP8 precision (simulate quantization)
     scale = fp8_max / torch.max(torch.abs(clamped_tensor))
     quantized_tensor = torch.round(clamped_tensor * scale) / scale
-    # return quantized_tensor.to(torch.float16)  # Return as FP16 for compatibility
     return quantized_tensor.to(torch.float8_e4m3fn)
 
 import os
@@ -36,7 +33,6 @@ if safetensors_files:
         input_file = selected_file
         output_file = f"{os.path.splitext(input_file)[0]}_fp8_e4m3fn.safetensors"
         data = load_file(input_file)
-        # Quantize and save the tensors with progress bar
         quantized_data = {}
         print("Starting quantization process...")
         for key, tensor in tqdm(data.items(), desc="Quantizing tensors", unit="tensor"):
@@ -44,7 +40,6 @@ if safetensors_files:
             tensor = tensor.to(dtype=torch.bfloat16, device="cuda")
             quantized_tensor = quantize_to_fp8(tensor)
             quantized_data[key] = quantized_tensor.cpu()
-        # Save the quantized tensors as safetensors
         save_file(quantized_data, output_file)
         print(f"Quantized safetensors saved to {output_file}.")
     except (ValueError, IndexError):
