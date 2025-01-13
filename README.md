@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-1.0.6-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-1.0.7-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -18,13 +18,13 @@ pip install gguf-connector --upgrade
 ```
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 ### Graphical User Interface (GUI)
-Select model(s) with llama.cpp connector:
-```
-ggc cpp
-```
 Select model(s) with ctransformers:
 ```
 ggc c
+```
+Select model(s) with llama.cpp connector (optional: need llama-cpp-python to work; get it [here](https://github.com/abetlen/llama-cpp-python/releases)):
+```
+ggc cpp
 ```
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo.gif)
 [<img src="https://raw.githubusercontent.com/calcuis/chatgpt-model-selector/master/demo1.gif" width="350" height="280">](https://github.com/calcuis/chatgpt-model-selector/blob/main/demo1.gif)
@@ -84,7 +84,12 @@ Launch to page/container:
 ```
 ggc w
 ```
-#### Convertor (beta feature)
+#### Quantizor (beta)
+Quantize safetensors from bf16 to fp8 (optional: need torch to work; pip install torch):
+```
+ggc q
+```
+#### Convertor (beta)
 Convert safetensors to gguf (optional: need torch to work; pip install torch):
 ```
 ggc t
