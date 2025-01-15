@@ -1,4 +1,5 @@
-import torch # optional (if you want quant2 works; pip install torch)
+
+import torch # optional (if you want quant2 decoder works; pip install torch)
 from .quant import dequantize as gq
 from .reader import GGMLQuantizationType, GGML_QUANT_SIZES
 from tqdm import tqdm
