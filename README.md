@@ -48,7 +48,7 @@ Select model(s) with metadata reader:
 ```
 ggc r
 ```
-Select model(s) with metadata fast reader (beta):
+Select model(s) with metadata fast reader:
 ```
 ggc r2
 ```
@@ -84,15 +84,20 @@ Launch to page/container:
 ```
 ggc w
 ```
-#### Quantizor (beta)
+#### Quantizor
 Quantize safetensors from bf16 to fp8 (optional: need torch to work; pip install torch):
 ```
 ggc q
 ```
-#### Convertor (beta)
+#### Convertor (alpha)
 Convert safetensors to gguf (optional: need torch to work; pip install torch):
 ```
 ggc t
+```
+#### Convertor (beta)
+Convert safetensors to gguf (unlimited; optional: need torch to work; pip install torch):
+```
+ggc t2
 ```
 #### Comfy
 Download comfy pack (see user guide [here](https://pypi.org/project/gguf-comfy)) by:
