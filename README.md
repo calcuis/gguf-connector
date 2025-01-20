@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-1.0.9-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-1.1.0-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -99,12 +99,17 @@ Convert safetensors to gguf (unlimited; optional: need torch to work; pip instal
 ```
 ggc t2
 ```
+#### Cutter
+Get cutter for bf/f16 to q2-q8 quantization (see user guide [here](https://pypi.org/project/gguf-cutter)) by:
+```
+ggc u
+```
 #### Comfy
 Download comfy pack (see user guide [here](https://pypi.org/project/gguf-comfy)) by:
 ```
 ggc y
 ```
-#### Node (beta)
+#### Node
 Clone node (see user/setup guide [here](https://pypi.org/project/gguf-node)) by:
 ```
 ggc n
