@@ -136,6 +136,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi3.5.gguf"
     },
     {
+        "name":"phi4.gguf     [5.6GB; for technical problem (4th)]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/phi4.gguf"
+    },
+    {
         "name":"llama2.gguf   [2.8GB; for comprehensive response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/llama2.gguf"
     },
