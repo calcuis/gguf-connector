@@ -104,6 +104,10 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/mamba.gguf"
     },
     {
+        "name":"deep.gguf     [3.1GB; for lengthy response]",
+        "url":"https://huggingface.co/calcuis/gguf/resolve/main/deep.gguf"
+    },
+    {
         "name":"orca.gguf     [4.1GB; for multiple response]",
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/orca.gguf"
     },
