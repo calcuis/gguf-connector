@@ -16,48 +16,6 @@ class ModelTemplate:
     keys_detect = []
     keys_banned = []
 
-class ModelHYVID(ModelTemplate):
-    arch = "hyvid"
-    keys_detect = [
-        ("transformer_blocks.0.attn.norm_added_k.weight",),
-        ("double_blocks.0.img_attn.proj.weight",),
-    ]
-    keys_banned = ["transformer_blocks.0.attn.norm_added_k.weight",]
-
-# class ModelFlux(ModelTemplate):
-#     arch = "flux"
-#     keys_detect = [
-#         ("transformer_blocks.0.attn.norm_added_k.weight",),
-#         ("double_blocks.0.img_attn.proj.weight",),
-#     ]
-#     keys_banned = ["transformer_blocks.0.attn.norm_added_k.weight",]
-
-class ModelSD3(ModelTemplate):
-    arch = "sd3"
-    keys_detect = [
-        ("transformer_blocks.0.attn.add_q_proj.weight",),
-        ("joint_blocks.0.x_block.attn.qkv.weight",),
-    ]
-    keys_banned = ["transformer_blocks.0.attn.add_q_proj.weight",]
-
-class ModelAura(ModelTemplate):
-    arch = "aura"
-    keys_detect = [
-        ("double_layers.3.modX.1.weight",),
-        ("joint_transformer_blocks.3.ff_context.out_projection.weight",),
-    ]
-    keys_banned = ["joint_transformer_blocks.3.ff_context.out_projection.weight",]
-
-class ModelLTXV(ModelTemplate):
-    arch = "ltxv"
-    keys_detect = [
-        (
-            "adaln_single.emb.timestep_embedder.linear_2.weight",
-            "transformer_blocks.27.scale_shift_table",
-            "caption_projection.linear_2.weight",
-        )
-    ]
-
 class ModelSDXL(ModelTemplate):
     arch = "sdxl"
     shape_fix = True
@@ -69,7 +27,6 @@ class ModelSDXL(ModelTemplate):
         ), # Non-diffusers
         ("label_emb.0.0.weight",),
     ]
-
 class ModelSD1(ModelTemplate):
     arch = "sd1"
     shape_fix = True #False
@@ -80,9 +37,47 @@ class ModelSD1(ModelTemplate):
             "output_blocks.2.1.conv.weight", "output_blocks.5.2.conv.weight", "output_blocks.8.2.conv.weight"
         ), # Non-diffusers
     ]
-
-# arch_list = [ModelFlux, ModelSD3, ModelAura, ModelLTXV, ModelHYVID, ModelSDXL, ModelSD1]
-arch_list = [ModelSD3, ModelAura, ModelLTXV, ModelHYVID, ModelSDXL, ModelSD1]
+class ModelSD3(ModelTemplate):
+    arch = "sd3"
+    keys_detect = [
+        ("transformer_blocks.0.attn.add_q_proj.weight",),
+        ("joint_blocks.0.x_block.attn.qkv.weight",),
+    ]
+    keys_banned = ["transformer_blocks.0.attn.add_q_proj.weight",]
+# ############################################################################
+class ModelFlux(ModelTemplate):
+    arch = "flux"
+    keys_detect = ["transformer_blocks.0.attn.norm_added_k.weight",]
+    
+class ModelAura(ModelTemplate):
+    arch = "aura"
+    keys_detect = ["double_layers.3.modX.1.weight",]
+    
+class ModelLTXV(ModelTemplate):
+    arch = "ltxv"
+    keys_detect = ["adaln_single.emb.timestep_embedder.linear_1.bias",]
+    
+class ModelHYVID(ModelTemplate):
+    arch = "hyvid"
+    keys_detect = ["txt_in.individual_token_refiner.blocks.0.norm1.weight",]
+    
+class ModelCosmos(ModelTemplate):
+    arch = "cosmos"
+    keys_detect = ["blocks.block0.blocks.0.block.attn.to_q.0.weight",]
+    
+class ModelPixArt(ModelTemplate):
+    arch = "pixart"
+    keys_detect = ["transformer_blocks.27.scale_shift_table",]
+    
+class ModelMochi(ModelTemplate):
+    arch = "mochi"
+    keys_detect = ["t5_yproj.weight",]
+    
+class ModelLumina(ModelTemplate):
+    arch = "lumina"
+    keys_detect = ["cap_embedder.0.weight",]
+    
+arch_list = [ModelFlux, ModelSD3, ModelAura, ModelLTXV, ModelHYVID, ModelSDXL, ModelSD1, ModelCosmos, ModelPixArt, ModelMochi, ModelLumina]
 
 def is_model_arch(model, state_dict):
     matched = False
