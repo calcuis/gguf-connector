@@ -198,9 +198,9 @@ def handle_tensors(args, writer, state_dict, model_arch):
             and (n_params / 256).is_integer()
             and not (data.shape[-1] / 256).is_integer()
         ):
-            orig_shape = data.shape
+            # orig_shape = data.shape
             data = data.reshape(n_params // 256, 256)
-            writer.add_array(f"comfy.gguf.orig_shape.{key}", tuple(int(dim) for dim in orig_shape))
+            # writer.add_array(f"comfy.gguf.orig_shape.{key}", tuple(int(dim) for dim in orig_shape))
 
         try:
             data = quantize(data, data_qtype)
