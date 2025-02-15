@@ -93,7 +93,7 @@ Quantize safetensors from bf16 to fp8 (optional: need torch to work; pip install
 ```
 ggc q
 ```
-#### Convertor (sigma)
+#### Convertor
 Convert safetensors to gguf (auto; optional: need torch to work; pip install torch):
 ```
 ggc t
