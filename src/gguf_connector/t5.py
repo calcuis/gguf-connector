@@ -3,7 +3,7 @@ import torch # optional (if you want this conversion tool; pip install torch)
 from .writer import GGUFWriter, GGMLQuantizationType
 from .quant import quantize, QuantError
 from .const import GGML_QUANT_VERSION, LlamaFileType
-from safetensors.torch import load_file # optional as well; pip install safetensors
+from safetensors.torch import load_file
 from tqdm import tqdm
 
 QUANTIZATION_THRESHOLD = 1024
