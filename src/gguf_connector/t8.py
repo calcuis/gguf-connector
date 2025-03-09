@@ -1,7 +1,7 @@
 
 import torch # optional (if you want this conversion tool; pip install torch)
-from gguf_connector.writer import GGUFWriter, GGMLQuantizationType
-from gguf_connector.const import GGML_QUANT_VERSION, LlamaFileType
+from .writer import GGUFWriter, GGMLQuantizationType
+from .const import GGML_QUANT_VERSION, LlamaFileType
 from safetensors.torch import load_file
 from tqdm import tqdm
 import numpy as np
@@ -35,7 +35,6 @@ def handle_tensors(writer, state_dict):
     for key, data in tqdm(state_dict.items(), desc="Processing Tensors"):
         old_dtype = data.dtype
         print(f"[INFO] Processing: {key} | Original dtype: {old_dtype} | Shape: {data.shape}")
-
         data = data.to(torch.float32).numpy()
 
         if not is_tensor_valid(data, key):
