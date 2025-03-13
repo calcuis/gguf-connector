@@ -12,12 +12,12 @@ MAX_TENSOR_NAME_LENGTH = 127
 MAX_TENSOR_DIMS = 4
 
 class ModelTemplate:
-    arch = "invalid"
-    shape_fix = False
-    keys_detect = []
-    keys_banned = []
-    keys_hiprec = []
-# ############################################################################
+    arch = "invalid"  # string describing architecture
+    shape_fix = False # whether to reshape tensors
+    keys_detect = []  # list of lists to match in state dict
+    keys_banned = []  # list of keys that should mark model as invalid for conversion
+    keys_hiprec = []  # list of keys that need to be kept in fp32 for some reason
+
     def handle_nd_tensor(self, key, data):
         raise NotImplementedError(f"Tensor detected that exceeds dims supported by C++ code! ({key} @ {data.shape})")
 
@@ -53,6 +53,14 @@ class ModelHyVid(ModelTemplate):
             "txt_in.individual_token_refiner.blocks.1.self_attn_qkv.weight",
         )
     ]
+
+    def handle_nd_tensor(self, key, data):
+        path = f"./fix_5d_tensors_{self.arch}.pt"
+        if os.path.isfile(path):
+            raise RuntimeError(f"5D tensor fix file already exists! {path}")
+        fsd = {key: data}
+        tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
+        torch.save(fsd, path)
 
 class ModelWan(ModelHyVid):
     arch = "wan"
@@ -117,7 +125,7 @@ def detect_arch(state_dict):
     model_arch = None
     for arch in arch_list:
         if is_model_arch(arch, state_dict):
-            model_arch = arch
+            model_arch = arch()
             break
     assert model_arch is not None, "Unknown model architecture!"
     return model_arch
@@ -125,14 +133,21 @@ def detect_arch(state_dict):
 def load_state_dict(path):
     if any(path.endswith(x) for x in [".ckpt", ".pt", ".bin", ".pth"]):
         state_dict = torch.load(path, map_location="cpu", weights_only=True)
-        state_dict = state_dict.get("model", state_dict)
+        for subkey in ["model", "module"]:
+            if subkey in state_dict:
+                state_dict = state_dict[subkey]
+                break
+        if len(state_dict) < 20:
+            raise RuntimeError(f"pt subkey load failed: {state_dict.keys()}")
     else:
         state_dict = load_file(path)
+
     prefix = None
     for pfx in ["model.diffusion_model.", "model."]:
         if any([x.startswith(pfx) for x in state_dict.keys()]):
             prefix = pfx
             break
+
     sd = {}
     for k, v in state_dict.items():
         if prefix and prefix not in k:
@@ -140,6 +155,7 @@ def load_state_dict(path):
         if prefix:
             k = k.replace(prefix, "")
         sd[k] = v
+
     return sd
 
 def load_model(path):
@@ -163,18 +179,24 @@ def handle_tensors(args, writer, state_dict, model_arch):
         raise ValueError(f"Can only handle tensor names up to {MAX_TENSOR_NAME_LENGTH} characters. Tensors exceeding the limit: {bad_list}")
     for key, data in tqdm(state_dict.items()):
         old_dtype = data.dtype
+
         if data.dtype == torch.bfloat16:
             data = data.to(torch.float32).numpy()
         elif data.dtype in [getattr(torch, "float8_e4m3fn", "_invalid"), getattr(torch, "float8_e5m2", "_invalid")]:
             data = data.to(torch.float16).numpy()
         else:
             data = data.numpy()
+
         n_dims = len(data.shape)
         data_shape = data.shape
         data_qtype = getattr(
             GGMLQuantizationType,
             "BF16" if old_dtype == torch.bfloat16 else "F16"
         )
+
+        if len(data.shape) > MAX_TENSOR_DIMS:
+            model_arch.handle_nd_tensor(key, data)
+            continue # needs to be added back later
 
         n_params = 1
         for dim_size in data_shape:
@@ -183,35 +205,29 @@ def handle_tensors(args, writer, state_dict, model_arch):
         if old_dtype in (torch.float32, torch.bfloat16):
             if n_dims == 1:
                 data_qtype = GGMLQuantizationType.F32
-
             elif n_params <= QUANTIZATION_THRESHOLD:
                 data_qtype = GGMLQuantizationType.F32
-              
             elif any(x in key for x in model_arch.keys_hiprec):
-                # tensors that require max precision
                 data_qtype = GGMLQuantizationType.F32
 
-        if (model_arch.shape_fix
-            and n_dims > 1
-            and n_params >= REARRANGE_THRESHOLD
-            and (n_params / 256).is_integer()
-            and not (data.shape[-1] / 256).is_integer()
+        if (model_arch.shape_fix                        # NEVER reshape for models such as flux
+            and n_dims > 1                              # Skip one-dimensional tensors
+            and n_params >= REARRANGE_THRESHOLD         # Only rearrange tensors meeting the size requirement
+            and (n_params / 256).is_integer()           # Rearranging only makes sense if total elements is divisible by 256
+            and not (data.shape[-1] / 256).is_integer() # Only need to rearrange if the last dimension is not divisible by 256
         ):
-            # orig_shape = data.shape
+            orig_shape = data.shape
             data = data.reshape(n_params // 256, 256)
-            # writer.add_array(f"comfy.gguf.orig_shape.{key}", tuple(int(dim) for dim in orig_shape))
-
+            writer.add_array(f"comfy.gguf.orig_shape.{key}", tuple(int(dim) for dim in orig_shape))
         try:
             data = quantize(data, data_qtype)
         except (AttributeError, QuantError) as e:
             tqdm.write(f"falling back to F16: {e}")
             data_qtype = GGMLQuantizationType.F16
             data = quantize(data, data_qtype)
-
         new_name = key
         shape_str = f"{{{', '.join(str(n) for n in reversed(data.shape))}}}"
         tqdm.write(f"{f'%-{max_name_len + 4}s' % f'{new_name}'} {old_dtype} --> {data_qtype.name}, shape = {shape_str}")
-
         writer.add_tensor(new_name, data, raw_dtype=data_qtype)
 
 import os
@@ -227,6 +243,7 @@ if safetensors_files:
         selected_file=safetensors_files[choice_index]
         print(f"Model file: {selected_file} is selected!")
         path=selected_file
+
         writer, state_dict, model_arch = load_model(path)
         writer.add_quantization_version(GGML_QUANT_VERSION)
         if next(iter(state_dict.values())).dtype == torch.bfloat16:
