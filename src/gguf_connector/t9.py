@@ -36,10 +36,8 @@ def handle_tensors(writer, state_dict):
         old_dtype = data.dtype
         print(f"[INFO] Processing: {key} | Original dtype: {old_dtype} | Shape: {data.shape}")
         data = data.to(torch.float32).numpy()
-
         if not is_tensor_valid(data, key):
             continue  # Skip if tensor is invalid
-
         data_qtype = GGMLQuantizationType.F32  # Force F32 for all tensors
         shape_str = f"{{{', '.join(map(str, reversed(data.shape)))}}}"
         print(f"[INFO] Writing: {key.ljust(max_name_len)} | {old_dtype} -> {data_qtype.name} | Shape: {shape_str}")
