@@ -48,8 +48,7 @@ def gguf_tokenizer_loader(path):
     spm.trainer_spec.byte_fallback = True
     spm.trainer_spec.vocab_size = len(tokens)
     spm.trainer_spec.max_sentence_length = 4096
-    spm.trainer_spec.eos_id = get_field(reader,
-        'tokenizer.ggml.eos_token_id', int)
+    spm.trainer_spec.eos_id = get_field(reader, 'tokenizer.ggml.eos_token_id', int)
     spm.trainer_spec.pad_id = get_field(reader, 'tokenizer.ggml.padding_token_id', int)
     print(f'Rebuilt tokenizer successfully with vocab size of {len(spm.pieces)}')
     del reader
