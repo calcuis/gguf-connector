@@ -26,7 +26,7 @@ def get_list_field(reader, field_name, field_type):
     else:
         raise TypeError(f"Unknown field type {field_type}")
 
-def gguf_tokenizer_loader(path):
+def tokenizer_builder(path):
     print(f'Attempting to rebuild sentencepiece tokenizer from metadata..')
     try:
         from sentencepiece import sentencepiece_model_pb2 as model
