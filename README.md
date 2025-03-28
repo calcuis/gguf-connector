@@ -22,7 +22,7 @@ Select model(s) with ctransformers:
 ```
 ggc c
 ```
-Select model(s) with llama.cpp connector (optional: need llama-cpp-python to work; get it [here](https://github.com/abetlen/llama-cpp-python/releases)):
+Select model(s) with llama.cpp connector (optional: need llama-cpp-python to work; get it [here](https://github.com/abetlen/llama-cpp-python/releases) or nightly [here](https://github.com/calcuis/llama-cpp-python/releases):
 ```
 ggc cpp
 ```
