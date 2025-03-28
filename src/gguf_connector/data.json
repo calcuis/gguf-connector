@@ -132,7 +132,7 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/gemma2.gguf"
     },
     {
-        "name":"gemma3-1b-it  [720MB; great summary; q4_0]",
+        "name":"gemma3-1b-it  [687MB; great summary; q4_0]",
         "url":"https://huggingface.co/chatpig/gemma-3-1b-it-gguf/resolve/main/gemma-3-1b-it-q4_0.gguf"
     },
     {
