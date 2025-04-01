@@ -133,11 +133,11 @@
     },
     {
         "name":"gemma3-1b-it  [687MB; great summary; q4_0]",
-        "url":"https://huggingface.co/chatpig/gemma-3-1b-it-gguf/resolve/main/gemma-3-1b-it-q4_0.gguf"
+        "url":"https://huggingface.co/gguf-org/gemma-3-1b-it-gguf/resolve/main/gemma-3-1b-it-q4_0.gguf"
     },
     {
         "name":"gemma3-1b-pt  [1.0GB; list response; q8_0]",
-        "url":"https://huggingface.co/chatpig/gemma-3-1b-pt-gguf/resolve/main/gemma-3-1b-pt-q8_0.gguf"
+        "url":"https://huggingface.co/gguf-org/gemma-3-1b-pt-gguf/resolve/main/gemma-3-1b-pt-q8_0.gguf"
     },
     {
         "name":"phi3.gguf     [2.3GB; for technical problem (3rd)]",
