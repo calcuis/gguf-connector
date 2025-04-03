@@ -132,11 +132,11 @@
         "url":"https://huggingface.co/calcuis/gguf/resolve/main/gemma2.gguf"
     },
     {
-        "name":"gemma3-1b-it  [687MB; great summary; q4_0]",
+        "name":"gemma3-1b-it  [687MB; for great summary; q4_0]",
         "url":"https://huggingface.co/gguf-org/gemma-3-1b-it-gguf/resolve/main/gemma-3-1b-it-q4_0.gguf"
     },
     {
-        "name":"gemma3-1b-pt  [1.0GB; list response; q8_0]",
+        "name":"gemma3-1b-pt  [1.0GB; for list response; q8_0]",
         "url":"https://huggingface.co/gguf-org/gemma-3-1b-pt-gguf/resolve/main/gemma-3-1b-pt-q8_0.gguf"
     },
     {
