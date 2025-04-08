@@ -1,5 +1,6 @@
 
 import os, json
+from tqdm import tqdm
 
 def list_gguf_files():
     files = [f for f in os.listdir() if f.endswith(".gguf")]
@@ -33,20 +34,24 @@ def split_gguf_file(filename, cutoff_size):
     offset = 0
     part_id = 1
 
-    while offset < total_size:
-        end = min(offset + cutoff_size, total_size)
-        part_data = data[offset:end]
-        part_name = f"model-{part_id:05d}-of-XXXX.gguf"
-        with open(part_name, "wb") as pf:
-            pf.write(part_data)
-        parts.append(part_name)
-        offset = end
-        part_id += 1
+    print("\nSplitting file into parts...")
+    with tqdm(total=total_size, unit='B', unit_scale=True, desc="Splitting") as pbar:
+        while offset < total_size:
+            end = min(offset + cutoff_size, total_size)
+            part_data = data[offset:end]
+            part_name = f"model-{part_id:05d}-of-XXXX.gguf"
+            with open(part_name, "wb") as pf:
+                pf.write(part_data)
+            parts.append(part_name)
+            offset = end
+            part_id += 1
+            pbar.update(len(part_data))
 
     num_parts = len(parts)
     final_files = []
 
-    for i, old_name in enumerate(parts):
+    print("\nRenaming parts with total count info...")
+    for i, old_name in tqdm(list(enumerate(parts)), desc="Renaming", unit="file"):
         new_name = f"model-{i+1:05d}-of-{num_parts:05d}.gguf"
         os.rename(old_name, new_name)
         final_files.append(new_name)
