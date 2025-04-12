@@ -58,7 +58,7 @@ class ModelHyVid(ModelTemplate):
             raise RuntimeError(f"5D tensor fix file already exists! {path}")
         fsd = {key: torch.from_numpy(data)}
         tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
-        save_file(fsd, path)
+        torch.save(fsd, path)
 
 class ModelWan(ModelHyVid):
     arch = "wan"
