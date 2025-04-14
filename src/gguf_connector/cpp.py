@@ -37,7 +37,7 @@ if gguf_files:
         def submit(i):
             root.title("Processing...")
             print("Note: if you move the banner, it might show: (Not Responding); but running in background still; please be patient.\nProcessing...")
-            output = llm("Q: "+str(i.get()), max_tokens=2048, echo=True)
+            output = llm("Q: "+str(i.get()), max_tokens=4096, echo=True)
             answer = output['choices'][0]['text']
             print(answer)
             o.insert(INSERT, answer+"\n\n")
