@@ -16,7 +16,6 @@ class ModelTemplate:
     keys_detect = []  # list of lists to match in state dict
     keys_banned = []  # list of keys that should mark model as invalid for conversion
     keys_hiprec = []  # list of keys that need to be kept in fp32 for some reason
-
     def handle_nd_tensor(self, key, data):
         raise NotImplementedError(f"Tensor detected that exceeds dims supported by C++ code! ({key} @ {data.shape})")
 
@@ -54,10 +53,10 @@ class ModelHyVid(ModelTemplate):
     ]
 
     def handle_nd_tensor(self, key, data):
-        path = f"./fix_5d_tensors_{self.arch}.pt"
+        path = f"./fix_5d_tensors_{self.arch}.safetensors"
         if os.path.isfile(path):
             raise RuntimeError(f"5D tensor fix file already exists! {path}")
-        fsd = {key: data}
+        fsd = {key: torch.from_numpy(data)}
         tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
         torch.save(fsd, path)
 
@@ -140,13 +139,11 @@ def load_state_dict(path):
             raise RuntimeError(f"pt subkey load failed: {state_dict.keys()}")
     else:
         state_dict = load_file(path)
-
     prefix = None
     for pfx in ["model.diffusion_model.", "model."]:
         if any([x.startswith(pfx) for x in state_dict.keys()]):
             prefix = pfx
             break
-
     sd = {}
     for k, v in state_dict.items():
         if prefix and prefix not in k:
@@ -154,7 +151,6 @@ def load_state_dict(path):
         if prefix:
             k = k.replace(prefix, "")
         sd[k] = v
-
     return sd
 
 def load_model(path):
@@ -178,24 +174,19 @@ def handle_tensors(args, writer, state_dict, model_arch):
         raise ValueError(f"Can only handle tensor names up to {MAX_TENSOR_NAME_LENGTH} characters. Tensors exceeding the limit: {bad_list}")
     for key, data in tqdm(state_dict.items()):
         old_dtype = data.dtype
-        
         data = data.to(torch.float32).numpy()
-
         n_dims = len(data.shape)
         data_shape = data.shape
         data_qtype = getattr(
             GGMLQuantizationType,
             "BF16" if old_dtype == torch.bfloat16 else "F16"
         )
-
         if len(data.shape) > MAX_TENSOR_DIMS:
             model_arch.handle_nd_tensor(key, data)
             continue # needs to be added back later
-
         n_params = 1
         for dim_size in data_shape:
             n_params *= dim_size
-
         if old_dtype in (torch.float32, torch.bfloat16):
             if n_dims == 1:
                 data_qtype = GGMLQuantizationType.F32
@@ -203,9 +194,7 @@ def handle_tensors(args, writer, state_dict, model_arch):
                 data_qtype = GGMLQuantizationType.F32
             elif any(x in key for x in model_arch.keys_hiprec):
                 data_qtype = GGMLQuantizationType.F32
-
         new_name = key
-
         data_qtype = GGMLQuantizationType.F32  # Force F32 for all tensors
         shape_str = f"{{{', '.join(str(n) for n in reversed(data.shape))}}}"
         tqdm.write(f"{f'%-{max_name_len + 4}s' % f'{new_name}'} {old_dtype} --> {data_qtype.name}, shape = {shape_str}")
