@@ -25,7 +25,7 @@ if gguf_files:
             if ask.lower() == 'q':
                   break
 
-            output = llm("Q: "+ask, max_tokens=2048, echo=True)
+            output = llm("Q: "+ask, max_tokens=4096, echo=True)
             answer = output['choices'][0]['text']
             print(answer+"\n")
 
