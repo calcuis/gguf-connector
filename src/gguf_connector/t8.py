@@ -43,6 +43,18 @@ class ModelAura(ModelTemplate):
     ]
     keys_banned = ["joint_transformer_blocks.3.ff_context.out_projection.weight",]
 
+class ModelHiDream(ModelTemplate):
+    arch = "hidream"
+    keys_detect = [
+        (
+            "caption_projection.0.linear.weight",
+            "double_stream_blocks.0.block.ff_i.shared_experts.w3.weight"
+        )
+    ]
+    keys_hiprec = [
+        ".ff_i.gate.weight" # nn.parameter, can't load from BF16 ver
+    ]
+
 class ModelHyVid(ModelTemplate):
     arch = "hyvid"
     keys_detect = [
@@ -53,12 +65,20 @@ class ModelHyVid(ModelTemplate):
     ]
 
     def handle_nd_tensor(self, key, data):
-        path = f"./fix_5d_tensors_{self.arch}.safetensors"
+        path = f"./fix_5d_tensors_{self.arch}.pt"
         if os.path.isfile(path):
             raise RuntimeError(f"5D tensor fix file already exists! {path}")
-        fsd = {key: torch.from_numpy(data)}
+        fsd = {key: data}
         tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
         torch.save(fsd, path)
+    
+    # def handle_nd_tensor(self, key, data):
+    #     path = f"./fix_5d_tensors_{self.arch}.safetensors"
+    #     if os.path.isfile(path):
+    #         raise RuntimeError(f"5D tensor fix file already exists! {path}")
+    #     fsd = {key: torch.from_numpy(data)}
+    #     tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
+    #     torch.save(fsd, path)
 
 class ModelWan(ModelHyVid):
     arch = "wan"
@@ -106,7 +126,7 @@ class ModelSD1(ModelTemplate):
         ), # Non-diffusers
     ]
 
-arch_list = [ModelFlux, ModelSD3, ModelAura, ModelLTXV, ModelHyVid, ModelWan, ModelSDXL, ModelSD1]
+arch_list = [ModelFlux, ModelSD3, ModelAura, ModelHiDream, ModelLTXV, ModelHyVid, ModelWan, ModelSDXL, ModelSD1]
 
 def is_model_arch(model, state_dict):
     matched = False
