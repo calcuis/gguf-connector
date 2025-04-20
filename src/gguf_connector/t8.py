@@ -64,21 +64,21 @@ class ModelHyVid(ModelTemplate):
         )
     ]
 
-    def handle_nd_tensor(self, key, data):
-        path = f"./fix_5d_tensors_{self.arch}.pt"
-        if os.path.isfile(path):
-            raise RuntimeError(f"5D tensor fix file already exists! {path}")
-        fsd = {key: data}
-        tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
-        torch.save(fsd, path)
-    
     # def handle_nd_tensor(self, key, data):
-    #     path = f"./fix_5d_tensors_{self.arch}.safetensors"
+    #     path = f"./fix_5d_tensors_{self.arch}.pt"
     #     if os.path.isfile(path):
     #         raise RuntimeError(f"5D tensor fix file already exists! {path}")
-    #     fsd = {key: torch.from_numpy(data)}
+    #     fsd = {key: data}
     #     tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
     #     torch.save(fsd, path)
+    
+    def handle_nd_tensor(self, key, data):
+        path = f"./fix_5d_tensors_{self.arch}.safetensors"
+        if os.path.isfile(path):
+            raise RuntimeError(f"5D tensor fix file already exists! {path}")
+        fsd = {key: torch.from_numpy(data)}
+        tqdm.write(f"5D key found in state dict! Manual fix required! - {key} {data.shape}")
+        torch.save(fsd, path)
 
 class ModelWan(ModelHyVid):
     arch = "wan"
