@@ -33,31 +33,20 @@ if gguf_files:
         arch = get_arch_str(reader)
         file_type = get_file_type(reader)
         print(f"Detected arch: '{arch}' (ftype: {str(file_type)})")
-        # sd5d = torch.load(f"fix_5d_tensors_{arch}.safetensors", weights_only=False)
-        # sd5d = {k:v.numpy() for k,v in sd5d.items()}
-        # print("5D tensors:", sd5d.keys())
-        sd5d = torch.load(f"fix_5d_tensors_{arch}.pt", weights_only=False)
-        print("5D:", sd5d.keys())
+        sd5d = torch.load(f"fix_5d_tensors_{arch}.safetensors", weights_only=False)
+        sd5d = {k:v.numpy() for k,v in sd5d.items()}
+        print("5D tensors:", sd5d.keys())
         writer = GGUFWriter(path=None, arch=arch)
         writer.add_quantization_version(GGML_QUANT_VERSION)
         writer.add_file_type(file_type)
         added = []
         def add_extra_key(writer, key, data):
-            old_dtype = data.dtype
-            data_qtype = GGMLQuantizationType.F32
-            n_dims = len(data.shape)
-            data_shape = data.shape
-            data = quantize(data, data_qtype)
-            tqdm.write(f"Adding key {key} ({data_shape})")
-            writer.add_tensor(key, data, raw_dtype=data_qtype)
             global added
+            data_qtype = GGMLQuantizationType.F32
+            data = quantize(data, data_qtype)
+            tqdm.write(f"Adding key {key} ({data.shape})")
+            writer.add_tensor(key, data, raw_dtype=data_qtype)
             added.append(key)
-            # global added
-            # data_qtype = GGMLQuantizationType.F32
-            # data = quantize(data, data_qtype)
-            # tqdm.write(f"Adding key {key} ({data.shape})")
-            # writer.add_tensor(key, data, raw_dtype=data_qtype)
-            # added.append(key)
         for tensor in tqdm(reader.tensors):
             writer.add_tensor(tensor.name, tensor.data, raw_dtype=tensor.tensor_type)
             key5d = tensor.name.replace(".bias", ".weight")
