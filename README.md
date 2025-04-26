@@ -152,15 +152,15 @@ Take pack (see user guide [here](https://pypi.org/project/gguf-pack)) by:
 ```
 ggc p
 ```
-#### FramePack
-Take framepack (portable packpack) by:
-```
-ggc p1
-```
 #### PackPack
 Take packpack (see user guide [here](https://pypi.org/project/framepack)) by:
 ```
 ggc p2
+```
+#### FramePack
+Take framepack (portable packpack) by:
+```
+ggc p1
 ```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
