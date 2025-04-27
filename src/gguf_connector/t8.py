@@ -52,7 +52,8 @@ class ModelHiDream(ModelTemplate):
         )
     ]
     keys_hiprec = [
-        ".ff_i.gate.weight" # nn.parameter, can't load from BF16 ver
+        ".ff_i.gate.weight" # nn.parameter, can't load from BF16 ver,
+        "img_emb.emb_pos"
     ]
 
 class ModelHyVid(ModelTemplate):
