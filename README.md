@@ -162,6 +162,11 @@ Take framepack (portable packpack) by:
 ```
 ggc p1
 ```
+#### Video generator
+Activate backend and frontend by (optional: need torch, diffusers to work; pip install torch, diffusers):
+```
+ggc vg
+```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
