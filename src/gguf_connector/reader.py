@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging, os
+import logging, os, sys
 from collections import OrderedDict
 from typing import Any, Literal, NamedTuple, TypeVar, Union
 import numpy as np
@@ -8,7 +8,6 @@ import numpy.typing as npt
 from .quant import quant_shape_to_byte_shape
 
 if __name__ == "__main__":
-    import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -19,6 +18,7 @@ from .const import (
     GGUF_VERSION,
     GGMLQuantizationType,
     GGUFValueType,
+    GGUFEndian,
 )
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,48 @@ class ReaderField(NamedTuple):
     parts: list[npt.NDArray[Any]] = []
     data: list[int] = [-1]
     types: list[GGUFValueType] = []
+
+    def contents(self, index_or_slice: int | slice = slice(None)) -> Any:
+        if self.types:
+            to_string = lambda x: str(x.tobytes(), encoding='utf-8') # noqa: E731
+            main_type = self.types[0]
+
+            if main_type == GGUFValueType.ARRAY:
+                sub_type = self.types[-1]
+
+                if sub_type == GGUFValueType.STRING:
+                    indices = self.data[index_or_slice]
+
+                    if isinstance(index_or_slice, int):
+                        return to_string(self.parts[indices]) # type: ignore
+                    else:
+                        return [to_string(self.parts[idx]) for idx in indices] # type: ignore
+                else:
+                    # FIXME: When/if _get_field_parts() support multi-dimensional arrays, this must do so too
+
+                    # Check if it's unsafe to perform slice optimization on data
+                    # if any(True for idx in self.data if len(self.parts[idx]) != 1):
+                    #     optim_slice = slice(None)
+                    # else:
+                    #     optim_slice = index_or_slice
+                    #     index_or_slice = slice(None)
+
+                    # if isinstance(optim_slice, int):
+                    #     return self.parts[self.data[optim_slice]].tolist()[0]
+                    # else:
+                    #     return [pv for idx in self.data[optim_slice] for pv in self.parts[idx].tolist()][index_or_slice]
+
+                    if isinstance(index_or_slice, int):
+                        return self.parts[self.data[index_or_slice]].tolist()[0]
+                    else:
+                        return [pv for idx in self.data[index_or_slice] for pv in self.parts[idx].tolist()]
+
+            if main_type == GGUFValueType.STRING:
+                return to_string(self.parts[-1])
+            else:
+                return self.parts[-1].tolist()[0]
+
+        return None
 
 class ReaderTensor(NamedTuple):
     name: str
@@ -76,8 +118,20 @@ class GGUFReader:
             self.byte_order = 'S'
             temp_version = temp_version.newbyteorder(self.byte_order)
         version = temp_version[0]
+        # endianess logic
         if version not in READER_SUPPORTED_VERSIONS:
             raise ValueError(f'Sorry, file appears to be version {version} which we cannot handle')
+        if sys.byteorder == "little":
+            # Host is little endian
+            host_endian = GGUFEndian.LITTLE
+            swapped_endian = GGUFEndian.BIG
+        else:
+            # Sorry PDP or other weird systems that don't use BE or LE.
+            host_endian = GGUFEndian.BIG
+            swapped_endian = GGUFEndian.LITTLE
+        self.endianess = swapped_endian if self.byte_order == "S" else host_endian
+        # if version not in READER_SUPPORTED_VERSIONS:
+        #     raise ValueError(f'Sorry, file appears to be version {version} which we cannot handle')
         self.fields: OrderedDict[str, ReaderField] = OrderedDict()
         self.tensors: list[ReaderTensor] = []
         offs += self._push_field(ReaderField(offs, 'GGUF.version', [temp_version], [0], [GGUFValueType.UINT32]))
@@ -116,10 +170,20 @@ class GGUFReader:
         count = int(count)
         itemsize = int(np.empty([], dtype = dtype).itemsize)
         end_offs = offset + itemsize * count
+        # ## rewritten to ensure it works fine ##
         return (
             self.data[offset:end_offs]
             .view(dtype = dtype)[:count]
+            # .newbyteorder(override_order or self.byte_order)
         )
+        # ## might not work for numpy ##
+        # arr = self.data[offset:end_offs].view(dtype=dtype)[:count]
+        # return arr.view(arr.dtype.newbyteorder(self.byte_order if override_order is None else override_order))
+        # old version
+        # arr = self.data[offset:end_offs].view(dtype=dtype)[:count]
+        # if override_order is None:
+        #     return arr
+        # return arr.view(arr.dtype.newbyteorder(override_order))
 
     def _push_field(self, field: ReaderField, skip_sum: bool = False) -> int:
         if field.name in self.fields:
