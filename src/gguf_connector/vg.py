@@ -5,7 +5,7 @@ from transformers import T5EncoderModel
 from diffusers import LTXPipeline, GGUFQuantizationConfig, LTXVideoTransformer3DModel
 from diffusers.utils import export_to_video
 
-model_path = "https://huggingface.co/calcuis/ltxv-gguf/blob/main/ltx-video-2b-v0.9-q8_0.gguf"
+model_path = "https://huggingface.co/calcuis/ltxv-gguf/blob/main/ltxv-2b-0.9.6-distilled-fp32-q8_0.gguf"
 transformer = LTXVideoTransformer3DModel.from_single_file(
     model_path,
     quantization_config=GGUFQuantizationConfig(compute_dtype=torch.bfloat16),
@@ -17,7 +17,7 @@ text_encoder = T5EncoderModel.from_pretrained(
     torch_dtype=torch.bfloat16,
 )
 pipe = LTXPipeline.from_pretrained(
-    "callgg/ltxv-decoder",
+    "callgg/ltxv0.9.6-decoder",
     text_encoder=text_encoder,
     transformer=transformer,
     torch_dtype=torch.bfloat16,
@@ -38,16 +38,16 @@ def generate_video(prompt, negative_prompt, width, height, num_frames, num_infer
 # Gradio UI
 
 sample_prompts = [
-    "A woman with long brown hair and light skin smiles at another woman with long blonde hair. The woman with brown hair wears a black jacket and has a small, barely noticeable mole on her right cheek. The camera angle is a close-up, focused on her brown hair and face. The lighting is warm and natural, likely from the setting sun, casting a soft glow on the scene. The scene appears to be real-life footage",
+    "A drone quickly rises through a bank of morning fog, revealing a pristine alpine lake surrounded by snow-capped mountains. The camera glides forward over the glassy water, capturing perfect reflections of the peaks. As it continues, the perspective shifts to reveal a lone wooden cabin with a curl of smoke from its chimney, nestled among tall pines at the lake edge. The final shot tracks upward rapidly, transitioning from intimate to epic as the full mountain range comes into view, bathed in the golden light of sunrise breaking through scattered clouds.",
 ]
 sample_prompts = [[x] for x in sample_prompts]
 
-block = gr.Blocks(title="chatPIG").queue()
+block = gr.Blocks(title="gguf").queue()
 with block:
     gr.Markdown("## 🎥 Video Generator")
     with gr.Row():
         prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
-        neg_prompt_input = gr.Textbox(label="Negative Prompt", value="worst quality, inconsistent motion, blurry, jittery, distorted", visible=False) # disable
+        neg_prompt_input = gr.Textbox(label="Negative Prompt", value="low quality, worst quality, deformed, distorted, disfigured, motion smear, motion artifacts, fused fingers, bad anatomy, weird hand, ugly", visible=False) # disable
         quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
         quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
     with gr.Row():
