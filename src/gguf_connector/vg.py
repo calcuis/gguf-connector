@@ -1,5 +1,5 @@
 
-import torch # optional (need torch to work; pip install torch, diffusers)
+import torch # optional (need torch, diffusers to work; pip install torch, diffusers)
 import gradio as gr # optional (need gradio for lazy ui; pip install gradio)
 from transformers import T5EncoderModel
 from diffusers import LTXPipeline, GGUFQuantizationConfig, LTXVideoTransformer3DModel
@@ -36,11 +36,7 @@ def generate_video(prompt, negative_prompt, width, height, num_frames, num_infer
     return "output.mp4"
 
 # Gradio UI
-# with gr.Blocks() as ui:
-#     gr.Markdown("## 🎥 Video Generator")
-#     with gr.Row():
-        # prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here", lines=2)
-        # neg_prompt_input = gr.Textbox(label="Negative Prompt", placeholder="Enter your negative prompt here", lines=2)
+
 sample_prompts = [
     "A woman with long brown hair and light skin smiles at another woman with long blonde hair. The woman with brown hair wears a black jacket and has a small, barely noticeable mole on her right cheek. The camera angle is a close-up, focused on the woman with brown hair face. The lighting is warm and natural, likely from the setting sun, casting a soft glow on the scene. The scene appears to be real-life footage",
 ]
@@ -74,5 +70,4 @@ with block:
         outputs=output_video,
     )
 
-# ui.launch()
 block.launch()
