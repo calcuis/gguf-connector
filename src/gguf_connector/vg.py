@@ -47,9 +47,9 @@ with block:
     gr.Markdown("## 🎥 Video Generator")
     with gr.Row():
         prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
-        neg_prompt_input = gr.Textbox(label="Negative Prompt", value="", visible=False) # disable negative prompt recently
-        example_quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
-        example_quick_prompts.click(lambda x: x[0], inputs=[example_quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
+        neg_prompt_input = gr.Textbox(label="Negative Prompt", value="worst quality, inconsistent motion, blurry, jittery, distorted", visible=False) # disable
+        quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
+        quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
     with gr.Row():
         width_input = gr.Number(label="Width", value=512)
         height_input = gr.Number(label="Height", value=512)
