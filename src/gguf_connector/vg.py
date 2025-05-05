@@ -36,11 +36,24 @@ def generate_video(prompt, negative_prompt, width, height, num_frames, num_infer
     return "output.mp4"
 
 # Gradio UI
-with gr.Blocks() as ui:
+# with gr.Blocks() as ui:
+#     gr.Markdown("## 🎥 Video Generator")
+#     with gr.Row():
+        # prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here", lines=2)
+        # neg_prompt_input = gr.Textbox(label="Negative Prompt", placeholder="Enter your negative prompt here", lines=2)
+sample_prompts = [
+    "A woman with long brown hair and light skin smiles at another woman with long blonde hair. The woman with brown hair wears a black jacket and has a small, barely noticeable mole on her right cheek. The camera angle is a close-up, focused on the woman with brown hair face. The lighting is warm and natural, likely from the setting sun, casting a soft glow on the scene. The scene appears to be real-life footage",
+]
+sample_prompts = [[x] for x in sample_prompts]
+
+block = gr.Blocks(title="chatPIG").queue()
+with block:
     gr.Markdown("## 🎥 Video Generator")
     with gr.Row():
-        prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here", lines=2)
-        neg_prompt_input = gr.Textbox(label="Negative Prompt", placeholder="Enter your negative prompt here", lines=2)
+        prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
+        neg_prompt_input = gr.Textbox(label="Negative Prompt", value="", visible=False) # disable negative prompt recently
+        example_quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
+        example_quick_prompts.click(lambda x: x[0], inputs=[example_quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
     with gr.Row():
         width_input = gr.Number(label="Width", value=512)
         height_input = gr.Number(label="Height", value=512)
@@ -61,4 +74,5 @@ with gr.Blocks() as ui:
         outputs=output_video,
     )
 
-ui.launch()
+# ui.launch()
+block.launch()
