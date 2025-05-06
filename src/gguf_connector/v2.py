@@ -45,8 +45,8 @@ def generate_video(prompt, negative_prompt, width, height, num_frames, num_infer
 # Gradio UI
 
 sample_prompts = [
-    'a pig moving quickly in a beautiful winter scenery nature trees sunset tracking camera',
-    'a cat and a dog baking a cake together in a kitchen. The cat is carefully measuring flour, while the dog is stirring the batter with a wooden spoon. The kitchen is cozy, with sunlight streaming through the window',
+    'A cat and a dog baking a cake together in a kitchen. The cat is carefully measuring flour, while the dog is stirring the batter with a wooden spoon. The kitchen is cozy, with sunlight streaming through the window.',
+    'A pig moving quickly in a beautiful winter scenery nature trees sunset tracking camera.',
 ]
 sample_prompts = [[x] for x in sample_prompts]
 
