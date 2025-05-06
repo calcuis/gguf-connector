@@ -28,7 +28,6 @@ def generate_video(input_image, prompt, negative_prompt, width, height, num_fram
     image = input_image.convert("RGB")
     condition1 = LTXVideoCondition(image=image, frame_index=0)
     generator = torch.Generator("cuda").manual_seed(0)
-
     video = pipe(
         conditions=[condition1],
         prompt=prompt,
@@ -39,7 +38,6 @@ def generate_video(input_image, prompt, negative_prompt, width, height, num_fram
         num_inference_steps=num_inference_steps,
         generator=generator,
     ).frames[0]
-
     export_to_video(video, "output.mp4", fps=fps)
     return "output.mp4"
 
@@ -53,7 +51,7 @@ sample_prompts = [[x] for x in sample_prompts]
 
 block = gr.Blocks(title="gguf").queue()
 with block:
-    gr.Markdown("## 🎥 Video Generator")
+    gr.Markdown("## 🎥 Video Generator 2")
     with gr.Row():
         input_image = gr.Image(type="pil", label="Upload Image")
     prompt = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
