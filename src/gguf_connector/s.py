@@ -15,8 +15,12 @@ def split_safetensors_file(input_path, output_dir):
     for key, tensor in tensors.items():
         for comp in components:
             if key.startswith(comp):
-                components[comp][key] = tensors[key]
-                break  # Assign only to the first matching component
+                if comp == "vae":
+                    new_key = key[len("vae."):] if key.startswith("vae.") else key
+                    components[comp][new_key] = tensors[key]
+                else:
+                    components[comp][key] = tensors[key]
+                break
 
     for comp_name, comp_tensors in components.items():
         if comp_tensors:
