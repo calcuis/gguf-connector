@@ -1,6 +1,5 @@
 
 import torch # optional (need torch to work; pip install torch)
-# import argparse, tempfile, time
 import tempfile, time
 import gradio as gr
 import numpy as np
@@ -351,11 +350,11 @@ with gr.Blocks(css=css) as demo:
     #     )
     # else:
     #     gr.Markdown("_(No examples configured or example prompt file missing)_")
-
 # --- Launch the App ---
-if __name__ == "__main__":
-    print("Launching Gradio interface...")
-    # set `GRADIO_SERVER_NAME`, `GRADIO_SERVER_PORT` env vars to override default values
-    # use `GRADIO_SERVER_NAME=0.0.0.0` for Docker
-    # demo.launch(share=args.share)
-    demo.launch()
+# if __name__ == "__main__":
+#     print("Launching Gradio interface...")
+#     # set `GRADIO_SERVER_NAME`, `GRADIO_SERVER_PORT` env vars to override default values
+#     # use `GRADIO_SERVER_NAME=0.0.0.0` for Docker
+#     # demo.launch(share=args.share)
+#     demo.launch()
+demo.launch()
