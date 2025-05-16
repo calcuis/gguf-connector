@@ -192,9 +192,11 @@ css = """
 default_text = "[S1] This is an open weights text to dialogue model. \n[S2] You get full control over scripts and voices. \n[S1] Wow. Amazing. (laughs) \n[S2] Try it now on Git hub or Hugging Face."
 
 # Build Gradio UI
-with gr.Blocks(css=css) as demo:
-    gr.Markdown("# Text-to-Speech Synthesis")
-
+block = gr.Blocks(title="gguf", css=css).queue()
+with block:
+    gr.Markdown("## 🎤 Text-to-Speech Synthesis")
+# with gr.Blocks(css=css) as demo:
+#     gr.Markdown("# Text-to-Speech Synthesis")
     with gr.Row(equal_height=False):
         with gr.Column(scale=1):
             text_input = gr.Textbox(
@@ -285,4 +287,4 @@ with gr.Blocks(css=css) as demo:
         api_name="generate_audio",
     )
 
-demo.launch()
+block.launch()
