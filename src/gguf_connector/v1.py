@@ -8,15 +8,8 @@ from pathlib import Path
 from typing import Optional, Tuple
 from diao.dia.model import Dia # optional (need diao to work; pip install diao)
 
-# --- Global Setup ---
-# parser = argparse.ArgumentParser(description="Gradio interface for Nari TTS")
-# parser.add_argument("--device", type=str, default=None, help="Force device (e.g., 'cuda', 'mps', 'cpu')")
-# parser.add_argument("--share", action="store_true", help="Enable Gradio sharing")
-# args = parser.parse_args()
-# Determine device
-# if args.device:
-#     device = torch.device(args.device)
-# elif torch.cuda.is_available():
+# --- Global Setup --- (device check is currently disabled)
+# if torch.cuda.is_available():
 #     device = torch.device("cuda")
 # # Simplified MPS check for broader compatibility
 # elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
@@ -26,12 +19,11 @@ from diao.dia.model import Dia # optional (need diao to work; pip install diao)
 #     device = torch.device("cpu")
 # print(f"Using device: {device}")
 
-# Load Nari model and config
+# Load model and config
 print("Loading model...")
 try:
-    # Use the function from inference.py
     # model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device=device)
-    model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device="cuda")
+    model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device=None)
 except Exception as e:
     print(f"Error loading Nari model: {e}")
     raise
@@ -47,10 +39,10 @@ def run_inference(
     speed_factor: float,
 ):
     """
-    Runs Nari inference using the globally loaded model and provided inputs.
-    Uses temporary files for text and audio prompt compatibility with inference.generate.
+    Runs inference using the globally loaded model and provided inputs.
     """
-    global model, device  # Access global model, config, device
+    global model # set device=None recently
+    # global model, device  # Access global model, config, device
 
     if not text_input or text_input.isspace():
         raise gr.Error("Text input cannot be empty.")
@@ -111,7 +103,6 @@ def run_inference(
                         raise gr.Error(f"Failed to save audio prompt: {write_e}")
 
         # 3. Run Generation
-
         start_time = time.time()
 
         # Use torch.inference_mode() context manager for the generation call
@@ -200,16 +191,7 @@ def run_inference(
 css = """
 #col-container {max-width: 90%; margin-left: auto; margin-right: auto;}
 """
-# Attempt to load default text from example.txt
 default_text = "[S1] This is an open weights text to dialogue model. \n[S2] You get full control over scripts and voices. \n[S1] Wow. Amazing. (laughs) \n[S2] Try it now on Git hub or Hugging Face."
-# example_txt_path = Path("./example.txt")
-# if example_txt_path.exists():
-#     try:
-#         default_text = example_txt_path.read_text(encoding="utf-8").strip()
-#         if not default_text:  # Handle empty example file
-#             default_text = "Example text file was empty."
-#     except Exception as e:
-#         print(f"Warning: Could not read example.txt: {e}")
 
 # Build Gradio UI
 with gr.Blocks(css=css) as demo:
@@ -305,56 +287,4 @@ with gr.Blocks(css=css) as demo:
         api_name="generate_audio",
     )
 
-    # Add examples (ensure the prompt path is correct or remove it if example file doesn't exist)
-    # example_prompt_path = "./example_prompt.mp3"  # Adjust if needed
-    examples_list = [
-        [
-            "[S1] Oh fire! Oh my goodness! What's the procedure? What to we do people? The smoke could be coming through an air duct! \n[S2] Oh my god! Okay.. it's happening. Everybody stay calm! \n[S1] What's the procedure... \n[S2] Everybody stay fucking calm!!!... Everybody fucking calm down!!!!! \n[S1] No! No! If you touch the handle, if its hot there might be a fire down the hallway! ",
-            None,
-            3072,
-            3.0,
-            1.3,
-            0.95,
-            35,
-            0.94,
-        ],
-        [
-            "[S1] Open weights text to dialogue model. \n[S2] You get full control over scripts and voices. \n[S1] I'm biased, but I think we clearly won. \n[S2] Hard to disagree. (laughs) \n[S1] Thanks for listening to this demo. \n[S2] Try it now on Git hub and Hugging Face. \n[S1] If you liked our model, please give us a star and share to your friends. \n[S2] This was Nari Labs.",
-            # example_prompt_path if Path(example_prompt_path).exists() else None,
-            3072,
-            3.0,
-            1.3,
-            0.95,
-            35,
-            0.94,
-        ],
-    ]
-
-    # if examples_list:
-    #     gr.Examples(
-    #         examples=examples_list,
-    #         inputs=[
-    #             text_input,
-    #             audio_prompt_input,
-    #             max_new_tokens,
-    #             cfg_scale,
-    #             temperature,
-    #             top_p,
-    #             cfg_filter_top_k,
-    #             speed_factor_slider,
-    #         ],
-    #         outputs=[audio_output],
-    #         fn=run_inference,
-    #         cache_examples=False,
-    #         label="Examples (Click to Run)",
-    #     )
-    # else:
-    #     gr.Markdown("_(No examples configured or example prompt file missing)_")
-# --- Launch the App ---
-# if __name__ == "__main__":
-#     print("Launching Gradio interface...")
-#     # set `GRADIO_SERVER_NAME`, `GRADIO_SERVER_PORT` env vars to override default values
-#     # use `GRADIO_SERVER_NAME=0.0.0.0` for Docker
-#     # demo.launch(share=args.share)
-#     demo.launch()
 demo.launch()
