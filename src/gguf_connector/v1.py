@@ -1,6 +1,7 @@
 
 import torch # optional (need torch to work; pip install torch)
-import argparse, tempfile, time
+# import argparse, tempfile, time
+import tempfile, time
 import gradio as gr
 import numpy as np
 import soundfile as sf
@@ -9,31 +10,29 @@ from typing import Optional, Tuple
 from diao.dia.model import Dia # optional (need diao to work; pip install diao)
 
 # --- Global Setup ---
-parser = argparse.ArgumentParser(description="Gradio interface for Nari TTS")
-parser.add_argument("--device", type=str, default=None, help="Force device (e.g., 'cuda', 'mps', 'cpu')")
-parser.add_argument("--share", action="store_true", help="Enable Gradio sharing")
-
-args = parser.parse_args()
-
+# parser = argparse.ArgumentParser(description="Gradio interface for Nari TTS")
+# parser.add_argument("--device", type=str, default=None, help="Force device (e.g., 'cuda', 'mps', 'cpu')")
+# parser.add_argument("--share", action="store_true", help="Enable Gradio sharing")
+# args = parser.parse_args()
 # Determine device
-if args.device:
-    device = torch.device(args.device)
-elif torch.cuda.is_available():
-    device = torch.device("cuda")
-# Simplified MPS check for broader compatibility
-elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-    # Basic check is usually sufficient, detailed check can be problematic
-    device = torch.device("mps")
-else:
-    device = torch.device("cpu")
-
-print(f"Using device: {device}")
+# if args.device:
+#     device = torch.device(args.device)
+# elif torch.cuda.is_available():
+#     device = torch.device("cuda")
+# # Simplified MPS check for broader compatibility
+# elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+#     # Basic check is usually sufficient, detailed check can be problematic
+#     device = torch.device("mps")
+# else:
+#     device = torch.device("cpu")
+# print(f"Using device: {device}")
 
 # Load Nari model and config
-print("Loading Nari model...")
+print("Loading model...")
 try:
     # Use the function from inference.py
-    model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device=device)
+    # model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device=device)
+    model = Dia.from_pretrained("callgg/dia-f16", compute_dtype="float16", device="cuda")
 except Exception as e:
     print(f"Error loading Nari model: {e}")
     raise
@@ -356,7 +355,7 @@ with gr.Blocks(css=css) as demo:
 # --- Launch the App ---
 if __name__ == "__main__":
     print("Launching Gradio interface...")
-
     # set `GRADIO_SERVER_NAME`, `GRADIO_SERVER_PORT` env vars to override default values
     # use `GRADIO_SERVER_NAME=0.0.0.0` for Docker
-    demo.launch(share=args.share)
+    # demo.launch(share=args.share)
+    demo.launch()
