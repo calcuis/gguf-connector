@@ -212,7 +212,7 @@ For standalone version please refer to the repository in the reference list (bel
 #### Article
 [understanding gguf and the gguf-connector](https://medium.com/@whiteblanksheet/understanding-gguf-and-the-gguf-connector-a-comprehensive-guide-3b1fc0f938ba)
 #### Website
-[gguf.org](https://gguf.org) (you can download the frontend from [github](https://github.com/chatpig/gguf.github.io) and host it locally; the backend is ethereum blockchain)
+[gguf.org](https://gguf.org) (you can download the frontend from [github](https://github.com/gguf-org/gguf-org.github.io) and host it locally; the backend is ethereum blockchain)
 
 [gguf.io](https://gguf.io) (i/o is a mirror of us; note: this web3 domain might be restricted access in some regions/by some service providers, if so, visit the one below instead, exactly the same)
 
