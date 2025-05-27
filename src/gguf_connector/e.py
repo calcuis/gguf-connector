@@ -34,7 +34,7 @@ import os
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
 if gguf_files:
-    print("GGUF file(s) available. Select which one to convert:")
+    print("GGUF file(s) available. Select which one to extract:")
     for index, file_name in enumerate(gguf_files, start=1):
         print(f"{index}. {file_name}")
     choice = input(f"Enter your choice (1 to {len(gguf_files)}): ")
