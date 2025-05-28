@@ -28,6 +28,9 @@ import os, random
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from PIL import Image
 
+if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
+    from bagel2 import downloader2
+
 from bagel2.data.data_utils import add_special_tokens, pil_img2rgb
 from bagel2.data.transforms import ImageTransform
 from bagel2.inferencer import InterleaveInferencer
@@ -39,8 +42,8 @@ from bagel2.modeling.bagel import (
 )
 from bagel2.modeling.qwen2 import Qwen2Tokenizer
 
-if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
-    from bagel2 import downloader2
+# if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
+#     from bagel2 import downloader2
 
 model_path = os.path.join(os.path.dirname(__file__), "models/bagel")
 
