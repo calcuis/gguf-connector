@@ -588,7 +588,8 @@ with block:
     with gr.Tab("🖌️ Image Edit"):
         with gr.Row():
             with gr.Column(scale=1):
-                edit_image_input = gr.Image(label="Input Image", value=load_example_image('test_images/women.jpg'))
+                # edit_image_input = gr.Image(label="Input Image", value=load_example_image('test_images/women.jpg'))
+                edit_image_input = gr.Image(label="Input Image", value=load_example_image(os.path.join(os.path.dirname(__file__), "../bagel2/test_images/women.jpg")))
                 edit_prompt = gr.Textbox(
                     label="Prompt",
                     value="She boards a modern subway, quietly reading a folded newspaper, wearing the same clothes."
@@ -685,7 +686,8 @@ with block:
     with gr.Tab("🖼️ Image Understanding"):
         with gr.Row():
             with gr.Column(scale=1):
-                img_input = gr.Image(label="Input Image", value=load_example_image('test_images/meme.jpg'))
+                # img_input = gr.Image(label="Input Image", value=load_example_image('test_images/meme.jpg'))
+                img_input = gr.Image(label="Input Image", value=load_example_image(os.path.join(os.path.dirname(__file__), "../bagel2/test_images/meme.jpg")))
                 understand_prompt = gr.Textbox(
                     label="Prompt", 
                     value="Can someone explain what's funny about this meme??"
