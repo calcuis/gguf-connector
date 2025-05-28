@@ -2,7 +2,17 @@
 import os
 
 if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
-    from bagel2 import downloader2
+    from huggingface_hub import snapshot_download
+    save_dir = os.path.join(os.path.dirname(__file__), "models/bagel")
+    repo_id = "callgg/bagel-fp8"
+    cache_dir = save_dir + "/cache"
+    snapshot_download(
+        cache_dir=cache_dir,
+        local_dir=save_dir,
+        repo_id=repo_id,
+        allow_patterns=["*.json", "*.safetensors", "*.bin", "*.py", "*.md", "*.txt"],
+        )
+    # from bagel2 import downloader2
 
 import time, psutil, platform, atexit   
 
@@ -32,7 +42,6 @@ import numpy as np
 import random
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from PIL import Image
-
 
 from bagel2.data.data_utils import add_special_tokens, pil_img2rgb
 from bagel2.data.transforms import ImageTransform
