@@ -1,4 +1,9 @@
 
+import os
+
+if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
+    from bagel2 import downloader2
+
 import time, psutil, platform, atexit   
 
 pynvml_available = False
@@ -24,12 +29,10 @@ if platform.system() == "Linux" or platform.system() == "Windows":
 import torch
 import gradio as gr
 import numpy as np
-import os, random
+import random
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from PIL import Image
 
-if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
-    from bagel2 import downloader2
 
 from bagel2.data.data_utils import add_special_tokens, pil_img2rgb
 from bagel2.data.transforms import ImageTransform
@@ -41,9 +44,6 @@ from bagel2.modeling.bagel import (
     SiglipVisionConfig, SiglipVisionModel
 )
 from bagel2.modeling.qwen2 import Qwen2Tokenizer
-
-# if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
-#     from bagel2 import downloader2
 
 model_path = os.path.join(os.path.dirname(__file__), "models/bagel")
 
