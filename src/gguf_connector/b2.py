@@ -4,7 +4,7 @@ import os
 if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/config.json")):
     from huggingface_hub import snapshot_download
     save_dir = os.path.join(os.path.dirname(__file__), "models/bagel")
-    repo_id = "callgg/bagel-fp8"
+    repo_id = "callgg/bagel-decoder"
     cache_dir = save_dir + "/cache"
     snapshot_download(
         cache_dir=cache_dir,
@@ -12,9 +12,8 @@ if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/conf
         repo_id=repo_id,
         allow_patterns=["*.json", "*.safetensors", "*.bin", "*.py", "*.md", "*.txt"],
         )
-    # from bagel2 import downloader2
 
-import time, psutil, platform, atexit   
+import time, psutil, platform, atexit, random
 
 pynvml_available = False
 if platform.system() == "Linux" or platform.system() == "Windows":
@@ -22,7 +21,7 @@ if platform.system() == "Linux" or platform.system() == "Windows":
         from pynvml import *
         nvmlInit()
         pynvml_available = True
-        print("pynvml (NVIDIA GPU monitoring library) initialized successfully.")
+        print("pynvml (NVIDIA GPU monitoring library) initialized successfully!\nDetecting Safetensors..\n")
         
         def shutdown_pynvml():
             print("Shutting down pynvml...")
@@ -39,7 +38,6 @@ if platform.system() == "Linux" or platform.system() == "Windows":
 import torch
 import gradio as gr
 import numpy as np
-import random
 from accelerate import infer_auto_device_map, load_checkpoint_and_dispatch, init_empty_weights
 from PIL import Image
 
@@ -65,8 +63,37 @@ vit_config = SiglipVisionConfig.from_json_file(os.path.join(model_path, "vit_con
 vit_config.rope = False
 vit_config.num_hidden_layers -= 1
 
-vae_model, vae_config = load_ae(local_path=os.path.join(model_path, "ae.safetensors"))
+# selection menu logic
+safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
 
+if safetensors_files:
+    print("Safetensors file(s) available. Select which one for VAE:")
+    for index, file_name in enumerate(safetensors_files, start=1):
+        print(f"{index}. {file_name}")
+    choice1 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+    try:
+        choice_index=int(choice1)-1
+        selected_file=safetensors_files[choice_index]
+        print(f"Safetensors file: {selected_file} is selected!\n")
+        vae_model, vae_config = load_ae(selected_file)
+        print("Safetensors file(s) available. Select which one for MODEL:")
+        for index, file_name in enumerate(safetensors_files, start=1):
+            print(f"{index}. {file_name}")
+        choice2 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+        try:
+            choice_index=int(choice2)-1
+            selected_file=safetensors_files[choice_index]
+            print(f"Model file: {selected_file} is selected!")
+            checkpoint = selected_file
+        except (ValueError, IndexError):
+                print("Invalid choice. Please enter a valid number.")
+    except (ValueError, IndexError):
+        print("Invalid choice. Please enter a valid number.")
+else:
+    print("No safetensors files are available in the current directory.")
+    input("--- Press ENTER To Exit ---")
+
+# prepare for launching
 config = BagelConfig(
     visual_gen=True,
     visual_und=True,
@@ -324,7 +351,7 @@ print("--- End of custom device_map modifications ---")
 # adjust gpu vram end
 model = load_checkpoint_and_dispatch(
     model,
-    checkpoint=os.path.join(model_path, "ema_fp8_e4m3fn.safetensors"),
+    checkpoint=checkpoint,
     device_map=device_map,
     offload_buffers=True,
     offload_folder="offload",
