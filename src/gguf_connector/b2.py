@@ -131,7 +131,7 @@ if gguf_files:
         # MODEL
         if safetensors_files:
             print("\nSafetensors file(s) available. Select which one for MODEL:")
-            for index, file_name in enumerate(gguf_files, start=1):
+            for index, file_name in enumerate(safetensors_files, start=1):
                 print(f"{index}. {file_name}")
             choice2 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
             try:
