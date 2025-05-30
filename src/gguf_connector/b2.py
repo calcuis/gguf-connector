@@ -10,7 +10,7 @@ if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/bagel/conf
         cache_dir=cache_dir,
         local_dir=save_dir,
         repo_id=repo_id,
-        allow_patterns=["*.json", "*.safetensors", "*.bin", "*.py", "*.md", "*.txt"],
+        allow_patterns=["*.json", "*.md", "*.txt"],
         )
 
 import time, psutil, platform, atexit, random
@@ -21,7 +21,7 @@ if platform.system() == "Linux" or platform.system() == "Windows":
         from pynvml import *
         nvmlInit()
         pynvml_available = True
-        print("pynvml (NVIDIA GPU monitoring library) initialized successfully!\nDetecting Safetensors..\n")
+        print("pynvml (NVIDIA GPU monitoring library) initialized successfully!\nDetecting GGUF/Safetensors...\n")
         
         def shutdown_pynvml():
             print("Shutting down pynvml...")
@@ -63,34 +63,90 @@ vit_config = SiglipVisionConfig.from_json_file(os.path.join(model_path, "vit_con
 vit_config.rope = False
 vit_config.num_hidden_layers -= 1
 
-# selection menu logic
+# selection menu logic begins
+from safetensors.torch import save_file
+from typing import Dict, Tuple
+from tqdm import tqdm
+from .reader import GGUFReader
+from .quant import dequantize
+
+def load_gguf_and_extract_metadata(gguf_path: str) -> Tuple[GGUFReader, list]:
+    reader = GGUFReader(gguf_path)
+    tensors_metadata = []
+    for tensor in reader.tensors:
+        tensor_metadata = {
+            'name': tensor.name,
+            'shape': tuple(tensor.shape.tolist()),
+            'n_elements': tensor.n_elements,
+            'n_bytes': tensor.n_bytes,
+            'data_offset': tensor.data_offset,
+            'type': tensor.tensor_type,
+        }
+        tensors_metadata.append(tensor_metadata)
+    return reader, tensors_metadata
+
+def convert_gguf_to_safetensors(gguf_path: str, output_path: str, use_bf16: bool) -> None:
+    reader, tensors_metadata = load_gguf_and_extract_metadata(gguf_path)
+    print(f"Extracted {len(tensors_metadata)} tensors from GGUF file")
+    tensors_dict: dict[str, torch.Tensor] = {}
+    for i, tensor_info in enumerate(tqdm(tensors_metadata, desc="Dequantizing tensors", unit="tensor")):
+        tensor_name = tensor_info['name']
+        tensor_data = reader.get_tensor(i)
+        weights = dequantize(tensor_data.data, tensor_data.tensor_type).copy()
+        try:
+            if use_bf16:
+                weights_tensor = torch.from_numpy(weights).to(dtype=torch.float32)
+                weights_tensor = weights_tensor.to(torch.bfloat16)
+            else:
+                weights_tensor = torch.from_numpy(weights).to(dtype=torch.float32)
+            weights_hf = weights_tensor
+        except Exception as e:
+            print(f"Error during dequantization for tensor '{tensor_name}': {e}")
+            weights_tensor = torch.from_numpy(weights.astype(np.float32)).to(torch.float16)
+            weights_hf = weights_tensor
+        tensors_dict[tensor_name] = weights_hf
+    metadata = {key: str(reader.get_field(key)) for key in reader.fields}
+    save_file(tensors_dict, output_path, metadata=metadata)
+    print("Dequantization complete!")
+
+# gguf and safetensors detection
+gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
 
-if safetensors_files:
-    print("Safetensors file(s) available. Select which one for VAE:")
-    for index, file_name in enumerate(safetensors_files, start=1):
+if gguf_files:
+    print("GGUF file(s) available. Select which one for VAE:")
+    for index, file_name in enumerate(gguf_files, start=1):
         print(f"{index}. {file_name}")
-    choice1 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+    choice = input(f"Enter your choice (1 to {len(gguf_files)}): ")
     try:
-        choice_index=int(choice1)-1
-        selected_file=safetensors_files[choice_index]
-        print(f"Safetensors file: {selected_file} is selected!\n")
-        vae_model, vae_config = load_ae(selected_file)
-        print("Safetensors file(s) available. Select which one for MODEL:")
-        for index, file_name in enumerate(safetensors_files, start=1):
-            print(f"{index}. {file_name}")
-        choice2 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
-        try:
-            choice_index=int(choice2)-1
-            selected_file=safetensors_files[choice_index]
-            print(f"Model file: {selected_file} is selected!")
-            checkpoint = selected_file
-        except (ValueError, IndexError):
+        choice_index=int(choice)-1
+        selected_file=gguf_files[choice_index]
+        print(f"VAE file: {selected_file} is selected!")
+        input_path=selected_file
+        # VAE
+        use_bf16 = False
+        vae_path = f"{os.path.splitext(input_path)[0]}-f32.safetensors"
+        # convert_gguf_to_safetensors(input_path, vae_path, use_bf16)
+        # vae_model, vae_config = load_ae(vae_path)
+        # MODEL
+        if safetensors_files:
+            print("\nSafetensors file(s) available. Select which one for MODEL:")
+            for index, file_name in enumerate(gguf_files, start=1):
+                print(f"{index}. {file_name}")
+            choice2 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+            try:
+                choice_index=int(choice2)-1
+                selected_model_file=safetensors_files[choice_index]
+                print(f"MODEL file: {selected_model_file} is selected!\n")
+                convert_gguf_to_safetensors(input_path, vae_path, use_bf16)
+                vae_model, vae_config = load_ae(vae_path)
+                checkpoint = selected_model_file
+            except (ValueError, IndexError):
                 print("Invalid choice. Please enter a valid number.")
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
 else:
-    print("No safetensors files are available in the current directory.")
+    print("No GGUF/Safetensors are available in the current directory.")
     input("--- Press ENTER To Exit ---")
 
 # prepare for launching
