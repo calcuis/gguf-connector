@@ -193,7 +193,7 @@ Activate backend and frontend by (optional: need diao to work; pip install diao)
 ```
 ggc s2
 ```
-#### voice 2 (text to voice)
+#### Voice 2 (text to voice)
 Activate backend and frontend by (optional: need chichat to work; pip install chichat):
 ```
 ggc c2
