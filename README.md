@@ -12,11 +12,11 @@ Install the connector via pip (once only):
 ```
 pip install gguf-connector
 ```
-Update the connector (if previous version installed) by:
+Update the connector (if a previous version is installed) by:
 ```
 pip install gguf-connector --upgrade
 ```
-With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
+With this version, you can interact directly with the GGUF file(s) available in the same directory by a simple command.
 ### Graphical User Interface (GUI)
 Select model(s) with ctransformers:
 ```
@@ -42,7 +42,7 @@ Select model(s) with vision connector:
 ```
 ggc v
 ```
-Opt a clip handler then opt a vision model; prompt your picture link to process (see example [here](https://huggingface.co/calcuis/llava-gguf))
+Opt a clip handler, then opt a vision model; prompt your picture link to process (see example [here](https://huggingface.co/calcuis/llava-gguf))
 #### Metadata reader (CLI only)
 Select model(s) with metadata reader:
 ```
@@ -56,7 +56,7 @@ Select model(s) with tensor reader (optional: need torch to work; pip install to
 ```
 ggc r3
 ```
-#### PDF analyzor (beta feature on CLI recently)
+#### PDF analyzer (beta feature on CLI recently)
 Load PDF(s) into a model with ctransformers:
 ```
 ggc cp
@@ -65,7 +65,7 @@ Load PDF(s) into a model with llama.cpp connector:
 ```
 ggc pp
 ```
-#### Speech recognizor (beta feature; accept WAV format recently)
+#### Speech recognizer (beta feature; accept WAV format recently)
 Prompt WAV(s) into a model with ctransformers:
 ```
 ggc cs
@@ -74,7 +74,7 @@ Prompt WAV(s) into a model with llama.cpp connector:
 ```
 ggc ps
 ```
-#### Speech recognizor (via Google api; online)
+#### Speech recognizer (via Google api; online)
 Prompt WAV(s) into a model with ctransformers:
 ```
 ggc cg
@@ -122,17 +122,17 @@ Convert safetensors to gguf (auto; optional: need torch to work; pip install tor
 ```
 ggc t
 ```
-#### Convertor (alpha)
+#### Converter (alpha)
 Convert safetensors to gguf (meta; optional: need torch to work; pip install torch):
 ```
 ggc t1
 ```
-#### Convertor (beta)
+#### Converter (beta)
 Convert safetensors to gguf (unlimited; optional: need torch to work; pip install torch):
 ```
 ggc t2
 ```
-#### Convertor (gamma)
+#### Converter (gamma)
 Convert gguf to safetensors (reversible; optional: need torch to work; pip install torch):
 ```
 ggc t3
@@ -188,12 +188,12 @@ Activate backend and frontend by (optional: need bagel2 to work; pip install bag
 ggc b2
 ```
 Opt a vae then opt a model file (see example [here](https://huggingface.co/calcuis/bagel-gguf))
-#### Speech 2 (text to speech)
+#### Speech 2 (text-to-speech)
 Activate backend and frontend by (optional: need diao to work; pip install diao):
 ```
 ggc s2
 ```
-#### Voice 2 (text to voice)
+#### Voice 2 (text-to-speech)
 Activate backend and frontend by (optional: need chichat to work; pip install chichat):
 ```
 ggc c2
@@ -206,13 +206,13 @@ ggc m
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo1.gif" width="350" height="300">](https://github.com/calcuis/gguf-connector/blob/main/demo1.gif)
 
 #### Import as a module
-Include the connector selection menu to your code by:
+Include the connector selection menu in your code by:
 ```
 from gguf_connector import menu
 ```
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/demo.gif" width="350" height="200">](https://github.com/calcuis/gguf-connector/blob/main/demo.gif)
 
-For standalone version please refer to the repository in the reference list (below).
+For the standalone version, please refer to the repository in the reference list (below).
 #### References
 [model selector](https://github.com/calcuis/chatgpt-model-selector) (standalone version: [installable package](https://github.com/calcuis/chatgpt-model-selector/releases))
 
