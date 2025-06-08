@@ -1,6 +1,6 @@
 
 import torch # optional (need torch to work; pip install torch)
-import random
+import random, os
 import numpy as np
 import gradio as gr
 
@@ -19,10 +19,9 @@ from pathlib import Path
 import librosa
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
-from safetensors.torch import load_file
+from safetensors.torch import load_file, save_file
 
 from chichat import perth # need chichat; pip install chichat
-# import chichat.perth
 from chichat.chatterbox.models.t3 import T3
 from chichat.chatterbox.models.s3tokenizer import S3_SR, drop_invalid_tokens
 from chichat.chatterbox.models.s3gen import S3GEN_SR, S3Gen
@@ -30,7 +29,7 @@ from chichat.chatterbox.models.tokenizers import EnTokenizer
 from chichat.chatterbox.models.voice_encoder import VoiceEncoder
 from chichat.chatterbox.models.t3.modules.cond_enc import T3Cond
 
-REPO_ID = "callgg/chatterbox-decoder"
+REPO_ID = "callgg/chatterbox-encoder"
 
 def punc_norm(text: str) -> str:
     """
@@ -39,14 +38,11 @@ def punc_norm(text: str) -> str:
     """
     if len(text) == 0:
         return "You need to add some text for me to talk."
-
     # Capitalise first letter
     if text[0].islower():
         text = text[0].upper() + text[1:]
-
     # Remove multiple space chars
     text = " ".join(text.split())
-
     # Replace uncommon/llm punc
     punc_to_replace = [
         ("...", ", "),
@@ -64,14 +60,111 @@ def punc_norm(text: str) -> str:
     ]
     for old_char_sequence, new_char in punc_to_replace:
         text = text.replace(old_char_sequence, new_char)
-
     # Add full stop if no ending punc
     text = text.rstrip(" ")
     sentence_enders = {".", "!", "?", "-", ","}
     if not any(text.endswith(p) for p in sentence_enders):
         text += "."
-
     return text
+
+from typing import Dict, Tuple
+from tqdm import tqdm
+from gguf_connector.reader import GGUFReader
+from gguf_connector.quant import dequantize
+
+def load_gguf_and_extract_metadata(gguf_path: str) -> Tuple[GGUFReader, list]:
+    reader = GGUFReader(gguf_path)
+    tensors_metadata = []
+    for tensor in reader.tensors:
+        tensor_metadata = {
+            'name': tensor.name,
+            'shape': tuple(tensor.shape.tolist()),
+            'n_elements': tensor.n_elements,
+            'n_bytes': tensor.n_bytes,
+            'data_offset': tensor.data_offset,
+            'type': tensor.tensor_type,
+        }
+        tensors_metadata.append(tensor_metadata)
+    return reader, tensors_metadata
+
+def convert_gguf_to_safetensors(gguf_path: str, output_path: str, use_bf16: bool) -> None:
+    reader, tensors_metadata = load_gguf_and_extract_metadata(gguf_path)
+    print(f"Extracted {len(tensors_metadata)} tensors from GGUF file")
+    tensors_dict: dict[str, torch.Tensor] = {}
+    for i, tensor_info in enumerate(tqdm(tensors_metadata, desc="Dequantizing tensors", unit="tensor")):
+        tensor_name = tensor_info['name']
+        tensor_data = reader.get_tensor(i)
+        weights = dequantize(tensor_data.data, tensor_data.tensor_type).copy()
+        try:
+            if use_bf16:
+                weights_tensor = torch.from_numpy(weights).to(dtype=torch.float32)
+                weights_tensor = weights_tensor.to(torch.bfloat16)
+            else:
+                weights_tensor = torch.from_numpy(weights).to(dtype=torch.float32)
+            weights_hf = weights_tensor
+        except Exception as e:
+            print(f"Error during dequantization for tensor '{tensor_name}': {e}")
+            weights_tensor = torch.from_numpy(weights.astype(np.float32)).to(torch.float16)
+            weights_hf = weights_tensor
+        tensors_dict[tensor_name] = weights_hf
+    metadata = {key: str(reader.get_field(key)) for key in reader.fields}
+    save_file(tensors_dict, output_path, metadata=metadata)
+    print("Dequantization complete!")
+
+# gguf and safetensors detection
+gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
+safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
+
+if gguf_files:
+    print("GGUF file(s) available. Select which one for ve:")
+    for index, file_name in enumerate(gguf_files, start=1):
+        print(f"{index}. {file_name}")
+    choice = input(f"Enter your choice (1 to {len(gguf_files)}): ")
+    try:
+        choice_index=int(choice)-1
+        selected_file=gguf_files[choice_index]
+        print(f"ve file: {selected_file} is selected!")
+        input_path=selected_file
+        # VAE
+        vae_path = f"{os.path.splitext(input_path)[0]}-bf16.safetensors"
+        if gguf_files:
+            print("\nGGUF file(s) available. Select which one for t3:")
+            for index, file_name in enumerate(gguf_files, start=1):
+                print(f"{index}. {file_name}")
+            choice2 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
+            try:
+                choice_index=int(choice2)-1
+                selected_clip_file=gguf_files[choice_index]
+                print(f"t3 file: {selected_clip_file} is selected!")
+                t3_path=selected_clip_file
+                # ENCODER
+                clip_path = f"{os.path.splitext(t3_path)[0]}-bf16.safetensors"
+                # MODEL
+                if safetensors_files:
+                    print("\nSafetensors file(s) available. Select which one for s3gen:")
+                    for index, file_name in enumerate(safetensors_files, start=1):
+                        print(f"{index}. {file_name}")
+                    choice3 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+                    try:
+                        choice_index=int(choice3)-1
+                        selected_model_file=safetensors_files[choice_index]
+                        print(f"s3gen file: {selected_model_file} is selected!\n")
+                        s3gen_path=selected_model_file
+                        # dequantization process begins
+                        use_bf16 = True
+                        print(f"Prepare to dequantize VAE: {input_path}")
+                        convert_gguf_to_safetensors(input_path, vae_path, use_bf16)
+                        print(f"Prepare to dequantize ENCODER: {t3_path}")
+                        convert_gguf_to_safetensors(t3_path, clip_path, use_bf16)
+                    except (ValueError, IndexError):
+                        print("Invalid choice. Please enter a valid number.")
+            except (ValueError, IndexError):
+                print("Invalid choice. Please enter a valid number.")
+    except (ValueError, IndexError):
+        print("Invalid choice. Please enter a valid number.")
+else:
+    print("No GGUF/Safetensors are available in the current directory.")
+    input("--- Press ENTER To Exit ---")
 
 @dataclass
 class Conditionals:
@@ -135,7 +228,6 @@ class ChatterboxTTS:
         self.device = device
         self.conds = conds
         self.watermarker = perth.PerthImplicitWatermarker
-        # self.watermarker = perth.PerthImplicitWatermarker()
 
     @classmethod
     def from_local(cls, ckpt_dir, device) -> 'ChatterboxTTS':
@@ -148,12 +240,12 @@ class ChatterboxTTS:
             map_location = None
         ve = VoiceEncoder()
         ve.load_state_dict(
-            load_file(ckpt_dir / "ve.safetensors")
+            load_file(vae_path)
         )
         ve.to(device).eval()
 
         t3 = T3()
-        t3_state = load_file(ckpt_dir / "t3_cfg.safetensors")
+        t3_state = load_file(clip_path)
         if "model" in t3_state.keys():
             t3_state = t3_state["model"][0]
         t3.load_state_dict(t3_state)
@@ -161,7 +253,7 @@ class ChatterboxTTS:
 
         s3gen = S3Gen()
         s3gen.load_state_dict(
-            load_file(ckpt_dir / "s3gen.safetensors"), strict=False
+            load_file(s3gen_path), strict=False
         )
         s3gen.to(device).eval()
 
@@ -185,7 +277,7 @@ class ChatterboxTTS:
                 print("MPS not available because the current MacOS version is not 12.3+ and/or you do not have an MPS-enabled device on this machine.")
             device = "cpu"
 
-        for fpath in ["ve.safetensors", "t3_cfg.safetensors", "s3gen.safetensors", "tokenizer.json", "conds.pt"]:
+        for fpath in ["tokenizer.json", "conds.pt"]:
             local_path = hf_hub_download(repo_id=REPO_ID, filename=fpath)
 
         return cls.from_local(Path(local_path).parent, device)
@@ -193,22 +285,17 @@ class ChatterboxTTS:
     def prepare_conditionals(self, wav_fpath, exaggeration=0.5):
         ## Load reference wav
         s3gen_ref_wav, _sr = librosa.load(wav_fpath, sr=S3GEN_SR)
-
         ref_16k_wav = librosa.resample(s3gen_ref_wav, orig_sr=S3GEN_SR, target_sr=S3_SR)
-
         s3gen_ref_wav = s3gen_ref_wav[:self.DEC_COND_LEN]
         s3gen_ref_dict = self.s3gen.embed_ref(s3gen_ref_wav, S3GEN_SR, device=self.device)
-
         # Speech cond prompt tokens
         if plen := self.t3.hp.speech_cond_prompt_len:
             s3_tokzr = self.s3gen.tokenizer
             t3_cond_prompt_tokens, _ = s3_tokzr.forward([ref_16k_wav[:self.ENC_COND_LEN]], max_len=plen)
             t3_cond_prompt_tokens = torch.atleast_2d(t3_cond_prompt_tokens).to(self.device)
-
         # Voice-encoder speaker embedding
         ve_embed = torch.from_numpy(self.ve.embeds_from_wavs([ref_16k_wav], sample_rate=S3_SR))
         ve_embed = ve_embed.mean(axis=0, keepdim=True).to(self.device)
-
         t3_cond = T3Cond(
             speaker_emb=ve_embed,
             cond_prompt_speech_tokens=t3_cond_prompt_tokens,
@@ -228,7 +315,6 @@ class ChatterboxTTS:
             self.prepare_conditionals(audio_prompt_path, exaggeration=exaggeration)
         else:
             assert self.conds is not None, "Please `prepare_conditionals` first or specify `audio_prompt_path`"
-
         # Update exaggeration if needed
         if exaggeration != self.conds.t3.emotion_adv[0, 0, 0]:
             _cond: T3Cond = self.conds.t3
@@ -237,7 +323,6 @@ class ChatterboxTTS:
                 cond_prompt_speech_tokens=_cond.cond_prompt_speech_tokens,
                 emotion_adv=exaggeration * torch.ones(1, 1, 1),
             ).to(device=self.device)
-
         # Norm and tokenize text
         text = punc_norm(text)
         text_tokens = self.tokenizer.text_to_tokens(text).to(self.device)
@@ -260,18 +345,14 @@ class ChatterboxTTS:
             )
             # Extract only the conditional batch.
             speech_tokens = speech_tokens[0]
-
             # TODO: output becomes 1D
             speech_tokens = drop_invalid_tokens(speech_tokens)
             speech_tokens = speech_tokens.to(self.device)
-
             wav, _ = self.s3gen.inference(
                 speech_tokens=speech_tokens,
                 ref_dict=self.conds.gen,
             )
             wav = wav.squeeze(0).detach().cpu().numpy()
-        #     watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
-        # return torch.from_numpy(watermarked_wav).unsqueeze(0)
         return torch.from_numpy(wav).unsqueeze(0)
       
 def load_model():
