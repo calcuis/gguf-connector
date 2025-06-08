@@ -15,7 +15,6 @@ def set_seed(seed: int):
 
 from dataclasses import dataclass
 from pathlib import Path
-
 import librosa
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
@@ -69,8 +68,8 @@ def punc_norm(text: str) -> str:
 
 from typing import Dict, Tuple
 from tqdm import tqdm
-from gguf_connector.reader import GGUFReader
-from gguf_connector.quant import dequantize
+from .reader import GGUFReader
+from .quant import dequantize
 
 def load_gguf_and_extract_metadata(gguf_path: str) -> Tuple[GGUFReader, list]:
     reader = GGUFReader(gguf_path)
