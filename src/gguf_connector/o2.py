@@ -1,7 +1,8 @@
 
 import torch
 from loguru import logger
-
+from argparse import ArgumentParser
+from pathlib import Path
 from fishaudio.fish_speech.inference_engine import TTSInferenceEngine
 from fishaudio.fish_speech.models.dac.inference import load_model as load_decoder_model
 from fishaudio.fish_speech.models.text2semantic.inference import launch_thread_safe_queue
@@ -22,8 +23,8 @@ if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/fish/confi
         allow_patterns=["*.json", "*.tiktoken", "*.pth"],
         )
 
-from .quant4 import convert_safetensors_to_pth
-from .quant3 import convert_gguf_to_safetensors
+from gguf_connector.quant4 import convert_safetensors_to_pth
+from gguf_connector.quant3 import convert_gguf_to_safetensors
 
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 if gguf_files:
@@ -47,39 +48,28 @@ else:
     print("No GGUF/Safetensors are available in the current directory.")
     input("--- Press ENTER To Exit ---")
 
-# from pathlib import Path
-# from argparse import ArgumentParser
-# def parse_args(output_path):
-#     parser = ArgumentParser()
-#     parser.add_argument(
-#         "--llama-checkpoint-path",
-#         type=Path,
-#         default=os.path.join(os.path.dirname(__file__), "models/fish"),
-#     )
-#     parser.add_argument(
-#         "--decoder-checkpoint-path",
-#         type=Path,
-#         default=output_path,
-#     )
-#     parser.add_argument("--decoder-config-name", type=str, default="modded_dac_vq")
-#     parser.add_argument("--device", type=str, default="cuda")
-#     parser.add_argument("--half", action="store_true")
-#     parser.add_argument("--compile", action="store_true")
-#     parser.add_argument("--max-gradio-length", type=int, default=0)
-#     parser.add_argument("--theme", type=str, default="dark")
-#     return parser.parse_args()
-# args = parse_args(output_path)
-# args.precision = torch.half if args.half else torch.bfloat16
-# # Check if MPS or CUDA is available
-# if torch.backends.mps.is_available():
-#     args.device = "mps"
-#     logger.info("mps is available, running on mps.")
-# elif torch.xpu.is_available():
-#     args.device = "xpu"
-#     logger.info("XPU is available, running on XPU.")
-# elif not torch.cuda.is_available():
-#     logger.info("CUDA is not available, running on CPU.")
-#     args.device = "cpu"
+def parse_args(output_path):
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--llama-checkpoint-path",
+        type=Path,
+        default=os.path.join(os.path.dirname(__file__), "models/fish"),
+    )
+    parser.add_argument(
+        "--decoder-checkpoint-path",
+        type=Path,
+        default=output_path,
+    )
+    parser.add_argument("--decoder-config-name", type=str, default="modded_dac_vq")
+    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--half", action="store_true")
+    parser.add_argument("--compile", action="store_true")
+    parser.add_argument("--max-gradio-length", type=int, default=0)
+    parser.add_argument("--theme", type=str, default="dark")
+    return parser.parse_args()
+
+args = parse_args(output_path)
+args.precision = torch.half if args.half else torch.bfloat16
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -93,43 +83,28 @@ print(f"Using device: {device}")
 
 logger.info("Loading Llama model...")
 llama_queue = launch_thread_safe_queue(
-    checkpoint_path=os.path.join(os.path.dirname(__file__), "models/fish"),
-    device=device,
-    precision=torch.bfloat16,
-    compile="store_true",
+    checkpoint_path=args.llama_checkpoint_path,
+    device=args.device,
+    precision=args.precision,
+    compile=args.compile,
 )
-# llama_queue = launch_thread_safe_queue(
-#     checkpoint_path=args.llama_checkpoint_path,
-#     device=args.device,
-#     precision=args.precision,
-#     compile=args.compile,
-# )
+
 logger.info("Loading VQ-GAN model...")
 decoder_model = load_decoder_model(
-    config_name="modded_dac_vq",
-    checkpoint_path=output_path,
-    device=device,
+    config_name=args.decoder_config_name,
+    checkpoint_path=args.decoder_checkpoint_path,
+    device=args.device,
 )
-# decoder_model = load_decoder_model(
-#     config_name=args.decoder_config_name,
-#     checkpoint_path=args.decoder_checkpoint_path,
-#     device=args.device,
-# )
+
 logger.info("Decoder model loaded, warming up...")
 
 # Create the inference engine
 inference_engine = TTSInferenceEngine(
     llama_queue=llama_queue,
     decoder_model=decoder_model,
-    compile="store_true",
-    precision=torch.bfloat16,
+    compile=args.compile,
+    precision=args.precision,
 )
-# inference_engine = TTSInferenceEngine(
-#     llama_queue=llama_queue,
-#     decoder_model=decoder_model,
-#     compile=args.compile,
-#     precision=args.precision,
-# )
 
 # Dry run to check if the model is loaded correctly and avoid the first-time latency
 list(
@@ -147,10 +122,11 @@ list(
         )
     )
 )
+
 logger.info("Warming up done, launching the web UI...")
 
 # Get the inference function with the immutable arguments
 inference_fct = get_inference_wrapper(inference_engine)
-# app = build_app(inference_fct, args.theme)
-app = build_app(inference_fct, theme="dark")
+
+app = build_app(inference_fct, args.theme)
 app.launch(show_api=True)
