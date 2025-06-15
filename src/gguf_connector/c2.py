@@ -5,6 +5,7 @@ import numpy as np
 import gradio as gr
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {DEVICE}")
 
 def set_seed(seed: int):
     torch.manual_seed(seed)
@@ -68,22 +69,19 @@ def punc_norm(text: str) -> str:
 
 from .quant3 import convert_gguf_to_safetensors
 
-# gguf and safetensors detection
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
-safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
 
 if gguf_files:
-    print("GGUF file(s) available. Select which one for ve:")
+    print("\nGGUF file(s) available. Select which one for ve:")
     for index, file_name in enumerate(gguf_files, start=1):
         print(f"{index}. {file_name}")
     choice = input(f"Enter your choice (1 to {len(gguf_files)}): ")
     try:
         choice_index=int(choice)-1
         selected_file=gguf_files[choice_index]
+        # VAE
         print(f"ve file: {selected_file} is selected!")
         input_path=selected_file
-        # VAE
-        vae_path = f"{os.path.splitext(input_path)[0]}-bf16.safetensors"
         if gguf_files:
             print("\nGGUF file(s) available. Select which one for t3:")
             for index, file_name in enumerate(gguf_files, start=1):
@@ -92,27 +90,37 @@ if gguf_files:
             try:
                 choice_index=int(choice2)-1
                 selected_clip_file=gguf_files[choice_index]
+                # ENCODER
                 print(f"t3 file: {selected_clip_file} is selected!")
                 t3_path=selected_clip_file
-                # ENCODER
-                clip_path = f"{os.path.splitext(t3_path)[0]}-bf16.safetensors"
-                # MODEL
-                if safetensors_files:
-                    print("\nSafetensors file(s) available. Select which one for s3gen:")
-                    for index, file_name in enumerate(safetensors_files, start=1):
+                if gguf_files:
+                    print("\nGGUF file(s) available. Select which one for s3gen:")
+                    for index, file_name in enumerate(gguf_files, start=1):
                         print(f"{index}. {file_name}")
-                    choice3 = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
+                    choice3 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
                     try:
                         choice_index=int(choice3)-1
-                        selected_model_file=safetensors_files[choice_index]
+                        selected_model_file=gguf_files[choice_index]
+                        # MODEL
                         print(f"s3gen file: {selected_model_file} is selected!\n")
-                        s3gen_path=selected_model_file
+                        s3_path=selected_model_file
+                        if DEVICE == "cuda":
+                            use_bf16 = True
+                            vae_path = f"{os.path.splitext(input_path)[0]}-bf16.safetensors"
+                            clip_path = f"{os.path.splitext(t3_path)[0]}-bf16.safetensors"
+                            model_path = f"{os.path.splitext(s3_path)[0]}-bf16.safetensors"
+                        else:
+                            use_bf16 = False
+                            vae_path = f"{os.path.splitext(input_path)[0]}-f32.safetensors"
+                            clip_path = f"{os.path.splitext(t3_path)[0]}-f32.safetensors"
+                            model_path = f"{os.path.splitext(s3_path)[0]}-f32.safetensors"
                         # dequantization process begins
-                        use_bf16 = True
                         print(f"Prepare to dequantize VAE: {input_path}")
                         convert_gguf_to_safetensors(input_path, vae_path, use_bf16)
                         print(f"Prepare to dequantize ENCODER: {t3_path}")
                         convert_gguf_to_safetensors(t3_path, clip_path, use_bf16)
+                        print(f"Prepare to dequantize MODEL: {s3_path}")
+                        convert_gguf_to_safetensors(s3_path, model_path, use_bf16)
                     except (ValueError, IndexError):
                         print("Invalid choice. Please enter a valid number.")
             except (ValueError, IndexError):
@@ -210,7 +218,7 @@ class ChatterboxTTS:
 
         s3gen = S3Gen()
         s3gen.load_state_dict(
-            load_file(s3gen_path), strict=False
+            load_file(model_path), strict=False
         )
         s3gen.to(device).eval()
 
