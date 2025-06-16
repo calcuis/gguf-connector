@@ -204,7 +204,7 @@ Activate backend and frontend by (optional: need fishaudio to work; pip install 
 ```
 ggc o2
 ```
-Opt a codec gguf to interact (see example [here](https://huggingface.co/calcuis/openaudio-gguf))
+Opt a codec then opt a model file (see example [here](https://huggingface.co/calcuis/openaudio-gguf))
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
