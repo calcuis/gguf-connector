@@ -131,7 +131,7 @@ if gguf_files:
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
 else:
-    print("No GGUF/Safetensors are available in the current directory.")
+    print("No GGUF files are available in the current directory.")
     input("--- Press ENTER To Exit ---")
 
 @dataclass
