@@ -15,14 +15,22 @@ import os
 if not os.path.isfile(os.path.join(os.path.dirname(__file__), "models/fish/config.json")):
     from huggingface_hub import snapshot_download
     save_dir = os.path.join(os.path.dirname(__file__), "models/fish")
-    repo_id = "callgg/fish-decoder"
+    repo_id = "callgg/fish-encoder"
     cache_dir = save_dir + "/cache"
     snapshot_download(
         cache_dir=cache_dir,
         local_dir=save_dir,
         repo_id=repo_id,
-        allow_patterns=["*.json", "*.tiktoken", "*.pth"],
+        allow_patterns=["*.json", "*.tiktoken"],
         )
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+# Simplified MPS check for broader compatibility
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
+print(f"Using device: {device}")
 from gguf_connector.quant4 import convert_safetensors_to_pth
 from gguf_connector.quant3 import convert_gguf_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
@@ -36,11 +44,38 @@ if gguf_files:
         selected_file=gguf_files[choice_index]
         print(f"codec file: {selected_file} is selected!")
         input_path=selected_file
-        use_bf16 = True
-        out_path = f"{os.path.splitext(input_path)[0]}_bf16.safetensors"
-        convert_gguf_to_safetensors(input_path, out_path, use_bf16)
-        convert_safetensors_to_pth(out_path)
-        output_path = os.path.splitext(out_path)[0] + ".pth"
+        if gguf_files:
+            print("GGUF file(s) available. Select which one for model:")
+            for index, file_name in enumerate(gguf_files, start=1):
+                print(f"{index}. {file_name}")
+            choice2 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
+            try:
+                choice_index=int(choice2)-1
+                selected_model_file=gguf_files[choice_index]
+                print(f"model file: {selected_model_file} is selected!")
+                m_path=selected_model_file
+                # create model folder
+                model_folder = './models/fish/'
+                os.makedirs(model_folder, exist_ok=True)
+                if device == "cuda":
+                    use_bf16 = True
+                    out_path = f"{model_folder}{os.path.splitext(input_path)[0]}-bf16.safetensors"
+                    m_out_path = f"{model_folder}{os.path.splitext(m_path)[0]}-bf16.safetensors"
+                else:
+                    use_bf16 = False
+                    out_path = f"{model_folder}{os.path.splitext(input_path)[0]}-f32.safetensors"
+                    m_out_path = f"{model_folder}{os.path.splitext(m_path)[0]}-f32.safetensors"
+                output_path = f"{model_folder}{os.path.splitext(input_path)[0]}.pth"
+                m_output_path = f"{model_folder}model.pth"
+                # dequantization process begins
+                print(f"Prepare to dequantize CLIP: {input_path}")
+                convert_gguf_to_safetensors(input_path, out_path, use_bf16)
+                convert_safetensors_to_pth(out_path, output_path)
+                print(f"Prepare to dequantize MODEL: {m_path}")
+                convert_gguf_to_safetensors(m_path, m_out_path, use_bf16)
+                convert_safetensors_to_pth(m_out_path, m_output_path)
+            except (ValueError, IndexError):
+                print("Invalid choice. Please enter a valid number.")
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
 else:
@@ -67,15 +102,6 @@ def parse_args(output_path):
     return parser.parse_args()
 args = parse_args(output_path)
 args.precision = torch.half if args.half else torch.bfloat16
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-# Simplified MPS check for broader compatibility
-elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-    # Basic check is usually sufficient, detailed check can be problematic
-    device = torch.device("mps")
-else:
-    device = torch.device("cpu")
-print(f"Using device: {device}")
 logger.info("Loading Llama model...")
 llama_queue = launch_thread_safe_queue(
     checkpoint_path=args.llama_checkpoint_path,
