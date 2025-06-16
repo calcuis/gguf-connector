@@ -104,16 +104,19 @@ if gguf_files:
                         # MODEL
                         print(f"s3gen file: {selected_model_file} is selected!\n")
                         s3_path=selected_model_file
+                        # create model folder
+                        model_folder = './models/box/'
+                        os.makedirs(model_folder, exist_ok=True)
                         if DEVICE == "cuda":
                             use_bf16 = True
-                            vae_path = f"{os.path.splitext(input_path)[0]}-bf16.safetensors"
-                            clip_path = f"{os.path.splitext(t3_path)[0]}-bf16.safetensors"
-                            model_path = f"{os.path.splitext(s3_path)[0]}-bf16.safetensors"
+                            vae_path = f"{model_folder}{os.path.splitext(input_path)[0]}-bf16.safetensors"
+                            clip_path = f"{model_folder}{os.path.splitext(t3_path)[0]}-bf16.safetensors"
+                            model_path = f"{model_folder}{os.path.splitext(s3_path)[0]}-bf16.safetensors"
                         else:
                             use_bf16 = False
-                            vae_path = f"{os.path.splitext(input_path)[0]}-f32.safetensors"
-                            clip_path = f"{os.path.splitext(t3_path)[0]}-f32.safetensors"
-                            model_path = f"{os.path.splitext(s3_path)[0]}-f32.safetensors"
+                            vae_path = f"{model_folder}{os.path.splitext(input_path)[0]}-f32.safetensors"
+                            clip_path = f"{model_folder}{os.path.splitext(t3_path)[0]}-f32.safetensors"
+                            model_path = f"{model_folder}{os.path.splitext(s3_path)[0]}-f32.safetensors"
                         # dequantization process begins
                         print(f"Prepare to dequantize VAE: {input_path}")
                         convert_gguf_to_safetensors(input_path, vae_path, use_bf16)
