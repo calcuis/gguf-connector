@@ -13,7 +13,7 @@ MAX_TENSOR_NAME_LENGTH = 127
 def load_state_dict(path):
     state_dict = load_file(path)
     prefix = None
-    for pfx in ["model.diffusion_model.", "model."]:
+    for pfx in ["model.diffusion_model.", "model.", "net."]:
         if any([x.startswith(pfx) for x in state_dict.keys()]):
             prefix = pfx
             break
