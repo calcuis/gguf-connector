@@ -31,12 +31,11 @@ else:
     transformer = HunyuanVideoTransformer3DModelPacked.from_pretrained('callgg/framepack', torch_dtype=torch.bfloat16).cpu()
 parser = argparse.ArgumentParser()
 parser.add_argument('--share', action='store_true')
-parser.add_argument("--server", type=str, default='0.0.0.0')
+parser.add_argument("--server", type=str, default='127.0.0.1') # default='0.0.0.0' dropped
 parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--inbrowser", action='store_true')
 args = parser.parse_args()
-# for win desktop probably use --server 127.0.0.1 --inbrowser
-# For linux server probably use --server 127.0.0.1 or do not use any cmd flags
+# for win desktop or linux server probably use --server 127.0.0.1 --inbrowser
 print(args)
 free_mem_gb = get_cuda_free_memory_gb(gpu)
 high_vram = free_mem_gb > 60
@@ -261,7 +260,7 @@ quick_prompts = [[x] for x in quick_prompts]
 css = make_progress_bar_css()
 block = gr.Blocks(css=css, title="gguf").queue()
 with block:
-    gr.Markdown('# framepack - ggc version')
+    gr.Markdown('## framepack - ggc edition')
     with gr.Row():
         with gr.Column():
             input_image = gr.Image(sources='upload', type="numpy", label="Image", height=320)
