@@ -167,6 +167,10 @@ Take framepack (portable packpack) by:
 ```
 ggc p1
 ```
+Run framepack- ggc edition by (optional: need framepack to work; pip install framepack):
+```
+ggc f2
+```
 #### Video 1 (image to video)
 Activate backend and frontend by (optional: need torch, diffusers to work; pip install torch, diffusers):
 ```
