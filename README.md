@@ -167,7 +167,7 @@ Take framepack (portable packpack) by:
 ```
 ggc p1
 ```
-Run framepack- ggc edition by (optional: need framepack to work; pip install framepack):
+Run framepack - ggc edition by (optional: need framepack to work; pip install framepack):
 ```
 ggc f2
 ```
