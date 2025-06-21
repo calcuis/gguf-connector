@@ -18,7 +18,7 @@ pip install gguf-connector --upgrade
 ```
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 ### Graphical User Interface (GUI)
-Select model(s) with ctransformers:
+Select model(s) with ctransformers (optional: need ctransformers to work; pip install ctransformers):
 ```
 ggc c
 ```
