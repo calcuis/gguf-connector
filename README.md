@@ -65,6 +65,7 @@ Load PDF(s) into a model with llama.cpp connector:
 ```
 ggc pp
 ```
+optional: need pypdf; pip install pypdf
 #### Speech recognizor (beta feature; accept WAV format recently)
 Prompt WAV(s) into a model with ctransformers:
 ```
@@ -74,6 +75,7 @@ Prompt WAV(s) into a model with llama.cpp connector:
 ```
 ggc ps
 ```
+optional: need speechrecognition, pocketsphinx; pip install speechrecognition, pocketsphinx
 #### Speech recognizor (via Google api; online)
 Prompt WAV(s) into a model with ctransformers:
 ```
