@@ -188,6 +188,11 @@ Activate backend and frontend by (optional: need torch, diffusers to work; pip i
 ```
 ggc i2
 ```
+#### note 2 (ocr)
+Activate backend and frontend by (optional: need transformers to work; pip install transformers):
+```
+ggc n2
+```
 #### Speech 2 (text to speech)
 Activate backend and frontend by (optional: need diao to work; pip install diao):
 ```
