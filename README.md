@@ -164,7 +164,7 @@ Take packpack (see user guide [here](https://pypi.org/project/framepack)) by:
 ```
 ggc p2
 ```
-#### FramePack
+#### FramePack (1-click long video generation)
 Take framepack (portable packpack) by:
 ```
 ggc p1
