@@ -46,7 +46,7 @@ class GGUFRemoverApp:
         self.input_file = None
         self.file_label = tk.Label(root, text="No file loaded.")
         self.file_label.pack(pady=5)
-        tk.Button(root, text="Open .gguf File", command=self.load_file).pack(pady=5)
+        tk.Button(root, text="Load GGUF File", command=self.load_file).pack(pady=5)
         # Frame for treeview and scrollbar
         frame = tk.Frame(root)
         frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
