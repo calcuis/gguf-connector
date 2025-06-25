@@ -139,6 +139,16 @@ Convert gguf to safetensors (reversible; optional: need torch to work; pip insta
 ```
 ggc t3
 ```
+#### Remover
+Tensor remover:
+```
+ggc rm
+```
+#### Renamer
+Tensor renamer:
+```
+ggc rn
+```
 #### Cutter
 Get cutter for bf/f16 to q2-q8 quantization (see user guide [here](https://pypi.org/project/gguf-cutter)) by:
 ```
