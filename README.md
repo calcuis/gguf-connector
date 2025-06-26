@@ -226,6 +226,12 @@ Activate backend and frontend by (optional: need fishaudio to work; pip install 
 ggc o2
 ```
 Opt a codec then opt a model file (see example [here](https://huggingface.co/calcuis/openaudio-gguf))
+#### Gudio 2 (text to speech)
+Activate backend and frontend by (optional: need gudio to work; pip install gudio):
+```
+ggc g2
+```
+Opt a model then opt a clip (see example [here](https://huggingface.co/gguf-org/gudio))
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
