@@ -3,13 +3,13 @@ import torch # optional (need torch to work; pip install torch)
 import random, os
 import numpy as np
 import gradio as gr
-from gudio import perth
-from gudio.tool.models.t3 import T3
+from gudio.tool.models.t3 import T3 # need gudio; pip install gudio
 from gudio.tool.models.s3tokenizer import S3_SR, drop_invalid_tokens
 from gudio.tool.models.s3gen import S3GEN_SR, S3Gen
 from gudio.tool.models.tokenizers import EnTokenizer
 from gudio.tool.models.voice_encoder import VoiceEncoder
 from gudio.tool.models.t3.modules.cond_enc import T3Cond
+from gudio import perth
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
@@ -67,7 +67,7 @@ from .quant3 import convert_gguf_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
 if gguf_files:
-    print("\nGGUF file(s) available. Select which one for MODEL(t3):")
+    print("\nGGUF file(s) available. Select which one for MODEL (t3):")
     for index, file_name in enumerate(gguf_files, start=1):
         print(f"{index}. {file_name}")
     choice2 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
@@ -78,7 +78,7 @@ if gguf_files:
         print(f"t3 file: {selected_t3_file} is selected!")
         t3_path=selected_t3_file
         if gguf_files:
-            print("\nGGUF file(s) available. Select which one for CLIP(s3):")
+            print("\nGGUF file(s) available. Select which one for CLIP (s3):")
             for index, file_name in enumerate(gguf_files, start=1):
                 print(f"{index}. {file_name}")
             choice3 = input(f"Enter your choice (1 to {len(gguf_files)}): ")
@@ -202,7 +202,7 @@ class GudioTTS:
         ve.to(device).eval()
 
         tokenizer = EnTokenizer(str(os.path.join(os.path.dirname(__file__), "../gudio/encoder/tokenizer.json")))
-        builtin_voice = os.path.join(os.path.dirname(__file__), "../gudio/encoder/conds.pt")
+        builtin_voice = os.path.join(os.path.dirname(__file__), "../gudio/encoder/codec.pt")
         conds = Conditionals.load(builtin_voice, map_location=map_location).to(device)
 
         return cls(t3, s3gen, ve, tokenizer, device, conds=conds)
