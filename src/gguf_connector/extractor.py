@@ -34,9 +34,13 @@ class GGUFExtractorApp:
         self.tensor_listbox.config(yscrollcommand=scrollbar.set)
         self.tensor_listbox.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-        # Extract Button
-        self.extract_button = tk.Button(root, text="Extract Selected Tensors", command=self.extract_selected)
-        self.extract_button.pack(pady=10)
+        # Buttons
+        button_frame = tk.Frame(root)
+        button_frame.pack(pady=10)
+        self.extract_selected_button = tk.Button(button_frame, text="Extract Selected Tensors", command=self.extract_selected)
+        self.extract_selected_button.pack(side="left", padx=10)
+        self.extract_unselected_button = tk.Button(button_frame, text="Extract Unselected Tensors", command=self.extract_unselected)
+        self.extract_unselected_button.pack(side="left", padx=10)
 
     def load_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("GGUF files", "*.gguf")])
@@ -54,15 +58,19 @@ class GGUFExtractorApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to read GGUF file:\n{e}")
 
-    def extract_selected(self):
+    def extract_tensors(self, indices_to_extract, output_title):
         if not self.reader or not self.file_path:
             messagebox.showwarning("Warning", "Please load a GGUF file first.")
             return
-        selected_indices = self.tensor_listbox.curselection()
-        if not selected_indices:
-            messagebox.showwarning("Warning", "No tensors selected.")
+        if not indices_to_extract:
+            messagebox.showwarning("Warning", f"No tensors to {output_title.lower()}.")
             return
-        save_path = filedialog.asksaveasfilename(defaultextension=".gguf", initialfile="output.gguf", filetypes=[("GGUF files", "*.gguf")])
+        save_path = filedialog.asksaveasfilename(
+            title=f"Save {output_title} File As",
+            defaultextension=".gguf",
+            initialfile="output.gguf",
+            filetypes=[("GGUF files", "*.gguf")]
+        )
         if not save_path:
             return
         try:
@@ -71,7 +79,7 @@ class GGUFExtractorApp:
             writer = GGUFWriter(path=None, arch=arch)
             writer.add_quantization_version(GGML_QUANT_VERSION)
             writer.add_file_type(file_type)
-            for idx in selected_indices:
+            for idx in indices_to_extract:
                 tensor = self.reader.tensors[idx]
                 writer.add_tensor(tensor.name, tensor.data, raw_dtype=tensor.tensor_type)
             with open(save_path, "wb"):
@@ -79,6 +87,16 @@ class GGUFExtractorApp:
                 writer.write_kv_data_to_file()
                 writer.write_tensors_to_file(progress=True)
                 writer.close()
-            messagebox.showinfo("Success", f"Selected tensors extracted and saved to:\n{save_path}")
+            messagebox.showinfo("Success", f"{output_title} saved to:\n{save_path}")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to extract tensors:\n{e}")
+            messagebox.showerror("Error", f"Failed to write file:\n{e}")
+
+    def extract_selected(self):
+        selected_indices = self.tensor_listbox.curselection()
+        self.extract_tensors(selected_indices, "Selected Tensors")
+
+    def extract_unselected(self):
+        all_indices = set(range(self.tensor_listbox.size()))
+        selected_indices = set(self.tensor_listbox.curselection())
+        unselected_indices = sorted(all_indices - selected_indices)
+        self.extract_tensors(unselected_indices, "Unselected Tensors")
