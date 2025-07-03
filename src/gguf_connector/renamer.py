@@ -31,8 +31,35 @@ class GGUFEditorApp:
         frame.pack(fill=tk.BOTH, expand=True)
         # File selection
         ttk.Button(frame, text="Load GGUF File", command=self.load_file).pack(pady=(0, 10))
+        # Batch options
+        batch_frame = ttk.LabelFrame(frame, text="Batch Rename Options")
+        batch_frame.pack(pady=5, fill="x")
+        # Prefix
+        prefix_frame = ttk.Frame(batch_frame)
+        prefix_frame.pack(pady=2, fill="x")
+        ttk.Label(prefix_frame, text="Prefix:").pack(side="left")
+        self.prefix_entry = ttk.Entry(prefix_frame, width=30)
+        self.prefix_entry.pack(side="left", padx=5)
+        ttk.Button(prefix_frame, text="Apply", command=self.apply_prefix).pack(side="left")
+        # Suffix
+        suffix_frame = ttk.Frame(batch_frame)
+        suffix_frame.pack(pady=2, fill="x")
+        ttk.Label(suffix_frame, text="Suffix:").pack(side="left")
+        self.suffix_entry = ttk.Entry(suffix_frame, width=30)
+        self.suffix_entry.pack(side="left", padx=5)
+        ttk.Button(suffix_frame, text="Apply", command=self.apply_suffix).pack(side="left")
+        # Search and Replace
+        sr_frame = ttk.Frame(batch_frame)
+        sr_frame.pack(pady=2, fill="x")
+        ttk.Label(sr_frame, text="Search:").pack(side="left")
+        self.search_entry = ttk.Entry(sr_frame, width=20)
+        self.search_entry.pack(side="left", padx=5)
+        ttk.Label(sr_frame, text="Replace:").pack(side="left")
+        self.replace_entry = ttk.Entry(sr_frame, width=20)
+        self.replace_entry.pack(side="left", padx=5)
+        ttk.Button(sr_frame, text="Apply", command=self.apply_search_replace).pack(side="left")
         # Scrollable tensor list
-        self.canvas = tk.Canvas(frame)
+        self.canvas = tk.Canvas(frame, height=300)
         self.scrollbar = ttk.Scrollbar(frame, orient="vertical", command=self.canvas.yview)
         self.tensor_frame = ttk.Frame(self.canvas)
         self.tensor_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -58,6 +85,40 @@ class GGUFEditorApp:
             entry.insert(0, tensor.name)
             entry.grid(row=idx, column=1, padx=5, pady=2, sticky="w")
             self.tensor_entries.append((tensor.name, entry))
+
+    def apply_prefix(self):
+        prefix = self.prefix_entry.get()
+        if not prefix:
+            messagebox.showwarning("Input Required", "Please enter a prefix.")
+            return
+        for _, entry in self.tensor_entries:
+            current_value = entry.get()
+            if not current_value.startswith(prefix):
+                entry.delete(0, tk.END)
+                entry.insert(0, prefix + current_value)
+
+    def apply_suffix(self):
+        suffix = self.suffix_entry.get()
+        if not suffix:
+            messagebox.showwarning("Input Required", "Please enter a suffix.")
+            return
+        for _, entry in self.tensor_entries:
+            current_value = entry.get()
+            if not current_value.endswith(suffix):
+                entry.delete(0, tk.END)
+                entry.insert(0, current_value + suffix)
+
+    def apply_search_replace(self):
+        search = self.search_entry.get()
+        replace = self.replace_entry.get()
+        if not search:
+            messagebox.showwarning("Input Required", "Please enter a search string.")
+            return
+        for _, entry in self.tensor_entries:
+            current_value = entry.get()
+            new_value = current_value.replace(search, replace)
+            entry.delete(0, tk.END)
+            entry.insert(0, new_value)
 
     def save_file(self):
         if not self.input_file or not self.reader:
