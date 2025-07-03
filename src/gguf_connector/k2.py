@@ -1,9 +1,9 @@
 
-import torch
+import torch # optional (need torch, diffusers to work; pip install torch, diffusers)
+import gradio as gr # optional (need gradio for lazy ui; pip install gradio)
 from transformers import T5EncoderModel
 from diffusers import FluxKontextPipeline
 from PIL import Image
-import gradio as gr
 
 text_encoder = T5EncoderModel.from_pretrained(
     "calcuis/kontext-gguf",
