@@ -1,8 +1,5 @@
 
-def rename_key(key, rules):
-    for search, replace in rules:
-        key = key.replace(search, replace)
-    return key
+from .rky import rename_key
 
 import os
 safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
