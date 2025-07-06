@@ -8,7 +8,7 @@ import os
 safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
 
 if safetensors_files:
-    print("Safetensors file(s) available. Select which one to fix:")
+    print("Safetensors file(s) available. Select which one to convert:")
     for index, file_name in enumerate(safetensors_files, start=1):
         print(f"{index}. {file_name}")
     choice = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
@@ -23,7 +23,7 @@ if safetensors_files:
             ("_lora_B_", ".lora_up.")
         ]
         input_path=selected_file
-        output_path = f"{os.path.splitext(input_path)[0]}_fixed.safetensors"
+        output_path = f"{os.path.splitext(input_path)[0]}_converted.safetensors"
         from safetensors.torch import load_file, save_file
         tensors = load_file(input_path)
         new_tensors = {rename_key(k, rename_rules): v for k, v in tensors.items()}
