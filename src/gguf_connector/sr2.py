@@ -1,14 +1,11 @@
 
-def rename_key(key, rules):
-    for search, replace in rules:
-        key = key.replace(search, replace)
-    return key
+from .rky import unet_to_base_map, base_to_unet_map, rename_key
 
 import os
 safetensors_files = [file for file in os.listdir() if file.endswith('.safetensors')]
 
 if safetensors_files:
-    print("Safetensors file(s) available. Select which one to reverse convert:")
+    print("Safetensors file(s) available. Select which one to convert:")
     for index, file_name in enumerate(safetensors_files, start=1):
         print(f"{index}. {file_name}")
     choice = input(f"Enter your choice (1 to {len(safetensors_files)}): ")
@@ -16,19 +13,14 @@ if safetensors_files:
         choice_index=int(choice)-1
         selected_file=safetensors_files[choice_index]
         print(f"Model file: {selected_file} is selected!")
-        rename_rules = [
-            ("_", "."),
-            ("lora.unet", "base_model.model"),
-            (".blocks", "_blocks"),
-            ("lora.down", "lora_A"),
-            ("lora.up", "lora_B"),
-            ("txt.", "txt_"),
-            ("img.", "img_"),
-            ("final.", "final_")
-        ]
-        input_path=selected_file
-        output_path = f"{os.path.splitext(input_path)[0]}_reversed.safetensors"
+        ask=input("From unet to base conversion (Y/n)? ")
+        if ask.lower() == 'y':
+            rename_rules = unet_to_base_map
+        else:
+            rename_rules = base_to_unet_map
         from safetensors.torch import load_file, save_file
+        input_path=selected_file
+        output_path = f"{os.path.splitext(input_path)[0]}_converted.safetensors"
         tensors = load_file(input_path)
         new_tensors = {rename_key(k, rename_rules): v for k, v in tensors.items()}
         save_file(new_tensors, output_path)
