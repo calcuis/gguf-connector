@@ -13,14 +13,23 @@ if safetensors_files:
         choice_index=int(choice)-1
         selected_file=safetensors_files[choice_index]
         print(f"Model file: {selected_file} is selected!")
-        ask=input("From unet to base conversion (Y/n)? ")
-        if ask.lower() == 'y':
-            rename_rules = unet_to_base_map
-        else:
-            rename_rules = base_to_unet_map
-        from safetensors.torch import load_file, save_file
         input_path=selected_file
-        output_path = f"{os.path.splitext(input_path)[0]}_converted.safetensors"
+        from safetensors.torch import safe_open
+        with safe_open(selected_file, framework="pt") as f:
+            tensor_names = f.keys()
+            first_tensor_name = next(iter(tensor_names), None)
+            if first_tensor_name.startswith("lora"):
+                print("unet detected! swapping unet to base...")
+                rename_rules = unet_to_base_map
+                output_path = f"{os.path.splitext(input_path)[0]}_base_converted.safetensors"
+            elif first_tensor_name.startswith("base"):
+                print("base detected! swapping base to unet...")
+                rename_rules = base_to_unet_map
+                output_path = f"{os.path.splitext(input_path)[0]}_unet_converted.safetensors"
+            else:
+                print("nothing detected! quit without doing anything...")
+                quit()
+        from safetensors.torch import load_file, save_file
         tensors = load_file(input_path)
         new_tensors = {rename_key(k, rename_rules): v for k, v in tensors.items()}
         save_file(new_tensors, output_path)
