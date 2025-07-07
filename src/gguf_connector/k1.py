@@ -17,34 +17,39 @@ pipe = FluxKontextPipeline.from_pretrained(
     torch_dtype=torch.bfloat16
     ).to("cuda")
 
-pipe.load_lora_weights("callgg/kontext-lora", weight_name="bot_lora.safetensors", adapter_name="lora")
+ask=input("Choose plushie instead of bot lora (Y/n)? ")
+if ask.lower() == 'y':
+    print("Loading LoRA: plushie")
+    pipe.load_lora_weights("callgg/kontext-lora", weight_name="plushie_lora.safetensors", adapter_name="lora")
+    sample_prompts = ['convert to plushie style']
+else:
+    print("Loading LoRA: bot")
+    pipe.load_lora_weights("callgg/kontext-lora", weight_name="bot_lora.safetensors", adapter_name="lora")
+    sample_prompts = ['convert the subject to a robot with white translucent panels and exposed red and black wiring and golden accented metal bits']
 pipe.set_adapters(["lora"], adapter_weights=[1])
+sample_prompts = [[x] for x in sample_prompts]
 
-def generate_image(image: Image.Image, prompt: str, guidance_scale: float = 2.5):
+def generate_image(image: Image.Image, prompt: str, num_inference_steps: float = 24, guidance_scale: float = 2.5):
     if image is None or prompt.strip() == "":
         return None
-    result = pipe(image=image, prompt=prompt, guidance_scale=guidance_scale).images[0]
+    result = pipe(image=image, prompt=prompt, num_inference_steps=num_inference_steps, guidance_scale=guidance_scale).images[0]
     return result
-
-sample_prompts = [
-    'convert the subject to a robot with white translucent panels and exposed red and black wiring and golden accented metal bits',
-]
-sample_prompts = [[x] for x in sample_prompts]
 
 # Gradio UI
 block = gr.Blocks(title="gguf").queue()
 with block:
-    gr.Markdown("## 🐷 Kontext Image Editor (with Bot lora)")
+    gr.Markdown("## 🐷 Kontext Image Editor (with lora)")
     with gr.Row():
         with gr.Column():
             input_image = gr.Image(type="pil", label="Input Image")
             prompt = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
             quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
             quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
-            guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
             submit_btn = gr.Button("Generate")
+            steps = gr.Slider(minimum=1, maximum=100, value=24, step=1, label="Steps")
+            guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
         with gr.Column():
             output_image = gr.Image(type="pil", label="Output Image")
-    submit_btn.click(fn=generate_image, inputs=[input_image, prompt, guidance], outputs=output_image)
+    submit_btn.click(fn=generate_image, inputs=[input_image, prompt, steps, guidance], outputs=output_image)
 
 block.launch()
