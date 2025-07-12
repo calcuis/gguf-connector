@@ -185,6 +185,39 @@ def dequantize_blocks_Q4_K(blocks, block_size, type_size, dtype=None):
     qs = (qs & 15).reshape((n_blocks, -1, 32))
     return (d * qs - dm).reshape((n_blocks, QK_K))
 
+# t quant
+# 2-bit; runable, not really usable in most of the cases
+def dequantize_blocks_TQ2_0(blocks, block_size, type_size, dtype=None):
+    n_blocks = blocks.shape[0]
+    qs, d = split_block_dims(blocks, QK_K // 4)
+    d = d.view(torch.float16).to(dtype)
+    qs = qs.reshape((n_blocks, -1, 1, 32)) >> torch.tensor([0, 2, 4, 6],
+        device=d.device, dtype=torch.uint8).reshape((1, 1, 4, 1))
+    qs = (qs & 3).reshape((n_blocks, -1)) - 1
+    # qs = (qs & 0x03).reshape((n_blocks, -1)) - 1
+    return d * qs
+# 1-bit; runable; for test purpose
+def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
+    n_blocks = blocks.shape[0]
+    qs, qh, d = split_block_dims(blocks, (QK_K - 4 * QK_K // 64) // 5, QK_K // 64)
+    d = d.view(torch.float16).to(dtype)
+    qs0, qs1 = qs[..., :32], qs[..., 32:]
+    qs0 = qs0.reshape((n_blocks, -1, 1, 32)) * torch.tensor(
+        [1, 3, 9, 27, 81], device=d.device, dtype=torch.uint8
+    ).reshape((1, 1, 5, 1))
+    qs0 = qs0.reshape((n_blocks, -1))
+    qs1 = qs1.reshape((n_blocks, -1, 1, 16)) * torch.tensor(
+        [1, 3, 9, 27, 81], device=d.device, dtype=torch.uint8
+    ).reshape((1, 1, 5, 1))
+    qs1 = qs1.reshape((n_blocks, -1))
+    qh = qh.reshape((n_blocks, -1, 1, 4)) * torch.tensor(
+        [1, 3, 9, 27], device=d.device, dtype=torch.uint8
+    ).reshape((1, 1, 4, 1))
+    qh = qh.reshape((n_blocks, -1))
+    qs = torch.cat([qs0, qs1, qh], dim=-1)
+    qs = ((qs * 3) >> 8) - 1
+    return d * qs
+
 # i quant
 # 4-bit; w=super_block_scale (4_nl)
 def dequantize_blocks_IQ4_NL(blocks, block_size, type_size, dtype=None):
@@ -206,39 +239,6 @@ def dequantize_blocks_IQ4_NL(blocks, block_size, type_size, dtype=None):
     return d * qs
 # others (tbc: iq4_xs, iq3_s, and iq3_xxs)
 
-# t quant
-# 2-bit; runable, not really usable in most of the cases
-def dequantize_blocks_TQ2_0(blocks, block_size, type_size, dtype=None):
-    n_blocks = blocks.shape[0]
-    qs, d = split_block_dims(blocks, QK_K // 4)
-    d = d.view(torch.float16).to(dtype)
-    qs = qs.reshape((n_blocks, -1, 1, 32)) >> torch.tensor([0, 2, 4, 6],
-        device=d.device, dtype=torch.uint8).reshape((1, 1, 4, 1))
-    qs = (qs & 3).reshape((n_blocks, -1)) - 1
-    # qs = (qs & 0x03).reshape((n_blocks, -1)) - 1
-    return (d * qs)
-# 1-bit; runable; for test purpose
-def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
-    n_blocks = blocks.shape[0]
-    qs, qh, d = split_block_dims(blocks, (QK_K - 4 * QK_K // 64) // 5, QK_K // 64)
-    d = d.view(torch.float16).to(dtype)
-    qs0, qs1 = qs[..., :32], qs[..., 32:]
-    qs0 = qs0.reshape((n_blocks, -1, 1, 32)) * torch.tensor(
-        [1, 3, 9, 27, 81], device=d.device, dtype=torch.uint8
-    ).reshape((1, 1, 5, 1))
-    qs0 = qs0.reshape((n_blocks, -1))
-    qs1 = qs1.reshape((n_blocks, -1, 1, 16)) * torch.tensor(
-        [1, 3, 9, 27, 81], device=d.device, dtype=torch.uint8
-    ).reshape((1, 1, 5, 1))
-    qs1 = qs1.reshape((n_blocks, -1))
-    qh = qh.reshape((n_blocks, -1, 1, 4)) * torch.tensor(
-        [1, 3, 9, 27], device=d.device, dtype=torch.uint8
-    ).reshape((1, 1, 4, 1))
-    qh = qh.reshape((n_blocks, -1))
-    qs = torch.cat([qs0, qs1, qh], dim=-1)
-    qs = ((qs * 3) >> 8) - 1
-    return (d * qs)
-
 dequantize_functions = {
     GGMLQuantizationType.BF16:dequantize_blocks_BF16,
     GGMLQuantizationType.Q8_0:dequantize_blocks_Q8_0,
@@ -251,10 +251,10 @@ dequantize_functions = {
     GGMLQuantizationType.Q4_K:dequantize_blocks_Q4_K,
     GGMLQuantizationType.Q3_K:dequantize_blocks_Q3_K,
     GGMLQuantizationType.Q2_K:dequantize_blocks_Q2_K,
+    GGMLQuantizationType.TQ2_0:dequantize_blocks_TQ2_0,
+    GGMLQuantizationType.TQ1_0:dequantize_blocks_TQ1_0,
     GGMLQuantizationType.IQ4_NL:dequantize_blocks_IQ4_NL,
     # GGMLQuantizationType.IQ4_XS:dequantize_blocks_IQ4_XS,
     # GGMLQuantizationType.IQ3_S:dequantize_blocks_IQ3_S,
     # GGMLQuantizationType.IQ3_XXS:dequantize_blocks_IQ3_XXS,
-    GGMLQuantizationType.TQ2_0:dequantize_blocks_TQ2_0,
-    GGMLQuantizationType.TQ1_0:dequantize_blocks_TQ1_0,
     }
