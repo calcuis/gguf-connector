@@ -43,7 +43,7 @@ def dequantize_blocks_BF16(blocks, block_size, type_size, dtype=None):
 def dequantize_blocks_Q8_0(blocks, block_size, type_size, dtype=None):
     d = blocks[:, :2].view(torch.float16).to(dtype)
     x = blocks[:, 2:].view(torch.int8)
-    return d * x
+    return x * d
 # 4-bit; w=q*block_scale
 def dequantize_blocks_Q4_0(blocks, block_size, type_size, dtype=None):
     n_blocks = blocks.shape[0]
@@ -236,7 +236,6 @@ def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
     ).reshape((1, 1, 4, 1))
     qh = qh.reshape((n_blocks, -1))
     qs = torch.cat([qs0, qs1, qh], dim=-1)
-    qs = ((qs * 3) >> 8) - 1
     qs = ((qs * 3) >> 8) - 1
     return (d * qs)
 
