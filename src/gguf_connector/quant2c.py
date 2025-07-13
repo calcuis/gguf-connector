@@ -30,8 +30,8 @@ def dequantize_tensor(tensor, dtype=None, dequant_dtype=None):
         dequant_dtype = dtype if dequant_dtype == 'target' else dequant_dtype
         return dequantize(tensor.data, qtype, oshape, dtype=dequant_dtype).to(dtype)
     else:
-        tqdm.write(f'Pushing back to numpy dequant (cpu offload) for qtype: {qtype}')
-        new = gq(tensor.cpu().numpy(), qtype)
+        tqdm.write(f'Processing tensor: qtype: {qtype}, {oshape}') # slow mode
+        new = gq(tensor.cpu().numpy(), qtype) # push to numpy for dequant (cpu offload)
         return torch.from_numpy(new).to(tensor.device, dtype=dtype)
 
 # handle bf16
