@@ -195,7 +195,7 @@ def dequantize_blocks_TQ2_0(blocks, block_size, type_size, dtype=None):
         device=d.device, dtype=torch.uint8).reshape((1, 1, 4, 1))
     qs = (qs & 3).reshape((n_blocks, -1)) - 1
     # qs = (qs & 0x03).reshape((n_blocks, -1)) - 1
-    return (d * qs)
+    return d * qs
 # 1-bit; runable; for test purpose
 def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
     n_blocks = blocks.shape[0]
@@ -216,7 +216,7 @@ def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
     qh = qh.reshape((n_blocks, -1))
     qs = torch.cat([qs0, qs1, qh], dim=-1)
     qs = ((qs * 3) >> 8) - 1
-    return (d * qs)
+    return d * qs
 
 # i quant
 # 4-bit; w=super_block_scale (iq4_nl)
