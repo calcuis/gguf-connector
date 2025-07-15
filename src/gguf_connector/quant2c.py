@@ -91,7 +91,6 @@ def dequantize_blocks_Q5_1(blocks, block_size, type_size, dtype=None):
     ql = qs.reshape((n_blocks, -1, 1, block_size // 2)) >> torch.tensor(
         [0, 4], device=d.device, dtype=torch.uint8).reshape(1, 1, 2, 1)
     qh = (qh & 1).to(torch.uint8)
-    # ql = (ql & 0x0F).reshape((n_blocks, -1))
     ql = (ql & 15).reshape((n_blocks, -1))
     qs = (ql | (qh << 4))
     return d * qs + m
@@ -194,7 +193,6 @@ def dequantize_blocks_TQ2_0(blocks, block_size, type_size, dtype=None):
     qs = qs.reshape((n_blocks, -1, 1, 32)) >> torch.tensor([0, 2, 4, 6],
         device=d.device, dtype=torch.uint8).reshape((1, 1, 4, 1))
     qs = (qs & 3).reshape((n_blocks, -1)) - 1
-    # qs = (qs & 0x03).reshape((n_blocks, -1)) - 1
     return d * qs
 # 1-bit; runable; for test purpose
 def dequantize_blocks_TQ1_0(blocks, block_size, type_size, dtype=None):
@@ -263,7 +261,53 @@ def dequantize_blocks_IQ4_XS(blocks, block_size, type_size, dtype=None):
     qs = torch.gather(kvalues.expand(qs.shape[0], qs.shape[1], qs.shape[2], 16), 3, qs)
     qs = qs.squeeze(-1).to(dtype)
     return (dl * qs).reshape(n_blocks, -1)
-# others (iq3_s, iq3_xxs)
+# 3-bit; w=super_block_scale (iq3_s); 3.44 bit/weight
+def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
+    n_blocks = blocks.shape[0]
+    d, qs, qh, signs, scales = split_block_dims(blocks, 2, QK_K // 4, QK_K // 32, QK_K // 8)
+    d = d.view(torch.float16).to(dtype)
+    scales = scales.reshape((n_blocks, -1, 1)) >> torch.tensor(
+        [0, 4], device=blocks.device, dtype=torch.uint8).reshape((1, 1, 2))
+    scales = (scales & 15).reshape((n_blocks, -1))
+    db = d * (1 + 2 * scales)
+    db = db.reshape((n_blocks, -1, 1, 1))
+    signs = signs.reshape((n_blocks, -1, 1)) >> torch.tensor(
+        [i for i in range(8)], device=blocks.device, dtype=torch.uint8).reshape((1, 1, 8))
+    signs = signs & 1
+    signs = torch.where(signs == 0, torch.tensor(1.0, device=blocks.device), torch.tensor(-1.0, device=blocks.device))
+    signs = signs.reshape((n_blocks, -1, 4, 8))
+    # qh_shifts = torch.arange(8, device=blocks.device, dtype=torch.uint8).view(1, 1, 8)
+    # qh = (qh.reshape((n_blocks, -1, 1)) >> qh_shifts) & 1
+    # qh = qh.reshape((n_blocks, -1)).to(torch.int16)
+    # qs = qs.to(torch.int64) | (qh << 8)
+    # grid = torch.take_along_dim(grid, qs.reshape((n_blocks, -1, 1, 1)), dim=-2)
+    # grid = grid.reshape((n_blocks, -1, 4, 8)) # tbc: pull the grid matrix back
+    # return (db * grid * signs).reshape((n_blocks, -1)) # skip grid recently
+    return (db * signs).reshape((n_blocks, -1))
+# 3-bit; w=super_block_scale (iq3_s); 3.06 bit/weight
+def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
+    n_blocks = blocks.shape[0]
+    d, qs, scales = split_block_dims(blocks, 2, QK_K // 4)
+    d = d.view(torch.float16).to(dtype)
+    scales = to_uint32(scales)
+    db = d * (0.5 + (scales >> 28)) * 0.5
+    db = db.reshape((n_blocks, -1, 1, 1))
+    bit_shifts = torch.tensor([0, 7, 14, 21], device=blocks.device, dtype=torch.uint8).reshape((1, 1, 4))
+    signs = scales.reshape((n_blocks, -1, 1)) >> bit_shifts
+    db = db.reshape((n_blocks, -1, 1, 1))
+    signs = signs.reshape((n_blocks, -1, 1)) >> torch.tensor(
+        [i for i in range(8)], device=blocks.device, dtype=torch.uint8).reshape((1, 1, 8))
+    signs = signs & 1
+    db = db.reshape((n_blocks, -1, 1, 1))
+    sign_shifts = torch.arange(8, device=blocks.device, dtype=torch.uint8).view(1, 1, 8)
+    signs = signs.reshape((n_blocks, -1, 1)) >> sign_shifts
+    signs = (signs & 1).float()
+    signs = torch.where(signs == 0, torch.tensor(1.0, device=blocks.device), torch.tensor(-1.0, device=blocks.device))
+    signs = signs.reshape((n_blocks, -1, 4, 8))
+    # grid = torch.take_along_dim(grid, qs.reshape((n_blocks, -1, 1, 1)), dim=-2)
+    # grid = grid.reshape((n_blocks, -1, 4, 8)) # tbc: pull the grid matrix back
+    # return (db * grid * signs).reshape((n_blocks, -1)) # skip grid recently
+    return (db * signs).reshape((n_blocks, -1))
 
 dequantize_functions = {
     GGMLQuantizationType.BF16:dequantize_blocks_BF16,
@@ -281,6 +325,6 @@ dequantize_functions = {
     GGMLQuantizationType.TQ1_0:dequantize_blocks_TQ1_0,
     GGMLQuantizationType.IQ4_NL:dequantize_blocks_IQ4_NL,
     GGMLQuantizationType.IQ4_XS:dequantize_blocks_IQ4_XS,
-    # GGMLQuantizationType.IQ3_S:dequantize_blocks_IQ3_S,
-    # GGMLQuantizationType.IQ3_XXS:dequantize_blocks_IQ3_XXS,
+    GGMLQuantizationType.IQ3_S:dequantize_blocks_IQ3_S,
+    GGMLQuantizationType.IQ3_XXS:dequantize_blocks_IQ3_XXS,
     }
