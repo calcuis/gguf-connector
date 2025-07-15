@@ -284,7 +284,7 @@ def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
     # grid = grid.reshape((n_blocks, -1, 4, 8)) # tbc: pull the grid matrix back
     # return (db * grid * signs).reshape((n_blocks, -1)) # skip grid recently
     return (db * signs).reshape((n_blocks, -1))
-# 3-bit; w=super_block_scale (iq3_s); 3.06 bit/weight
+# 3-bit; w=super_block_scale (iq3_xxs); 3.06 bit/weight
 def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     n_blocks = blocks.shape[0]
     d, qs, scales = split_block_dims(blocks, 2, QK_K // 4)
