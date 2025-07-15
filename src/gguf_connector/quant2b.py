@@ -6,7 +6,7 @@ def split_block_dims(blocks, *args):
     n_max = blocks.shape[1]
     dims = list(args) + [n_max - sum(args)]
     return torch.split(blocks, dims, dim=1)
-# unit conversion (for 5_0, 5_1)
+# unit conversion (for 5_0, 5_1, etc.)
 def to_uint32(x):
     x = x.view(torch.uint8).to(torch.int32)
     return (x[:, 0] | x[:, 1] << 8 | x[:, 2] << 16 | x[:, 3] << 24).unsqueeze(1)
@@ -19,3 +19,9 @@ def get_scale_min(scales):
     sc = torch.cat([d & 0x3F, (m_d & 0x0F) | ((d >> 2) & 0x30)], dim=-1)
     min = torch.cat([m & 0x3F, (m_d >> 4) | ((m >> 2) & 0x30)], dim=-1)
     return (sc.reshape((n_blocks, 8)), min.reshape((n_blocks, 8)))
+# grid mapping (for iq3_s, iq3_xxs, etc.)
+def load_grid_tensor(grid_shape, grid_hex):
+    grid_bytes = torch.tensor(list(grid_hex))
+    grid_words = grid_bytes.view(-1, 2).flip(1)
+    grid = grid_words.contiguous().view(-1).to(torch.int16).view(*grid_shape)
+    return grid
