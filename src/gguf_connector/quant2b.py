@@ -10,7 +10,7 @@ def split_block_dims(blocks, *args):
 def to_uint32(x):
     x = x.view(torch.uint8).to(torch.int32)
     return (x[:, 0] | x[:, 1] << 8 | x[:, 2] << 16 | x[:, 3] << 24).unsqueeze(1)
-# calculate scale min (for 4_k, 5_k)
+# calculate scale min (for 4_k, 5_k, tq1_0, tq_2_0, iq4_xs, iq4_nl, etc.)
 def get_scale_min(scales):
     n_blocks = scales.shape[0]
     scales = scales.view(torch.uint8)
