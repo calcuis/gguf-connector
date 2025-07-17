@@ -20,11 +20,6 @@ def get_scale_min(scales):
     min = torch.cat([m & 0x3F, (m_d >> 4) | ((m >> 2) & 0x30)], dim=-1)
     return (sc.reshape((n_blocks, 8)), min.reshape((n_blocks, 8)))
 # grid mapping (for iq3_s, iq3_xxs, etc.)
-# def load_grid_tensor(grid_shape, grid_hex):
-#     grid_bytes = torch.tensor(list(grid_hex))
-#     grid_words = grid_bytes.view(-1, 2).flip(1)
-#     grid = grid_words.contiguous().view(-1).to(torch.int16).view(*grid_shape)
-#     return grid
 def load_grid_tensor(grid_shape, grid_hex, grid_map):
     grid_bytes = torch.tensor(list(grid_hex), dtype=torch.uint8)
     grid_words = grid_bytes.view(-1, 2).flip(1)
