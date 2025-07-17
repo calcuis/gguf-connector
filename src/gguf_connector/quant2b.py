@@ -16,16 +16,15 @@ def get_scale_min(scales):
     scales = scales.view(torch.uint8)
     scales = scales.reshape((n_blocks, 3, 4))
     d, m, m_d = torch.split(scales, scales.shape[-2] // 3, dim=-2)
-    sc = torch.cat([d & 0x3F, (m_d & 0x0F) | ((d >> 2) & 0x30)], dim=-1)
-    min = torch.cat([m & 0x3F, (m_d >> 4) | ((m >> 2) & 0x30)], dim=-1)
-    return (sc.reshape((n_blocks, 8)), min.reshape((n_blocks, 8)))
+    sc = torch.cat([d & 63, m_d & 15 | d >> 2 & 48], dim=-1)
+    min = torch.cat([m & 63, m_d >> 4 | m >> 2 & 48], dim=-1)
+    return sc.reshape((n_blocks, 8)), min.reshape((n_blocks, 8))
 # grid mapping (for iq3_s, iq3_xxs, etc.)
-def load_grid_tensor(grid_shape, grid_hex, grid_map):
-    grid_bytes = torch.tensor(list(grid_hex), dtype=torch.uint8)
+def load_grid_tensor(grid_shape, grid_hex, grid_map, device):
+    grid_bytes = torch.tensor(list(grid_hex), dtype=torch.uint8, device=device)
     grid_words = grid_bytes.view(-1, 2).flip(1)
     grid = grid_words.contiguous().view(-1).to(torch.int16).view(*grid_shape)
-    # i.e., map 0x01 to 0, 0x03 to 1, ... (1st to 0, 2nd to 1, etc.)
-    grid_map_tensor = torch.tensor(grid_map, dtype=torch.int16)
+    grid_map_tensor = torch.tensor(grid_map, dtype=torch.int16, device=device)
     for mapped_value, original_value in enumerate(grid_map):
         grid[grid == original_value] = mapped_value
     return grid
