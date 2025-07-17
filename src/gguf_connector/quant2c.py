@@ -328,7 +328,6 @@ def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     return (db * signs).reshape(n_blocks, -1)
 
 def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
-    QK_K = 256
     grid_shape = (512, 4)
     grid_map = (0x01, 0x03, 0x05, 0x07, 0x09, 0x0b, 0x0d, 0x0f)
     grid_hex = (
