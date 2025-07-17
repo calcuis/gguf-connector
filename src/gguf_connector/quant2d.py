@@ -262,7 +262,11 @@ def dequantize_blocks_IQ4_XS(blocks, block_size, type_size, dtype=None):
     qs = qs.squeeze(-1).to(dtype)
     return (dl * qs).reshape(n_blocks, -1)
 
-from .quant2b import load_grid_tensor
+def load_grid_tensor(grid_shape, grid_hex):
+    grid_bytes = torch.tensor(list(grid_hex))
+    grid_words = grid_bytes.view(-1, 2).flip(1)
+    grid = grid_words.contiguous().view(-1).to(torch.int16).view(*grid_shape)
+    return grid
 # 3-bit; w=super_block_scale (iq3_s); 3.44 bit/weight
 def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
     grid_shape = (512, 4)
@@ -324,10 +328,7 @@ def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
     # qs_exp = qs.unsqueeze(-1).expand(-1, -1, 4)         # (n_blocks, 64, 4)
     # grid = torch.gather(grid, dim=1, index=qs_exp)      # (n_blocks, 64, 4)
     # grid = grid.view(n_blocks, 64, 4, 1).expand(-1, -1, -1, 8)  # (n_blocks, 64, 4, 8)
-    # grid = grid.view(n_blocks, -1, 4, 1).expand(-1, -1, -1, 8)  # match shape to signs
-    # grid = torch.take_along_dim(grid.unsqueeze(0), qs.view(n_blocks, -1, 1, 1), dim=-2)
     # signs = signs.view(n_blocks, 64, 4, 8)                     # Ensure matching shape
-    # db = db.view(n_blocks, 64, 1, 1)                           # Already correctly reshaped
     # assert db.shape == grid.shape == signs.shape, f"{db.shape} != {grid.shape} != {signs.shape}"
     # return (db * grid * signs).reshape(n_blocks, -1)    # skip grid recently
     return (db * signs).reshape(n_blocks, -1)
@@ -377,7 +378,6 @@ def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     # qs_exp = qs.unsqueeze(-1).expand(-1, -1, 4)             # (n_blocks, 64, 4)
     # grid = torch.gather(grid, dim=1, index=qs_exp)          # (n_blocks, 64, 4)
     # grid = grid.view(n_blocks, 64, 4, 1).expand(-1, -1, -1, 8)  # (n_blocks, 64, 4, 8)
-    # grid = torch.take_along_dim(grid, qs.reshape((n_blocks, -1, 1, 1)), dim=-2)
     # grid = grid.reshape((n_blocks, -1, 4, 8))             # Ensure matching shape
     # assert db.shape == grid.shape == signs.shape, f"{db.shape} != {grid.shape} != {signs.shape}"
     # return (db * grid * signs).reshape((n_blocks, -1))    # skip grid recently
