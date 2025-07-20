@@ -19,12 +19,19 @@ def get_scale_min(scales):
     sc = torch.cat([d & 63, m_d & 15 | d >> 2 & 48], dim=-1)
     min = torch.cat([m & 63, m_d >> 4 | m >> 2 & 48], dim=-1)
     return sc.reshape((n_blocks, 8)), min.reshape((n_blocks, 8))
-# grid mapping (for iq3_s, iq3_xxs, etc.)
+# grid mapping logic (for iq3_s, iq3_xxs, etc.)
+from math import ceil, log2
 def load_grid_tensor(grid_shape, grid_hex, grid_map, device):
+    bits_per_elem = ceil(log2(len(grid_map)))
+    elems_per_byte = 8 // bits_per_elem
     grid_bytes = torch.tensor(list(grid_hex), dtype=torch.uint8, device=device)
-    grid_words = grid_bytes.view(-1, 2).flip(1)
-    grid = grid_words.contiguous().view(-1).to(torch.int16).view(*grid_shape)
-    grid_map_tensor = torch.tensor(grid_map, dtype=torch.int16, device=device)
-    for mapped_value, original_value in enumerate(grid_map):
-        grid[grid == original_value] = mapped_value
-    return grid
+    grid = grid_bytes.view(-1, 2)
+    mask = (grid > 64)
+    grid = torch.where(mask, grid + 9, grid) & 15
+    shifts = torch.tensor([4, 0], dtype=torch.uint8, device=device).view(1, 2)
+    grid = (grid << shifts).sum(dim=1)
+    shift_vals = torch.arange(0, 8, 8 // elems_per_byte, device=device).view(1, elems_per_byte)
+    grid = (grid.view(-1, 1) >> shift_vals) & ((1 << bits_per_elem) - 1)
+    grid_map_tensor = torch.tensor(grid_map, dtype=torch.float32, device=device).view(1, -1)
+    grid = torch.take_along_dim(grid_map_tensor, grid, dim=1)
+    return grid.view(1, 1, *grid_shape)
