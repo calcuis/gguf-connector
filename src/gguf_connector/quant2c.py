@@ -308,7 +308,6 @@ def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     signs = signs.reshape((n_blocks, -1, 1)) >> torch.tensor(
         [i for i in range(8)], device=d.device, dtype=torch.uint8).reshape((1, 1, 8))
     signs = signs & 1
-    db = db.reshape((n_blocks, -1, 1, 1))
     sign_shifts = torch.arange(8, device=d.device, dtype=torch.uint8).view(1, 1, 8)
     signs = signs.reshape((n_blocks, -1, 1)) >> sign_shifts
     signs = (signs & 1).float()
@@ -316,10 +315,13 @@ def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     signs = signs.reshape(n_blocks, -1, 4, 8)
     qs = qs.reshape(n_blocks, -1, 1, 1)
     grid = load_grid_tensor(grid_shape, grid_hex, grid_map, device=d.device)   # (256, 4)
-    grid = grid.unsqueeze(0).expand(n_blocks, -1, -1)         # (n_blocks, 512, 4)
+    grid = grid.expand(n_blocks, 1, *grid_shape)                            # shape: (n_blocks, 1, 256, 4)
+    # ## to be reviewed for this part  ##
+    # grid = grid.unsqueeze(0).expand(n_blocks, -1, -1)         # (n_blocks, 256, 4)
     # qs_exp = qs.unsqueeze(-1).expand(-1, -1, 4)             # (n_blocks, 64, 4)
     # grid = torch.gather(grid, dim=1, index=qs_exp)          # (n_blocks, 64, 4)
     # grid = grid.view(n_blocks, 64, 4, 1).expand(-1, -1, -1, 8) # (n_blocks, 64, 4, 8)
+    # old version #
     # grid = torch.take_along_dim(grid, qs.reshape((n_blocks, -1, 1, 1)), dim=-2) # dropped option
     # grid = grid.reshape((n_blocks, -1, 4, 8))             # Ensure matching shape
     # assert db.shape == grid.shape == signs.shape, f"{db.shape} != {grid.shape} != {signs.shape}"
@@ -379,15 +381,20 @@ def dequantize_blocks_IQ3_S(blocks, block_size, type_size, dtype=None):
     qh = (qh.reshape((n_blocks, -1, 1)) >> qh_shifts) & 1
     qh = qh.reshape((n_blocks, -1)).to(torch.int16)
     qs = qs.to(torch.int64) | (qh << 8)  # (n_blocks, 64)
-    grid = load_grid_tensor(grid_shape, grid_hex, grid_map, device=d.device)    # (512, 4)
-    grid = grid.unsqueeze(0).expand(n_blocks, -1, -1)                           # (n_blocks, 512, 4)
-    gathered_grid = torch.gather(grid, dim=1, index=qs.unsqueeze(-1).expand(-1, -1, 4))  # (n_blocks, 64, 4)
-    gathered_grid = gathered_grid.unsqueeze(-1).expand(-1, -1, -1, 8)                    # (n_blocks, 64, 4, 8)
-    # scales = scales.repeat_interleave(8, dim=1)  # (n_blocks, 8) → (n_blocks, 64)
-    # db = d * (1 + 2 * scales.to(dtype))          # now (n_blocks, 64)
-    # db = db.reshape((n_blocks, 64, 1, 1))
-    # db = db.expand(-1, 64, 4, 8)  # expand db to match gathered_grid and signs
-    # return (db * gathered_grid.to(dtype) * signs).reshape(n_blocks, -1)   # skip grid for speed test
+    grid = load_grid_tensor(grid_shape, grid_hex, grid_map, device=device)  # shape: (1, 1, 512, 4)
+    grid = grid.expand(n_blocks, 1, *grid_shape)                            # shape: (n_blocks, 1, 512, 4)
+    grid = grid.squeeze(1)  # remove 1-channel dimension → (n_blocks, 512, 4)
+    # version 1 #
+    # gathered_grid = torch.gather(grid, dim=1, index=qs.unsqueeze(-1).expand(-1, -1, 4))  # (n_blocks, 64, 4)
+    # gathered_grid = gathered_grid.unsqueeze(-1).expand(-1, -1, -1, 8)  # (n_blocks, 64, 4, 8)
+    # db = db.expand(-1, 64, 4, 8)  # match shapes
+    # return (db * gathered_grid * signs).reshape(n_blocks, -1)
+    # version 2 #
+    # n_blocks, n_qs = qs.shape
+    # gathered_grid = torch.gather(grid, dim=1, index=qs.unsqueeze(-1).expand(-1, -1, 4))  # (n_blocks, n_qs, 4)
+    # gathered_grid = gathered_grid.unsqueeze(-1).expand(-1, -1, -1, 8)  # (n_blocks, n_qs, 4, 8)
+    # db = db.expand(-1, n_qs, 4, 8) # adjust shapes
+    # return (db * gathered_grid.to(dtype) * signs).reshape(n_blocks, -1) # skip grid for test
     return (db * signs).reshape(n_blocks, -1)
 
 dequantize_functions = {
