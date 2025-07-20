@@ -315,13 +315,13 @@ def dequantize_blocks_IQ3_XXS(blocks, block_size, type_size, dtype=None):
     signs = signs.reshape(n_blocks, -1, 4, 8)
     qs = qs.reshape(n_blocks, -1, 1, 1)
     grid = load_grid_tensor(grid_shape, grid_hex, grid_map, device=d.device)   # (256, 4)
-    grid = grid.expand(n_blocks, 1, *grid_shape)                            # shape: (n_blocks, 1, 256, 4)
-    # ## to be reviewed for this part  ##
-    # grid = grid.unsqueeze(0).expand(n_blocks, -1, -1)         # (n_blocks, 256, 4)
+    grid = grid.expand(n_blocks, 1, *grid_shape)                               # shape: (n_blocks, 1, 256, 4)
+    # version 2 (to be reviewed) #
+    # grid = grid.unsqueeze(0).expand(n_blocks, -1, -1)       # (n_blocks, 256, 4)
     # qs_exp = qs.unsqueeze(-1).expand(-1, -1, 4)             # (n_blocks, 64, 4)
     # grid = torch.gather(grid, dim=1, index=qs_exp)          # (n_blocks, 64, 4)
     # grid = grid.view(n_blocks, 64, 4, 1).expand(-1, -1, -1, 8) # (n_blocks, 64, 4, 8)
-    # old version #
+    # version 1 #
     # grid = torch.take_along_dim(grid, qs.reshape((n_blocks, -1, 1, 1)), dim=-2) # dropped option
     # grid = grid.reshape((n_blocks, -1, 4, 8))             # Ensure matching shape
     # assert db.shape == grid.shape == signs.shape, f"{db.shape} != {grid.shape} != {signs.shape}"
