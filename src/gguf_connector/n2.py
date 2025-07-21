@@ -42,9 +42,9 @@ iface = gr.Interface(
         gr.Image(type="pil", label="Upload Document"),
         gr.Slider(1024, 15000, value=4096, step=512, label="Max New Tokens")
     ],
-    outputs=gr.Textbox(label="OCR Output", lines=20),
+    # outputs=gr.Textbox(label="OCR Output", lines=20),
+    outputs=gr.Code(lines=20, label="OCR Output", language="html"),
     title="Document OCR with Structured Output",
     description="Upload a scanned document image to extract text, tables (HTML), and math (LaTeX)."
 )
-
 iface.launch()
