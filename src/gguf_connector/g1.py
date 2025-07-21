@@ -14,7 +14,7 @@ def generate_code(prompt):
     inputs = tokenizer(prompt, return_tensors="pt").to(DEVICE)
     outputs = model.generate(
         **inputs,
-        max_new_tokens=1600,
+        max_new_tokens=1800,
         pad_token_id=tokenizer.eos_token_id
     )
     generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
