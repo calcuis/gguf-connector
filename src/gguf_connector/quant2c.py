@@ -340,8 +340,10 @@ def dequantize_blocks_IQ2_S(blocks, block_size, type_size, dtype=None):
     scales = (scales & 15).reshape(n_blocks, -1).to(dtype)
     db = d * (0.5 + scales) * 0.25
     db = db.view(n_blocks, -1, 1, 1)
-    signs = signs.reshape((n_blocks, -1, 1)) >> torch.arange(
-        [i for i in range(8)], dtype=torch.uint8, device=d.device).reshape((1, 1, 8))
+    # signs = signs.reshape((n_blocks, -1, 1)) >> torch.arange(
+    #     [i for i in range(8)], dtype=torch.uint8, device=d.device).reshape((1, 1, 8))
+    signs = signs.reshape(n_blocks, -1, 1) >> torch.tensor(
+        [i for i in range(8)], device=d.device, dtype=torch.uint8).reshape(1, 1, 8)
     signs = (signs & 1).to(dtype)
     signs = torch.where(signs == 0, 1.0, -1.0)
     signs = signs.view(n_blocks, -1, 2, 8)
