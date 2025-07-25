@@ -5,6 +5,9 @@ from transformers import T5EncoderModel
 from diffusers import FluxKontextPipeline
 from PIL import Image
 
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {DEVICE}")
+
 text_encoder = T5EncoderModel.from_pretrained(
     "calcuis/kontext-gguf",
     gguf_file="t5xxl_fp16-q4_0.gguf",
@@ -15,7 +18,7 @@ pipe = FluxKontextPipeline.from_pretrained(
     "calcuis/kontext-gguf",
     text_encoder_2=text_encoder,
     torch_dtype=torch.bfloat16
-    ).to("cuda")
+    ).to(DEVICE)
 
 def generate_image(image: Image.Image, prompt: str, guidance_scale: float = 2.5):
     if image is None or prompt.strip() == "":
@@ -36,5 +39,4 @@ with block:
         with gr.Column():
             output_image = gr.Image(type="pil", label="Output Image")
     submit_btn.click(fn=generate_image, inputs=[input_image, prompt, guidance], outputs=output_image)
-
 block.launch()
