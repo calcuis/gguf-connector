@@ -42,6 +42,7 @@ sample_prompts = [
     "안녕히 주무셨어요?",
     "你好",
     "Herzlichen Glückwunsch",
+    "Que tenga usted buenos días",
 ]
 sample_prompts = [[x] for x in sample_prompts]
 # Gradio UI
