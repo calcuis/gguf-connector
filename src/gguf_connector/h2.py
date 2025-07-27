@@ -37,12 +37,20 @@ def generate_audio(user_prompt, max_new_tokens, temperature, top_p, top_k):
     waveform = torch.from_numpy(output.audio).unsqueeze(0)
     torchaudio.save(audio_path, waveform, output.sampling_rate)
     return audio_path
-default_text = "[S1] Hey Connector, why your appearance looks so stupid? [S2] Oh, really? maybe I ate too much smart beans. [S1] Wow. Amazing. [S2] Let's go to get some more smart beans and you will become stupid as well."
+sample_prompts = [
+    "[S1] Hey Connector, why your appearance looks so stupid? [S2] Oh, really? maybe I ate too much smart beans. [S1] Wow. Awesome! [S2] Do you want some?",
+    "안녕히 주무셨어요?",
+    "你好",
+    "Herzlichen Glückwunsch",
+]
+sample_prompts = [[x] for x in sample_prompts]
 # Gradio UI
 with gr.Blocks(title="gguf") as demo:
     gr.Markdown("## 🎧 Higgs Audio Generation")
     with gr.Row():
-        user_input = gr.Textbox(label="Prompt", value=default_text, lines=4)
+        user_input = gr.Textbox(label="Prompt", lines=4, placeholder="Enter your prompt here (or click Sample Prompt)", value="")
+        quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[user_input])
+        quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=user_input, show_progress=False, queue=False)
     with gr.Row():
         max_tokens = gr.Slider(100, 2048, value=1024, step=1, label="Max New Tokens")
         temperature = gr.Slider(0.1, 1.0, value=0.3, step=0.05, label="Temperature")
