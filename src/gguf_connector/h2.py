@@ -38,7 +38,7 @@ def generate_audio(user_prompt, max_new_tokens, temperature, top_p, top_k):
     torchaudio.save(audio_path, waveform, output.sampling_rate)
     return audio_path
 sample_prompts = [
-    "[S1] Hey Connector, why your appearance looks so stupid? [S2] Oh, really? maybe I ate too much smart beans. [S1] Wow. Awesome! [S2] Do you want some?",
+    "[SPEAKER0] Hey Connector, why your appearance looks so stupid? [SPEAKER1] Oh, really? maybe I ate too much smart beans. [SPEAKER0] Wow. Awesome! [SPEAKER1] Do you want some?",
     "안녕히 주무셨어요?",
     "你好",
     "Herzlichen Glückwunsch",
