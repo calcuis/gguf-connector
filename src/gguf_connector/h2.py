@@ -5,7 +5,7 @@ import gradio as gr # need gradio and higgs to work; pip install higgs
 from higgs.serve.serve_engine import HiggsAudioServeEngine, HiggsAudioResponse
 from higgs.data_types import ChatMLSample, Message
 
-MODEL_PATH = "callgg/higgs-decoder"
+MODEL_PATH = "callgg/higgs-f16"
 AUDIO_TOKENIZER_PATH = "callgg/higgs-encoder"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
@@ -43,6 +43,7 @@ sample_prompts = [
     "你好",
     "Herzlichen Glückwunsch",
     "Que tenga usted buenos días",
+    "こんにちは",
 ]
 sample_prompts = [[x] for x in sample_prompts]
 # Gradio UI
