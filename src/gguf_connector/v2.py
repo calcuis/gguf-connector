@@ -10,11 +10,13 @@ transformer = WanTransformer3DModel.from_single_file(
     model_path,
     quantization_config=GGUFQuantizationConfig(compute_dtype=torch.bfloat16),
     torch_dtype=torch.bfloat16,
+    config="callgg/t2v-decoder",
+    subfolder="transformer"
 )
 text_encoder = UMT5EncoderModel.from_pretrained(
     "chatpig/umt5xxl-encoder-gguf",
     gguf_file="umt5xxl-encoder-q4_0.gguf",
-    torch_dtype=torch.bfloat16,
+    torch_dtype=torch.bfloat16
 )
 vae = AutoencoderKLWan.from_pretrained(
     "callgg/t2v-decoder",
