@@ -20,7 +20,7 @@ transformer = FluxTransformer2DModel.from_single_file(
 text_encoder = T5EncoderModel.from_pretrained(
     "chatpig/t5-v1_1-xxl-encoder-fp32-gguf",
     gguf_file="t5xxl-encoder-fp32-q2_k.gguf",
-    torch_dtype=torch.bfloat16,
+    torch_dtype=torch.bfloat16
     )
 
 pipe = FluxKontextPipeline.from_pretrained(
