@@ -64,7 +64,7 @@ if safetensors_files:
         writer, state_dict, _ = load_model(path,given)
         writer.add_quantization_version(GGML_QUANT_VERSION)
         out_path = f"{os.path.splitext(path)[0]}-f32.gguf"
-        writer.add_file_type(LlamaFileType.MOSTLY_F16)
+        writer.add_file_type(LlamaFileType.ALL_F32)
         if os.path.isfile(out_path):
             input("Output file exists. Press Enter to overwrite or Ctrl+C to abort.")
         handle_tensors(writer, state_dict)
