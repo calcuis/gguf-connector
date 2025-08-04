@@ -271,22 +271,22 @@ Activate backend and frontend by (optional: need gudio to work; pip install gudi
 ggc g2
 ```
 Opt a model then opt a clip (see example [here](https://huggingface.co/gguf-org/gudio))
-#### Krea 5 (image generator)
+#### Krea 5 and Kontext 6 (diffusers based)
 Activate backend and frontend by (optional: need diffusers to work; pip install diffusers):
 ```
 ggc k5
 ```
-Semi-full quant supported in new k7 (optional: need dequantor to work; pip install dequantor)
+Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/krea-gguf))
+```
+ggc k6
+```
+Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/knotext-gguf))
+#### Krea 7 and Kontext 8 (dequantor based; semi-full quant supported)
+Activate backend and frontend by (optional: need dequantor to work; pip install dequantor):
 ```
 ggc k7
 ```
 Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/krea-gguf))
-#### Kontext 6 (image editor)
-Activate backend and frontend by (optional: need diffusers to work; pip install diffusers):
-```
-ggc k6
-```
-Semi-full quant supported in new k8 (optional: need dequantor to work; pip install dequantor)
 ```
 ggc k8
 ```
