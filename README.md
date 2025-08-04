@@ -280,7 +280,7 @@ Semi-full quant supported in new k7 (optional: need dequantor to work; pip insta
 ```
 ggc k7
 ```
-Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/krea-gguf))
+Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/krea-gguf))
 #### Kontext 6 (image editor)
 Activate backend and frontend by (optional: need diffusers to work; pip install diffusers):
 ```
@@ -290,7 +290,7 @@ Semi-full quant supported in new k8 (optional: need dequantor to work; pip insta
 ```
 ggc k8
 ```
-Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/kontext-gguf))
+Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/kontext-gguf))
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
