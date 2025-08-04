@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-2.3.6-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-2.3.7-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -277,12 +277,20 @@ Activate backend and frontend by (optional: need diffusers to work; pip install 
 ggc k5
 ```
 Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/krea-gguf))
+```
+ggc k7
+```
+Semi-full quant supported in new k7 (need dequantor to work; pip install dequantor)
 #### Kontext 6 (image editor)
 Activate backend and frontend by (optional: need diffusers to work; pip install diffusers):
 ```
 ggc k6
 ```
 Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/kontext-gguf))
+```
+ggc k8
+```
+Semi-full quant supported in new k8 (need dequantor to work; pip install dequantor)
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
