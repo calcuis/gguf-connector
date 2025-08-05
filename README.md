@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-2.3.7-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-2.3.8-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -271,26 +271,23 @@ Activate backend and frontend by (optional: need gudio to work; pip install gudi
 ggc g2
 ```
 Opt a model then opt a clip (see example [here](https://huggingface.co/gguf-org/gudio))
-#### Krea 5 and Kontext 6 (diffusers based)
-Activate backend and frontend by (optional: need diffusers to work; pip install diffusers):
-```
-ggc k5
-```
-Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/krea-gguf))
-```
-ggc k6
-```
-Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/knotext-gguf))
-#### Krea 7 and Kontext 8 (dequantor based; semi-full quant supported)
+#### Krea 7 (image generator)
 Activate backend and frontend by (optional: need dequantor to work; pip install dequantor):
 ```
 ggc k7
 ```
-Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/krea-gguf))
+Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/krea-gguf))
+#### Kontext 8 (image editor)
+Activate backend and frontend by (optional: need dequantor to work; pip install dequantor):
 ```
 ggc k8
 ```
-Opt a model file in the current directory to interact with (see example [here](https://huggingface.co/calcuis/kontext-gguf))
+Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/kontext-gguf))
+#### K-flux connector
+Select flux model(s) with k connector:
+```
+ggc k
+```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
