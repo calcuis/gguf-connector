@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-2.4.0-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-2.4.1-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -277,7 +277,7 @@ Activate backend and frontend by (optional: need dequantor to work; pip install 
 ggc k8
 ```
 Opt a model file in the current directory (see example [here](https://huggingface.co/calcuis/kontext-gguf))
-#### K-flux connector
+#### Flux connector (all-in-one)
 Select flux image model(s) with k connector:
 ```
 ggc k
@@ -286,6 +286,11 @@ ggc k
 Select wan video model(s) with w2 connector:
 ```
 ggc w2
+```
+#### Ltxv connector
+Select ltxv model(s) with x2 connector:
+```
+ggc x2
 ```
 #### Gudio 2 (text to speech)
 Activate backend and frontend by (optional: need gudio to work; pip install gudio):
