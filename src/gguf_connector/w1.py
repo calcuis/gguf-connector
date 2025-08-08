@@ -1,5 +1,5 @@
 
-import torch # optional (need torch to work; pip install torch)
+import torch # need torch, transformers and dequantor to work
 from transformers import UMT5EncoderModel
 from dequantor import AutoencoderKLWan, WanPipeline, WanTransformer3DModel, WanVACEPipeline, WanVACETransformer3DModel, GGUFQuantizationConfig
 from dequantor.utils import export_to_video
