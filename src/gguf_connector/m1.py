@@ -1,5 +1,5 @@
 
-import torch
+import torch # need torch, transformers and dequantor to work
 from transformers import T5EncoderModel
 from dequantor import MochiPipeline, MochiTransformer3DModel, AutoencoderKLMochi, GGUFQuantizationConfig
 from dequantor.utils import export_to_video
