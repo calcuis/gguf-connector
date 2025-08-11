@@ -96,13 +96,13 @@ def launch_qi_distill_app(model_path,dtype):
     positive_magic = {"en": "Ultra HD, 4K, cinematic composition."}
     negative_prompt = " "
     # Inference function
-    def generate_image(prompt):
+    def generate_image(prompt,num_steps):
         result = pipe(
         prompt=prompt + positive_magic["en"],
         negative_prompt=negative_prompt,
         height=1024,
         width=1024,
-        num_inference_steps=15,
+        num_inference_steps=num_steps,
         # num_inference_steps=24,
         # true_cfg_scale=2.5,
         generator=torch.Generator()
@@ -123,9 +123,8 @@ def launch_qi_distill_app(model_path,dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
-                # guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
+                num_steps = gr.Slider(minimum=4, maximum=100, value=15, step=1, label="Step")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
-        submit_btn.click(fn=generate_image, inputs=[prompt], outputs=output_image)
-        # submit_btn.click(fn=generate_image, inputs=[prompt, guidance], outputs=output_image)
+        submit_btn.click(fn=generate_image, inputs=[prompt,num_steps], outputs=output_image)
     block.launch()
