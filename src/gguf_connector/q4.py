@@ -5,7 +5,7 @@ from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransf
 # from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage
 # from transformers import Qwen2_5_VLForConditionalGeneration
 
-def launch_qi_app(model_path,dtype):
+def launch_qi_app(model_path):
     transformer = QwenImageTransformer2DModel.from_single_file(
         model_path,
         quantization_config=GGUFQuantizationConfig(compute_dtype=dtype),
@@ -34,21 +34,23 @@ def launch_qi_app(model_path,dtype):
     positive_magic = {"en": "Ultra HD, 4K, cinematic composition."}
     negative_prompt = " "
     # Inference function
-    def generate_image(prompt):
+    def generate_image(prompt,num_steps,cfg_scale):
         result = pipe(
         prompt=prompt + positive_magic["en"],
         negative_prompt=negative_prompt,
         height=1024,
         width=1024,
-        num_inference_steps=24,
-        true_cfg_scale=2.5,
+        # num_inference_steps=24,
+        # true_cfg_scale=2.5,
+        num_inference_steps=num_steps,
+        true_cfg_scale=cfg_scale,
         generator=torch.Generator()
         ).images[0]
         return result
     # Lazy prompt
-    sample_prompts = ['a pig holding a sign that says hello world',
-                    'a bear walking in a cyber city',
-                    'a frog in a hat']
+    sample_prompts = ['a bear in a hat',
+                    'a cat walking in a cyber city',
+                    'a pig holding a sign that says hello world']
     sample_prompts = [[x] for x in sample_prompts]
     # Gradio UI
     block = gr.Blocks(title="gguf").queue()
@@ -60,11 +62,11 @@ def launch_qi_app(model_path,dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
-                # guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
+                num_steps = gr.Slider(minimum=4, maximum=100, value=24, step=1, label="Step")
+                cfg_scale = gr.Slider(minimum=0, maximum=10, value=2.5, step=0.5, label="Scale")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
-        submit_btn.click(fn=generate_image, inputs=[prompt], outputs=output_image)
-        # submit_btn.click(fn=generate_image, inputs=[prompt, guidance], outputs=output_image)
+        submit_btn.click(fn=generate_image, inputs=[prompt,num_steps,cfg_scale], outputs=output_image)
     block.launch()
 
 def launch_qi_distill_app(model_path,dtype):
