@@ -1,11 +1,12 @@
 
-import torch # need torch and dequantor to work
+import torch # need torch, transformers and dequantor to work
 import gradio as gr
 from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel
 # from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage
-# from transformers import Qwen2_5_VLForConditionalGeneration
+from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
+from transformers import Qwen2_5_VLForConditionalGeneration
 
-def launch_qi_app(model_path):
+def launch_qi_app(model_path,dtype):
     transformer = QwenImageTransformer2DModel.from_single_file(
         model_path,
         quantization_config=GGUFQuantizationConfig(compute_dtype=dtype),
@@ -77,6 +78,17 @@ def launch_qi_distill_app(model_path,dtype):
         config="callgg/qi-decoder",
         subfolder="transformer"
         )
+    text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        "callgg/qi-decoder",
+        subfolder="text_encoder",
+        quantization_config=TransformersBitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=dtype
+            ),
+        torch_dtype=dtype,
+    )
+    text_encoder = text_encoder.to("cpu")
     # text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     #     "chatpig/qwen2.5-vl-7b-it-gguf",
     #     gguf_file="qwen2.5-vl-7b-it-q2_k.gguf",
@@ -111,9 +123,9 @@ def launch_qi_distill_app(model_path,dtype):
         ).images[0]
         return result
     # Lazy prompt
-    sample_prompts = ['a bear in a hat',
-                    'a cat walking in a cyber city',
-                    'a pig holding a sign that says hello world']
+    sample_prompts = ['a pig holding a sign that says hello world',
+                    'a bear walking in a cyber city',
+                    'a frog in a hat']
     sample_prompts = [[x] for x in sample_prompts]
     # Gradio UI
     block = gr.Blocks(title="gguf").queue()
