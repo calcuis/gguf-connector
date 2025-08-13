@@ -64,12 +64,13 @@ class GGUFReader:
         28: "GGML_TYPE_F64",#           = 32  # except 1d tensors
         29: "GGML_TYPE_IQ1_M",#         = 31  # except 1d tensors
         30: "GGML_TYPE_BF16",#          = 32  # except 1d tensors
-        32: "GGML_TYPE_BF16",#          = 32  # except 1d tensors # keep this
+        # 32: "GGML_TYPE_BF16",#          = 32  # except 1d tensors # keep this
         # 33: "GGML_TYPE_Q4_0_4_4",#      = 33  # removed from gguf directory, use Q4_0 and runtime repack
         # 34: "GGML_TYPE_Q4_0_4_8",#      = 34  # removed from gguf directory, use Q4_0 and runtime repack
-        # 35: "GGML_TYPE__Q4_0_8_8",#     = 35  # removed from gguf directory, use Q4_0 and runtime repack
-        34: "GGML_TYPE__TQ1_0",#        = 36  # except 1d tensors
-        35: "GGML_TYPE__TQ2_0",#        = 37  # except 1d tensors
+        # 35: "GGML_TYPE_Q4_0_8_8",#      = 35  # removed from gguf directory, use Q4_0 and runtime repack
+        34: "GGML_TYPE_TQ1_0",#        = 36  # except 1d tensors
+        35: "GGML_TYPE_TQ2_0",#        = 37  # except 1d tensors
+        39: "GGML_TYPE_MXFP4",#        = 39  # not confirmed yet
     }
 
     def __init__(self, file_path):
