@@ -7,7 +7,7 @@ from higgs.data_types import ChatMLSample, Message
 
 MODEL_PATH = "callgg/higgs-f16"
 AUDIO_TOKENIZER_PATH = "callgg/higgs-encoder"
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
 # System prompt
 system_prompt = (
