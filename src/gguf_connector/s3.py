@@ -2,13 +2,13 @@
 import torch # need torch to work; pip install torch
 from .s4 import launch_sd3_app, launch_sd3m_app
 
-# connector selection (large by default)
-ask=input("Use medium (2b) model instead (Y/n)? ")
+# connector selection (2b/medium by default)
+ask=input("Use large (8b) model instead (Y/n)? ")
 if ask.lower() == 'y':
-    selected = "medium"
+    selected = "large"
     print(f'connector choice: {selected}\n')
 else:
-    selected = "large"
+    selected = "medium"
     print(f'connector choice: {selected}\n')
 
 import os
@@ -29,10 +29,10 @@ if gguf_files:
         print(f"Device detected: {device}")
         print(f"torch version: {torch.__version__}")
         print(f"dtype using: {dtype}")
-        if selected == 'medium':
-            launch_sd3m_app(input_path, dtype)
-        else:
+        if selected == 'large':
             launch_sd3_app(input_path, dtype)
+        else:
+            launch_sd3m_app(input_path, dtype)
     except (ValueError, IndexError):
         print('Invalid choice. Please enter a valid number.')
 else:
