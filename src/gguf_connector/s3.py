@@ -3,7 +3,7 @@ import torch # need torch to work; pip install torch
 from .s4 import launch_sd3_app, launch_sd3m_app
 
 # connector selection (large by default)
-ask=input("Use medium model instead (Y/n)? ")
+ask=input("Use medium (2b) model instead (Y/n)? ")
 if ask.lower() == 'y':
     selected = "medium"
     print(f'connector choice: {selected}\n')
