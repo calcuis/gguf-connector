@@ -1,5 +1,4 @@
 
-import torch # need torch to work; pip install torch
 from transformers import T5EncoderModel # need transformers and dequantor to work
 from dequantor import StableDiffusion3Pipeline, GGUFQuantizationConfig, SD3Transformer2DModel
 import gradio as gr
