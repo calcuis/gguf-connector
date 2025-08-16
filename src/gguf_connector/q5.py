@@ -2,7 +2,7 @@
 import torch # need torch to work; pip install torch
 from .q4 import launch_qi_app, launch_qi_distill_app
 
-# connector selection (2b by default)
+# connector selection (original by default)
 ask=input("Use distilled model instead (Y/n)? ")
 if ask.lower() == 'y':
     selected = "distill"
