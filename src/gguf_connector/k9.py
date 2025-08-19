@@ -33,6 +33,7 @@ def launch_krea_app(model_path, dtype):
             num_inference_steps=num_steps,
             guidance_scale=guidance,
         ).images[0]
+        return result
     # Lazy prompt
     sample_prompts = ['a cat in a hat',
                     'a dog walking in a cyber city with joy',
