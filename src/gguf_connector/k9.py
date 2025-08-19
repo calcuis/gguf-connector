@@ -35,13 +35,13 @@ def launch_krea_app(model_path, dtype):
         ).images[0]
     # Lazy prompt
     sample_prompts = ['a cat in a hat',
-                    'a pig walking in a cyber city with joy',
-                    'a frog holding a sign that says hello world']
+                    'a dog walking in a cyber city with joy',
+                    'a pig holding a sign that says hello world']
     sample_prompts = [[x] for x in sample_prompts]
     # Gradio UI
     block = gr.Blocks(title="gguf").queue()
     with block:
-        gr.Markdown("## 🐷 Krea Image Generator")
+        gr.Markdown("## 🐷 Krea/Flux Image Generator")
         with gr.Row():
             with gr.Column():
                 prompt = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
@@ -49,7 +49,7 @@ def launch_krea_app(model_path, dtype):
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
                 num_steps = gr.Slider(minimum=4, maximum=100, value=8, step=1, label="Step")
-                guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
+                guidance = gr.Slider(minimum=1.0, maximum=10.0, value=3.5, step=0.1, label="Guidance Scale")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[prompt,num_steps,guidance], outputs=output_image)
