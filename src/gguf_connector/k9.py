@@ -50,7 +50,7 @@ def launch_krea_app(model_path, dtype):
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
                 num_steps = gr.Slider(minimum=4, maximum=100, value=8, step=1, label="Step")
-                guidance = gr.Slider(minimum=1.0, maximum=10.0, value=3.5, step=0.1, label="Guidance Scale")
+                guidance = gr.Slider(minimum=0.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[prompt,num_steps,guidance], outputs=output_image)
@@ -98,7 +98,7 @@ def launch_kontext_app(model_path, dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
-                guidance = gr.Slider(minimum=1.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
+                guidance = gr.Slider(minimum=0.0, maximum=10.0, value=2.5, step=0.1, label="Guidance Scale")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[input_image, prompt, guidance], outputs=output_image)
