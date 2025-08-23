@@ -307,7 +307,7 @@ Select mochi model(s) with m1 connector:
 ```
 ggc m1
 ```
-#### KX-lite connector
+#### Kx-lite connector
 Select kontext model(s) with k0 connector:
 ```
 ggc k0
