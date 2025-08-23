@@ -86,7 +86,7 @@ def launch_qi_distill_app(model_path,dtype):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=dtype
             ),
-        torch_dtype=dtype,
+        torch_dtype=dtype
     )
     text_encoder = text_encoder.to("cpu")
     # text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
@@ -102,7 +102,7 @@ def launch_qi_distill_app(model_path,dtype):
     pipe = DiffusionPipeline.from_pretrained(
         "callgg/qi-decoder",
         transformer=transformer,
-        # text_encoder=text_encoder,
+        text_encoder=text_encoder,
         # vae=vae,
         torch_dtype=dtype
     )
