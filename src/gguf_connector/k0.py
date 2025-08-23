@@ -24,7 +24,6 @@ def launch_kx_image_edit_app(model_path,dtype):
         torch_dtype=dtype
     )
     pipe.enable_model_cpu_offload()
-    # pipe.load_lora_weights("callgg/image-lite-lora",weight_name="kx-lite.safetensors",adapter_name="lora")
     def generate_image(image,prompt,neg_prompt,guidance_scale,num_steps):
         if image is None or prompt.strip() == "":
             return None
@@ -35,7 +34,6 @@ def launch_kx_image_edit_app(model_path,dtype):
                     'convert to Ghibli style',
                     'turn this image into line style']
     sample_prompts = [[x] for x in sample_prompts]
-    # Gradio UI
     block = gr.Blocks(title="gguf").queue()
     with block:
         gr.Markdown("## 🐷 Image Editor")
