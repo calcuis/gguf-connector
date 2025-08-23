@@ -29,6 +29,8 @@ if gguf_files:
         print(f"Device detected: {device}")
         print(f"torch version: {torch.__version__}")
         print(f"dtype using: {dtype}")
+        if device == "cuda":
+            print(f"running with: {torch.cuda.get_device_name(torch.cuda.current_device())}")
         if selected == 'large':
             launch_sd3_app(input_path, dtype)
         else:
