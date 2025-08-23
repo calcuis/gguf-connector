@@ -1,6 +1,7 @@
 
-import torch # need torch and dequantor to work
-from dequantor import QwenImageEditPipeline, QwenImageTransformer2DModel, GGUFQuantizationConfig
+import torch # need torch, transformers and dequantor to work
+from dequantor import QwenImageEditPipeline, QwenImageTransformer2DModel, GGUFQuantizationConfig, AutoencoderKLQwenImage
+from transformers import Qwen2_5_VLForConditionalGeneration
 import gradio as gr
 
 def launch_image_edit_app(model_path,dtype):
@@ -11,9 +12,21 @@ def launch_image_edit_app(model_path,dtype):
         config="callgg/image-edit-decoder",
         subfolder="transformer"
         )
+    text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        "callgg/qi-decoder",
+        subfolder="text_encoder",
+        torch_dtype=dtype
+    )
+    vae = AutoencoderKLQwenImage.from_pretrained(
+        "callgg/qi-decoder",
+        subfolder="vae",
+        torch_dtype=dtype
+        )
     pipe = QwenImageEditPipeline.from_pretrained(
             "callgg/image-edit-decoder",
             transformer=transformer,
+            text_encoder=text_encoder,
+            vae=vae,
             torch_dtype=dtype
         )
     pipe.enable_model_cpu_offload()
