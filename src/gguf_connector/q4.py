@@ -63,8 +63,8 @@ def launch_qi_app(model_path,dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 submit_btn = gr.Button("Generate")
-                num_steps = gr.Slider(minimum=4, maximum=100, value=24, step=1, label="Step")
-                cfg_scale = gr.Slider(minimum=0, maximum=10, value=2.5, step=0.5, label="Scale")
+                num_steps = gr.Slider(minimum=4, maximum=100, value=8, step=1, label="Step")
+                cfg_scale = gr.Slider(minimum=0, maximum=10, value=1, step=0.5, label="Scale")
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[prompt,num_steps,cfg_scale], outputs=output_image)
