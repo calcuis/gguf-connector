@@ -317,7 +317,7 @@ Select sd3.5 model(s) with s3 connector:
 ```
 ggc s3
 ```
-Opt a model file to interact with (see example [here]((https://huggingface.co/calcuis/sd3.5-lite-gguf))
+Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/sd3.5-lite-gguf))
 #### Gudio 2 (text to speech)
 Activate backend and frontend by (optional: need gudio to work; pip install gudio):
 ```
