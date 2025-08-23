@@ -3,8 +3,7 @@ import torch # need torch, transformers and dequantor to work
 import gradio as gr
 from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel
 # from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage
-from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
-from transformers import Qwen2_5_VLForConditionalGeneration
+from transformers import BitsAndBytesConfig, Qwen2_5_VLForConditionalGeneration
 
 def launch_qi_app(model_path,dtype):
     transformer = QwenImageTransformer2DModel.from_single_file(
@@ -81,7 +80,7 @@ def launch_qi_distill_app(model_path,dtype):
     text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         "callgg/qi-decoder",
         subfolder="text_encoder",
-        quantization_config=TransformersBitsAndBytesConfig(
+        quantization_config=BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=dtype
@@ -89,11 +88,6 @@ def launch_qi_distill_app(model_path,dtype):
         torch_dtype=dtype
     )
     text_encoder = text_encoder.to("cpu")
-    # text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-    #     "chatpig/qwen2.5-vl-7b-it-gguf",
-    #     gguf_file="qwen2.5-vl-7b-it-q2_k.gguf",
-    #     torch_dtype=dtype
-    #     )
     # vae = AutoencoderKLQwenImage.from_pretrained(
     #     "callgg/qi-decoder",
     #     subfolder="vae",
@@ -117,7 +111,6 @@ def launch_qi_distill_app(model_path,dtype):
         height=1024,
         width=1024,
         num_inference_steps=num_steps,
-        # num_inference_steps=24,
         # true_cfg_scale=2.5,
         generator=torch.Generator()
         ).images[0]
