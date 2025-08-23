@@ -312,6 +312,7 @@ Select kontext model(s) with k0 connector:
 ```
 ggc k0
 ```
+Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/kontext-gguf))
 #### SD-lite connector
 Select sd3.5 model(s) with s3 connector:
 ```
