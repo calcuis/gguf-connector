@@ -1,6 +1,6 @@
 
 import torch # need torch, transformers and dequantor to work
-from transformers import T5EncoderModel
+from transformers import T5EncoderModel, T5TokenizerFast
 from dequantor import FluxKontextPipeline, FluxTransformer2DModel, GGUFQuantizationConfig
 import gradio as gr
 
@@ -11,16 +11,22 @@ def launch_kx_image_edit_app(model_path,dtype):
         torch_dtype=dtype,
         config="callgg/kontext-decoder",
         subfolder="transformer"
-        )
+    )
     text_encoder = T5EncoderModel.from_pretrained(
         "chatpig/t5-v1_1-xxl-encoder-fp32-gguf",
         gguf_file="t5xxl-encoder-fp32-q2_k.gguf",
+        torch_dtype=dtype
+    )
+    tokenizer = T5TokenizerFast.from_pretrained(
+        "callgg/kontext-decoder",
+        subfolder="tokenizer_2",
         torch_dtype=dtype
     )
     pipe = FluxKontextPipeline.from_pretrained(
         "callgg/kontext-decoder",
         transformer=transformer,
         text_encoder_2=text_encoder,
+        tokenizer_2=tokenizer,
         torch_dtype=dtype
     )
     pipe.enable_model_cpu_offload()
