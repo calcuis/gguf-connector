@@ -23,8 +23,8 @@ if gguf_files:
         if device == "cuda":
             print(f"running with: {torch.cuda.get_device_name(torch.cuda.current_device())}")
         launch_image_edit_app(input_path,dtype)
-    except (ValueError, IndexError):
-        print('Invalid choice. Please enter a valid number.')
+    except (ValueError, IndexError) as e:
+        print(f"Invalid choice. Please enter a valid number. ({e})")
 else:
     print('No GGUF files are available in the current directory.')
     input('--- Press ENTER To Exit ---')
