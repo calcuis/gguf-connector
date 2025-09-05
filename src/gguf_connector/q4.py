@@ -86,7 +86,7 @@ def launch_qi_app(model_path,dtype):
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[prompt,num_steps,cfg_scale], outputs=output_image)
-    block.launch()
+    block.launch(server_name="0.0.0.0")
 
 def launch_qi_distill_app(model_path,dtype):
     transformer = QwenImageTransformer2DModel.from_single_file(
@@ -157,7 +157,7 @@ def launch_qi_distill_app(model_path,dtype):
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[prompt,num_steps], outputs=output_image)
-    block.launch()
+    block.launch(server_name="0.0.0.0")
 
 def launch_image_edit_app(model_path,dtype):
     transformer = QwenImageTransformer2DModel.from_single_file(
@@ -220,4 +220,4 @@ def launch_image_edit_app(model_path,dtype):
             with gr.Column():
                 output_image = gr.Image(type="pil", label="Output Image")
         submit_btn.click(fn=generate_image, inputs=[input_image,prompt,neg_prompt,guidance,num_steps], outputs=output_image)
-    block.launch()
+    block.launch(server_name="0.0.0.0")
