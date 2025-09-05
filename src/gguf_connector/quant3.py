@@ -44,4 +44,3 @@ def convert_gguf_to_safetensors(gguf_path: str, output_path: str, use_bf16: bool
         tensors_dict[tensor_name] = weights_hf
     metadata = {key: str(reader.get_field(key)) for key in reader.fields}
     save_file(tensors_dict, output_path, metadata=metadata)
-    print("Dequantization complete!")
