@@ -1,5 +1,5 @@
 
-import torch # need torch to work; pip install torch
+import torch, os # need torch to work; pip install torch
 from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 
