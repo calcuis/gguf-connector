@@ -12,7 +12,7 @@ if _gpu_count > 1:
     max_memory = {}
     for i in range(_gpu_count):
         total_mb = torch.cuda.get_device_properties(i).total_memory // (1024 ** 2)
-        max_memory[f"cuda:{i}"] = f"{int(total_mb)}MB"
+        max_memory[i] = f"{int(total_mb)}MB"
 
     print("Using device_map:", device_map)
     print("Max memory per device:", max_memory)
