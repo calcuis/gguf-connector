@@ -48,26 +48,14 @@ def launch_fastvlm_app():
     block.launch()
 
 from pathlib import Path
-
 def get_hf_cache_hub_path():
     home_dir = Path.home()
     hf_cache_path = home_dir / ".cache" / "huggingface" / "hub" / "models--callgg--fastvlm-0.5b-bf16" / "blobs" / "4c70bf1ae23f362b9a623706bffbd0830999ea55c821c0b3545c49bd988095a7"
     return str(hf_cache_path)
 
-from safetensors import safe_open
-from safetensors.torch import save_file
-
-def add_metadata_to_safetensors(file_path, new_metadata):
-    with safe_open(file_path, framework="pt") as f:
-        tensors = {key: f.get_tensor(key) for key in f.keys()}
-        metadata = f.metadata() or {}
-    metadata.update(new_metadata)
-    temp_path = file_path + ".tmp"
-    save_file(tensors, temp_path, metadata)
-    os.replace(temp_path, file_path)
-
 import os
 from .quant3 import convert_gguf_to_safetensors
+from .quant4 import add_metadata_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
