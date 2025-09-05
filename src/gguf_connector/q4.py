@@ -1,8 +1,24 @@
-
 import torch # need torch, transformers and dequantor to work
 from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage, QwenImageEditPipeline
 from transformers import BitsAndBytesConfig, Qwen2_5_VLForConditionalGeneration
 import gradio as gr
+
+# Multi-GPU detection and auto-mapping setup
+_gpu_count = torch.cuda.device_count()
+if _gpu_count > 1:
+    _gpu_names = [torch.cuda.get_device_name(i) for i in range(_gpu_count)]
+    print("Detected GPUs:", _gpu_names)
+    device_map = "auto"
+    max_memory = {}
+    for i in range(_gpu_count):
+        total_mb = torch.cuda.get_device_properties(i).total_memory // (1024 ** 2)
+        max_memory[f"cuda:{i}"] = f"{int(total_mb)}MB"
+
+    print("Using device_map:", device_map)
+    print("Max memory per device:", max_memory)
+else:
+    device_map = None
+    max_memory = None
 
 def launch_qi_app(model_path,dtype):
     transformer = QwenImageTransformer2DModel.from_single_file(
@@ -10,7 +26,9 @@ def launch_qi_app(model_path,dtype):
         quantization_config=GGUFQuantizationConfig(compute_dtype=dtype),
         torch_dtype=dtype,
         config="callgg/qi-decoder",
-        subfolder="transformer"
+        subfolder="transformer",
+        device_map=device_map,
+        max_memory=max_memory
         )
     # text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     #     "chatpig/qwen2.5-vl-7b-it-gguf",
@@ -27,7 +45,9 @@ def launch_qi_app(model_path,dtype):
         transformer=transformer,
         # text_encoder=text_encoder,
         # vae=vae,
-        torch_dtype=dtype
+        torch_dtype=dtype,
+        device_map=device_map,
+        max_memory=max_memory
     )
     pipe.enable_model_cpu_offload()
     positive_magic = {"en": "Ultra HD, 4K, cinematic composition."}
@@ -74,7 +94,9 @@ def launch_qi_distill_app(model_path,dtype):
         quantization_config=GGUFQuantizationConfig(compute_dtype=dtype),
         torch_dtype=dtype,
         config="callgg/qi-decoder",
-        subfolder="transformer"
+        subfolder="transformer",
+        device_map=device_map,
+        max_memory=max_memory
     )
     text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         "callgg/qi-decoder",
@@ -84,7 +106,9 @@ def launch_qi_distill_app(model_path,dtype):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=dtype
             ),
-        torch_dtype=dtype
+        torch_dtype=dtype,
+        device_map=device_map,
+        max_memory=max_memory
     )
     text_encoder = text_encoder.to("cpu")
     # vae = AutoencoderKLQwenImage.from_pretrained(
@@ -97,7 +121,9 @@ def launch_qi_distill_app(model_path,dtype):
         transformer=transformer,
         text_encoder=text_encoder,
         # vae=vae,
-        torch_dtype=dtype
+        torch_dtype=dtype,
+        device_map=device_map,
+        max_memory=max_memory
     )
     pipe.enable_model_cpu_offload()
     positive_magic = {"en": "Ultra HD, 4K, cinematic composition."}
@@ -139,24 +165,32 @@ def launch_image_edit_app(model_path,dtype):
         quantization_config=GGUFQuantizationConfig(compute_dtype=dtype),
         torch_dtype=dtype,
         config="callgg/image-edit-decoder",
-        subfolder="transformer"
+        subfolder="transformer",
+        device_map=device_map,
+        max_memory=max_memory
         )
     text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         "callgg/qi-decoder",
         subfolder="text_encoder",
-        torch_dtype=dtype
+        torch_dtype=dtype,
+        device_map=device_map,
+        max_memory=max_memory
         )
     vae = AutoencoderKLQwenImage.from_pretrained(
         "callgg/qi-decoder",
         subfolder="vae",
-        torch_dtype=dtype
+        torch_dtype=dtype,
+        device_map=device_map,
+        max_memory=max_memory
         )
     pipe = QwenImageEditPipeline.from_pretrained(
             "callgg/image-edit-decoder",
             transformer=transformer,
             text_encoder=text_encoder,
             vae=vae,
-            torch_dtype=dtype
+            torch_dtype=dtype,
+            device_map=device_map,
+            max_memory=max_memory
         )
     pipe.enable_model_cpu_offload()
     pipe.load_lora_weights("callgg/image-lite-lora", weight_name="lite.safetensors", adapter_name="lora")
