@@ -11,11 +11,12 @@ def launch_fastvlm_app():
     tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_ID,
+        # torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
         dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
         device_map="auto",
         trust_remote_code=True,
     )
-    def describe_image(img: Image.Image) -> str:
+    def describe_image(img: Image.Image, num_tokens) -> str:
         if img is None:
             return "Please upload an image."
         messages = [{"role": "user", "content": "<image>\nDescribe this image in detail."}]
@@ -33,7 +34,7 @@ def launch_fastvlm_app():
                 inputs=input_ids,
                 attention_mask=attention_mask,
                 images=px,
-                max_new_tokens=256
+                max_new_tokens=num_tokens
             )
         return tok.decode(out[0], skip_special_tokens=True)
     block = gr.Blocks(title="gguf").queue()
@@ -43,9 +44,10 @@ def launch_fastvlm_app():
             with gr.Column():
                 img_input = gr.Image(type="pil", label="Input Image")
                 btn = gr.Button("Describe Image", variant="primary")
+                num_tokens = gr.Slider(minimum=64, maximum=1024, value=128, step=1, label="Output Token")
             with gr.Column():
                 output = gr.Textbox(label="Description", lines=5)
-        btn.click(fn=describe_image, inputs=img_input, outputs=output)
+        btn.click(fn=describe_image, inputs=[img_input,num_tokens], outputs=output)
     block.launch()
 
 def launch_fastvlm15_app():
@@ -58,7 +60,7 @@ def launch_fastvlm15_app():
         device_map="auto",
         trust_remote_code=True,
     )
-    def describe_image(img: Image.Image) -> str:
+    def describe_image(img: Image.Image, num_tokens) -> str:
         if img is None:
             return "Please upload an image."
         messages = [{"role": "user", "content": "<image>\nDescribe this image in detail."}]
@@ -76,7 +78,7 @@ def launch_fastvlm15_app():
                 inputs=input_ids,
                 attention_mask=attention_mask,
                 images=px,
-                max_new_tokens=256
+                max_new_tokens=num_tokens
             )
         return tok.decode(out[0], skip_special_tokens=True)
     block = gr.Blocks(title="gguf").queue()
@@ -86,9 +88,10 @@ def launch_fastvlm15_app():
             with gr.Column():
                 img_input = gr.Image(type="pil", label="Input Image")
                 btn = gr.Button("Describe Image", variant="primary")
+                num_tokens = gr.Slider(minimum=64, maximum=1024, value=128, step=1, label="Output Token")
             with gr.Column():
                 output = gr.Textbox(label="Description", lines=5)
-        btn.click(fn=describe_image, inputs=img_input, outputs=output)
+        btn.click(fn=describe_image, inputs=[img_input,num_tokens], outputs=output)
     block.launch()
 
 def get_hf_cache_hub_path(selected):
