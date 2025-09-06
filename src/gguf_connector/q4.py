@@ -144,7 +144,8 @@ def launch_image_edit_app(model_path,dtype):
     text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         "callgg/qi-decoder",
         subfolder="text_encoder",
-        torch_dtype=dtype
+        # torch_dtype=dtype
+        dtype=dtype
         )
     vae = AutoencoderKLQwenImage.from_pretrained(
         "callgg/qi-decoder",
