@@ -348,7 +348,7 @@ ggc f6
 ```
 Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/fastvlm-gguf))
 #### VibeVoice connector (text/voice to speech)
-Select vibevoice model(s) with v6 connector:
+Select vibevoice model(s) with v6 connector (optional: need yvoice to work; pip install yvoice):
 ```
 ggc v6
 ```
