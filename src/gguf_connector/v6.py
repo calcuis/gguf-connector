@@ -19,7 +19,7 @@ def launch_vibevoice_app():
         device_map=device
     )
     processor = VibeVoiceProcessor.from_pretrained(model_id)
-    def generate_voice(script, voice_samples):
+    def generate_voice(script, voice_samples, cfg_pace):
         if not script.strip():
             return None
         if not voice_samples:
@@ -35,7 +35,8 @@ def launch_vibevoice_app():
         output = model.generate(
             **inputs,
             tokenizer=processor.tokenizer,
-            cfg_scale=1.3,
+            # cfg_scale=1.3,
+            cfg_scale=cfg_pace,
             max_new_tokens=None,
         )
         generated_speech = output.speech_outputs[0]
@@ -59,10 +60,11 @@ def launch_vibevoice_app():
                 file_count="multiple"
             )
         generate_btn = gr.Button("Generate Speech 🎵")
+        cfg_scale = gr.Slider(0.0, 5, step=.1, label="CFG Scale/Pace", value=1.3)
         output_audio = gr.Audio(label="Generated Output", type="filepath")
         generate_btn.click(
             generate_voice,
-            inputs=[script_input, voice_input],
+            inputs=[script_input, voice_input, cfg_scale],
             outputs=output_audio,
         )
     block.launch()
