@@ -94,6 +94,56 @@ def launch_fastvlm15_app():
         btn.click(fn=describe_image, inputs=[img_input,num_tokens], outputs=output)
     block.launch()
 
+def launch_fastvlm9_app():
+    MODEL_ID = "callgg/fastvlm-0.5b-bf16"
+    IMAGE_TOKEN_INDEX = -200
+    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID,
+        dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+        device_map="auto",
+        trust_remote_code=True,
+    )
+    def describe_image(img: Image.Image, prompt, num_tokens) -> str:
+        if img is None:
+            return "Please upload an image."
+        messages = [{"role": "user", "content": f"<image>\n{prompt}."}]
+        rendered = tok.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
+        pre, post = rendered.split("<image>", 1)
+        pre_ids = tok(pre, return_tensors="pt", add_special_tokens=False).input_ids
+        post_ids = tok(post, return_tensors="pt", add_special_tokens=False).input_ids
+        img_tok = torch.tensor([[IMAGE_TOKEN_INDEX]], dtype=pre_ids.dtype)
+        input_ids = torch.cat([pre_ids, img_tok, post_ids], dim=1).to(model.device)
+        attention_mask = torch.ones_like(input_ids, device=model.device)
+        px = model.get_vision_tower().image_processor(images=img, return_tensors="pt")["pixel_values"]
+        px = px.to(model.device, dtype=model.dtype)
+        with torch.no_grad():
+            out = model.generate(
+                inputs=input_ids,
+                attention_mask=attention_mask,
+                images=px,
+                max_new_tokens=num_tokens
+            )
+        return tok.decode(out[0], skip_special_tokens=True)
+    sample_prompts = ['Describe this image in detail',
+                    'Describe what you see in one sentence']
+    sample_prompts = [[x] for x in sample_prompts]
+    block = gr.Blocks(title="gguf").queue()
+    with block:
+        gr.Markdown("## 🖼️ Image Descriptor (advanced mode)")
+        with gr.Row():
+            with gr.Column():
+                img_input = gr.Image(type="pil", label="Input Image")
+                prompt = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
+                quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
+                quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
+                btn = gr.Button("Submit", variant="primary")
+                num_tokens = gr.Slider(minimum=64, maximum=1024, value=128, step=1, label="Output Token")
+            with gr.Column():
+                output = gr.Textbox(label="Description", lines=5)
+        btn.click(fn=describe_image, inputs=[img_input,prompt,num_tokens], outputs=output)
+    block.launch()
+
 def get_hf_cache_hub_path(selected):
     home_dir = Path.home()
     if selected == '0.5b':
