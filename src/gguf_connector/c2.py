@@ -128,8 +128,8 @@ if gguf_files:
                         print("Invalid choice. Please enter a valid number.")
             except (ValueError, IndexError):
                 print("Invalid choice. Please enter a valid number.")
-    except (ValueError, IndexError):
-        print("Invalid choice. Please enter a valid number.")
+    except (ValueError, IndexError) as e:
+        print(f"Invalid choice. Please enter a valid number. ({e})")
 else:
     print("No GGUF files are available in the current directory.")
     input("--- Press ENTER To Exit ---")
