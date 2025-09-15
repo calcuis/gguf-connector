@@ -66,7 +66,7 @@ if gguf_files:
             out_path = f'{os.path.splitext(input_path)[0]}-bf16.safetensors'
         else:
             use_bf16 = False
-            out_path = f'{os.path.splitext(input_path)[0]}-fp16.safetensors'
+            out_path = f'{os.path.splitext(input_path)[0]}-f16.safetensors'
         convert_gguf_to_safetensors(input_path, out_path, use_bf16)
     except (ValueError, IndexError):
         print('Invalid choice. Please enter a valid number.')
