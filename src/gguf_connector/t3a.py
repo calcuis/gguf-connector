@@ -2,8 +2,8 @@
 import torch # optional (need torch to work; pip install torch)
 import numpy as np
 from safetensors.torch import save_file
-from gguf_connector.quant5 import dequantize
-from gguf_connector.reader import GGUFReader
+from .quant5 import dequantize
+from .reader import GGUFReader
 from tqdm import tqdm
 
 def load_gguf_and_extract_metadata(gguf_path):
