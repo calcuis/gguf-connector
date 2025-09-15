@@ -104,8 +104,8 @@ if gguf_files:
                 convert_gguf_to_safetensors(t3_path, model_path, use_bf16)
                 print(f"Prepare to dequantize S3: {s3_path}")
                 convert_gguf_to_safetensors(s3_path, clip_path, use_bf16)
-            except (ValueError, IndexError):
-                print("Invalid choice. Please enter a valid number.")
+            except (ValueError, IndexError) as e:
+                print(f"Invalid choice. Please enter a valid number. ({e})")
     except (ValueError, IndexError):
         print("Invalid choice. Please enter a valid number.")
 else:
