@@ -21,7 +21,7 @@ import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
-from chichat import perth # need chichat; pip install chichat
+# from chichat import perth # need chichat; pip install chichat
 from chichat.chatterbox.models.t3 import T3
 from chichat.chatterbox.models.s3tokenizer import S3_SR, drop_invalid_tokens
 from chichat.chatterbox.models.s3gen import S3GEN_SR, S3Gen
@@ -195,7 +195,7 @@ class ChatterboxTTS:
         self.tokenizer = tokenizer
         self.device = device
         self.conds = conds
-        self.watermarker = perth.PerthImplicitWatermarker
+        # self.watermarker = perth.PerthImplicitWatermarker
 
     @classmethod
     def from_local(cls, ckpt_dir, device) -> 'ChatterboxTTS':
