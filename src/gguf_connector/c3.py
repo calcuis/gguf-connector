@@ -385,13 +385,6 @@ def load_model():
     return model
 
 def generate(model, language_id, text, audio_prompt_path, exaggeration, temperature, seed_num, cfgw):
-    # Validate language_id
-    # if language_id and language_id.lower() not in SUPPORTED_LANGUAGES:
-    #     supported_langs = ", ".join(SUPPORTED_LANGUAGES.keys())
-    #     raise ValueError(
-    #         f"Unsupported language_id '{language_id}'. "
-    #         f"Supported languages: {supported_langs}"
-    #     )
     if model is None:
         # model = ChatterboxTTS.from_pretrained(DEVICE)
         model = ChatterboxMultilingualTTS.from_pretrained(DEVICE)
@@ -411,7 +404,6 @@ def generate(model, language_id, text, audio_prompt_path, exaggeration, temperat
 block = gr.Blocks(title="gguf")
 with block:
     model_state = gr.State(None)  # Loaded once per session/user
-
     with gr.Row():
         with gr.Column():
             text = gr.Textbox(
@@ -420,9 +412,13 @@ with block:
                 max_lines=5
             )
             ref_wav = gr.Audio(sources=["upload", "microphone"], type="filepath", label="Reference Audio File", value=None)
+            language_id = gr.Dropdown(
+                ["en","es","fr","de","ja","ko","da","it","ar","el","fi","he","hi","ml","nl","no","pl","pt","ru","sv","sw","tr"],
+                label="Select a Language"
+            )
             exaggeration = gr.Slider(0.25, 2, step=.05, label="Exaggeration (Neutral = 0.5, extreme values can be unstable)", value=.5)
             cfg_weight = gr.Slider(0.0, 1, step=.05, label="CFG/Pace", value=0.5)
-            language_id = gr.Textbox(label="Language (i.e., en, es, fr, it, ja, ko, etc.)", value="en")
+            # language_id = gr.Textbox(label="Language (i.e., en, es, fr, it, ja, ko, etc.)", value="en")
             with gr.Accordion("More options", open=False):
                 seed_num = gr.Number(value=0, label="Random seed (0 for random)")
                 temp = gr.Slider(0.05, 5, step=.05, label="temperature", value=.8)
