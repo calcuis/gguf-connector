@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-2.8.5-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-2.8.6-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -245,9 +245,9 @@ Realtime live captioning:
 ```
 ggc f7
 ```
-Advanced mode with customized text prompt and image (see example [here](https://huggingface.co/calcuis/fastvlm-gguf)):
+Connector mode, opt a gguf to interact with (see example [here](https://huggingface.co/calcuis/fastvlm-gguf)):
 ```
-ggc f9
+ggc f6
 ```
 Activate accurate/precise mode by (optional: need vtoo to work; pip install vtoo):
 ```
@@ -360,10 +360,10 @@ Select dia model(s) with s6 connector:
 ggc s6
 ```
 Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/dia-gguf))
-#### FastVLM connector (image to text)
-Select fastvlm model(s) with f6 connector:
+#### FastVLM connector (image-text to text)
+Select fastvlm model(s) with f9 connector:
 ```
-ggc f6
+ggc f9
 ```
 Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/fastvlm-gguf))
 #### VibeVoice connector (text/voice to speech)
@@ -372,6 +372,12 @@ Select vibevoice model(s) with v6 connector (optional: need yvoice to work; pip 
 ggc v6
 ```
 Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/vibevoice-gguf))
+#### Docling connector (image/document to text)
+Select docling model(s) with n3 connector:
+```
+ggc n3
+```
+Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/docling-gguf))
 #### Gudio 2 (text to speech)
 Activate backend and frontend by (optional: need gudio to work; pip install gudio):
 ```
