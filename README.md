@@ -253,6 +253,7 @@ Activate accurate/precise mode by (optional: need vtoo to work; pip install vtoo
 ```
 ggc h3
 ```
+Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/holo-gguf))
 #### Speech 2 (text to speech)
 Activate backend and frontend by (optional: need diao to work; pip install diao):
 ```
