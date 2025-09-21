@@ -245,7 +245,7 @@ Realtime live captioning:
 ```
 ggc f7
 ```
-Advanced mode with customized text prompt and image:
+Advanced mode with customized text prompt and image (see example [here](https://huggingface.co/calcuis/fastvlm-gguf)):
 ```
 ggc f9
 ```
