@@ -16,13 +16,8 @@ else:
     device = torch.device("cpu")
 print(f"Using device: {device}")
 
-from pathlib import Path
-def get_hf_cache_hub_path():
-    home_dir = Path.home()
-    hf_cache_path = home_dir / ".cache" / "huggingface" / "hub" / "models--callgg--dia-f16" / "blobs" / "40ba0e38590ff2a9238c55906ab3441c7dbc7de68f0c349e504f44e235115700"
-    return str(hf_cache_path)
-
 import os
+from .tph import get_hf_cache_hub_path
 from .quant3 import convert_gguf_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
 
@@ -36,7 +31,8 @@ if gguf_files:
         selected_model_file=gguf_files[choice_index]
         print(f"Model file: {selected_model_file} is selected!")
         selected_file_path=selected_model_file
-        model_path = get_hf_cache_hub_path()
+        ghash = "40ba0e38590ff2a9238c55906ab3441c7dbc7de68f0c349e504f44e235115700"
+        model_path = get_hf_cache_hub_path('callgg','dia-f16',ghash)
         if torch.cuda.is_available():
             use_bf16 = True
         else:
