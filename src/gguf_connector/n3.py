@@ -56,13 +56,8 @@ def launch_docling_app():
         )
     block.launch()
 
-from pathlib import Path
-def get_hf_cache_hub_path():
-    home_dir = Path.home()
-    hf_cache_path = home_dir / ".cache" / "huggingface" / "hub" / "models--callgg--docling-bf16" / "blobs" / "1cdad234deb1cde18ee6a586f849057f19851daf1fedce2e40aff791dbe46f61"
-    return str(hf_cache_path)
-
 import os
+from .tph import get_hf_cache_hub_path
 from .quant3 import convert_gguf_to_safetensors
 from .quant4 import add_metadata_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
@@ -77,14 +72,13 @@ if gguf_files:
         selected_model_file=gguf_files[choice_index]
         print(f"Model file: {selected_model_file} is selected!")
         selected_file_path=selected_model_file
-
         DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if DEVICE == "cuda" else torch.float32
         print(f"Device detected: {DEVICE}")
         print(f"torch version: {torch.__version__}")
         print(f"dtype using: {dtype}")
-
-        model_path = get_hf_cache_hub_path()
+        ghash = "1cdad234deb1cde18ee6a586f849057f19851daf1fedce2e40aff791dbe46f61"
+        model_path = get_hf_cache_hub_path('callgg','docling-bf16',ghash)
         if DEVICE == "cuda":
             print(f"Running with: {torch.cuda.get_device_name(torch.cuda.current_device())}")
             use_bf16 = True
