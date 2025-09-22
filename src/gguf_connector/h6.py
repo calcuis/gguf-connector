@@ -68,13 +68,8 @@ def launch_higgs_app():
         )
     block.launch()
 
-from pathlib import Path
-def get_hf_cache_hub_path():
-    home_dir = Path.home()
-    hf_cache_path = home_dir / ".cache" / "huggingface" / "hub" / "models--callgg--higgs-f16" / "blobs" / "01dd3d8f7cf912154e51645e1f1afa01d3446ca900f927d8fa14698718deb914"
-    return str(hf_cache_path)
-
 import os
+from .tph import get_hf_cache_hub_path
 from .quant3 import convert_gguf_to_safetensors
 from .quant4 import add_metadata_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
@@ -89,7 +84,8 @@ if gguf_files:
         selected_model_file=gguf_files[choice_index]
         print(f"Model file: {selected_model_file} is selected!")
         selected_file_path=selected_model_file
-        model_path = get_hf_cache_hub_path()
+        ghash = "01dd3d8f7cf912154e51645e1f1afa01d3446ca900f927d8fa14698718deb914"
+        model_path = get_hf_cache_hub_path('callgg','higgs-f16',ghash)
         if DEVICE == "cuda":
             use_bf16 = True
         else:
