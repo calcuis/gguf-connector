@@ -15,6 +15,7 @@ def launch_vibevoice_app():
     dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
     model = VibeVoiceForConditionalGenerationInference.from_pretrained(
         model_id,
+        # torch_dtype=dtype,
         dtype=dtype,
         device_map=device
     )
@@ -69,13 +70,8 @@ def launch_vibevoice_app():
         )
     block.launch()
 
-from pathlib import Path
-def get_hf_cache_hub_path():
-    home_dir = Path.home()
-    hf_cache_path = home_dir / ".cache" / "huggingface" / "hub" / "models--callgg--vibevoice-bf16" / "blobs" / "53a915ae1a937cde20531290877f23aee39a7cc21786ff3a783158ac443ae74d"
-    return str(hf_cache_path)
-
 import os
+from .tph import get_hf_cache_hub_path
 from .quant3 import convert_gguf_to_safetensors
 from .quant4 import add_metadata_to_safetensors
 gguf_files = [file for file in os.listdir() if file.endswith('.gguf')]
@@ -93,7 +89,8 @@ if gguf_files:
         selected_model_file=gguf_files[choice_index]
         print(f"Model file: {selected_model_file} is selected!")
         selected_file_path=selected_model_file
-        model_path = get_hf_cache_hub_path()
+        ghash = "53a915ae1a937cde20531290877f23aee39a7cc21786ff3a783158ac443ae74d"
+        model_path = get_hf_cache_hub_path('callgg','vibevoice-bf16',ghash)
         if DEVICE == "cuda":
             use_bf16 = True
         else:
