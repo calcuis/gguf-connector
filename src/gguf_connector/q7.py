@@ -13,7 +13,7 @@ if gguf_files:
     try:
         choice_index = int(choice) - 1
         selected_file = gguf_files[choice_index]
-        print(f'Model file: {selected_file} is selected as image editor!')
+        print(f'Model file: {selected_file} is selected as image editor plus!')
         input_path = selected_file
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
