@@ -1,6 +1,6 @@
 
 import torch # need torch, transformers and dequantor to work
-from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage, QwenImageEditPipeline
+from dequantor import DiffusionPipeline, GGUFQuantizationConfig, QwenImageTransformer2DModel, AutoencoderKLQwenImage, QwenImageEditPipeline, QwenImageEditPlusPipeline
 from transformers import BitsAndBytesConfig, Qwen2_5_VLForConditionalGeneration
 import gradio as gr
 
