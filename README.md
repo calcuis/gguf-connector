@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-2.8.8-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-2.8.9-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://badgen.net/badge/pack/0.1.3/green?icon=windows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -322,6 +322,11 @@ Opt a model file to interact with (see example [here](https://huggingface.co/cal
 Select image edit plus model(s) with q7 connector:
 ```
 ggc q7
+```
+#### Qwen image edit plux connector - multiple image input
+Select image edit plus model(s) with q8 connector:
+```
+ggc q8
 ```
 Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/qwen-image-edit-plus-gguf))
 #### Lumina image connector
