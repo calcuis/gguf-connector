@@ -16,7 +16,8 @@ def launch_ltxv_app(model_path, dtype):
     text_encoder = T5EncoderModel.from_pretrained(
         "chatpig/t5-v1_1-xxl-encoder-fp32-gguf",
         gguf_file="t5xxl-encoder-fp32-q2_k.gguf",
-        torch_dtype=dtype,
+        # torch_dtype=dtype,
+        dtype=dtype,
         )
     vae = AutoencoderKLLTXVideo.from_pretrained(
         "callgg/ltxv0.9.6-decoder",
@@ -32,14 +33,14 @@ def launch_ltxv_app(model_path, dtype):
         )
     pipe.enable_model_cpu_offload()
     # Inference function
-    def generate_video(prompt, negative_prompt, num_frames):
+    def generate_video(prompt, negative_prompt, num_steps, num_frames):
         video = pipe(
             prompt=prompt,
             negative_prompt=negative_prompt,
             width=480,
             height=480,
             num_frames=num_frames,
-            num_inference_steps=25
+            num_inference_steps=num_steps
         ).frames[0]
         export_to_video(video, "output.mp4", fps=24)
         return "output.mp4"
@@ -60,12 +61,13 @@ def launch_ltxv_app(model_path, dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
                 generate_btn = gr.Button("Generate")
+                num_steps = gr.Slider(minimum=4, maximum=100, value=15, step=1, label="Step")
                 num_frames_input = gr.Slider(minimum=15, maximum=200, value=25, step=5, label="Length")
             with gr.Column():
                 output_video = gr.Video(label="Generated Video")
         generate_btn.click(
             fn=generate_video,
-            inputs=[prompt_input, neg_prompt_input,num_frames_input],
+            inputs=[prompt_input,neg_prompt_input,num_steps,num_frames_input],
             outputs=output_video
         )
     block.launch()
@@ -81,7 +83,8 @@ def launch_ltxv_13b_app(model_path, dtype):
     text_encoder = T5EncoderModel.from_pretrained(
         "chatpig/t5-v1_1-xxl-encoder-fp32-gguf",
         gguf_file="t5xxl-encoder-fp32-q2_k.gguf",
-        torch_dtype=dtype,
+        # torch_dtype=dtype,
+        dtype=dtype,
         )
     vae = AutoencoderKLLTXVideo.from_pretrained(
         "callgg/ltxv0.9.8-decoder",
@@ -97,14 +100,14 @@ def launch_ltxv_13b_app(model_path, dtype):
         )
     pipe.enable_model_cpu_offload()
     # Inference function
-    def generate_video(prompt, negative_prompt, num_frames):
+    def generate_video(prompt, negative_prompt, num_steps, num_frames):
         video = pipe(
             prompt=prompt,
             negative_prompt=negative_prompt,
             width=480,
             height=480,
             num_frames=num_frames,
-            num_inference_steps=25
+            num_inference_steps=num_steps
         ).frames[0]
         export_to_video(video, "output.mp4", fps=24)
         return "output.mp4"
@@ -124,12 +127,13 @@ def launch_ltxv_13b_app(model_path, dtype):
                 quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt_input])
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt_input, show_progress=False, queue=False)
                 generate_btn = gr.Button("Generate")
+                num_steps = gr.Slider(minimum=4, maximum=100, value=25, step=1, label="Step")
                 num_frames_input = gr.Slider(minimum=15, maximum=200, value=25, step=5, label="Length")
             with gr.Column():
                 output_video = gr.Video(label="Generated Video")
         generate_btn.click(
             fn=generate_video,
-            inputs=[prompt_input, neg_prompt_input,num_frames_input],
+            inputs=[prompt_input,neg_prompt_input,num_steps,num_frames_input],
             outputs=output_video
         )
     block.launch()
