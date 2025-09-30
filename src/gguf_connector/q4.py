@@ -352,7 +352,7 @@ def launch_image_edit_lite_app(model_path,dtype):
         torch_dtype=dtype
     )
     pipe.enable_model_cpu_offload()
-    # pipe.load_lora_weights("callgg/image-lite-lora", weight_name="lite.safetensors", adapter_name="lora")
+    pipe.load_lora_weights("callgg/image-lite-lora", weight_name="lite2.safetensors", adapter_name="lora")
     def generate_image(prompt, img1, img2, img3, steps, guidance):
         images = []
         for img in [img1, img2, img3]:
@@ -393,7 +393,7 @@ def launch_image_edit_lite_app(model_path,dtype):
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 generate_btn = gr.Button("Generate Image")
                 steps = gr.Slider(1, 50, value=8, step=1, label="Inference Steps")
-                guidance = gr.Slider(0.1, 10.0, value=1.0, step=0.1, label="Guidance Scale")
+                guidance = gr.Slider(0.1, 10.0, value=3.5, step=0.1, label="Guidance Scale")
             with gr.Column():
                 output_image = gr.Image(label="Output", type="pil")
         generate_btn.click(
