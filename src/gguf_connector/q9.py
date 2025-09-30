@@ -6,10 +6,10 @@ from dequantor import (
     AutoencoderKLQwenImage,
 )
 from transformers import Qwen2_5_VLForConditionalGeneration
-from gguf_connector.vrm import get_gpu_vram, get_affordable_precision
+from .vrm import get_gpu_vram, get_affordable_precision
 from PIL import Image
 
-from nunchaku import NunchakuQwenImageTransformer2DModel
+from nunchaku import NunchakuQwenImageTransformer2DModel # need nunchaku
 
 def launch_image_edit_pluz_app(model_path,dtype):
     transformer = NunchakuQwenImageTransformer2DModel.from_pretrained(
@@ -110,7 +110,7 @@ if safetensors_files:
         print(f"dtype using: {dtype}")
         if device == "cuda":
             print(f"running with: {torch.cuda.get_device_name(torch.cuda.current_device())}")
-            prec = get_affordable_precision()
+            prec = get_affordable_precision() # provide affordable precision hints
             print(f"affordable precision: {prec} (opt a wrong precision file will return error)")
         launch_image_edit_pluz_app(input_path,dtype)
     except (ValueError, IndexError) as e:
