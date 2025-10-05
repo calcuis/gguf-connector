@@ -417,7 +417,7 @@ Let's draw something with s8 connector:
 ```
 ggc s8
 ```
-Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/sketch-gguf))
+Opt a model file to interact with (see example [here](https://huggingface.co/calcuis/sketch))
 #### Gudio 2 (text to speech)
 Activate backend and frontend by (optional: need gudio to work; pip install gudio):
 ```
