@@ -419,7 +419,7 @@ ggc g2
 ```
 Opt a model then opt a clip (see example [here](https://huggingface.co/gguf-org/gudio))
 #### Sketch (draw something awesome)
-Sketch gguf connector:
+Sketch gguf connector (optional: need dequantor to work; pip install dequantor):
 ```
 ggc s8
 ```
