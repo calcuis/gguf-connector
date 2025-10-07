@@ -1,7 +1,6 @@
 
 import torch # need torch, transformers, nunchaku and dequantor to work
 import gradio as gr
-from PIL import Image
 from dequantor import (
     FluxKontextPipeline,
     QwenImageEditPlusPipeline,
