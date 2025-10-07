@@ -109,15 +109,10 @@ def launch_20b_sketch_app(model_path,dtype):
         pipe._exclude_from_cpu_offload.append("transformer")
         pipe.enable_sequential_cpu_offload()
     def generate_image(prompt, img1, img2, img3, steps, guidance):
-        if 'composite' in img1 and img1['composite'] is not None:
-            drawn_image = img1['composite']
-            img1 = drawn_image.convert("P")
         images = []
         for img in [img1, img2, img3]:
             if img is not None:
-                if not isinstance(img, Image.Image):
-                    img = Image.open(img)
-                images.append(img.convert("RGB"))
+                images.append(repack_image(img))
         if not images:
             return None
         inputs = {
@@ -145,8 +140,8 @@ def launch_20b_sketch_app(model_path,dtype):
                     img1 = gr.ImageEditor(
                         type="pil",
                         label="Draw here!",
-                        image_mode="P", # color mode
-                        brush=gr.Brush(colors=["#000000", "#FFFFFF"]), # black and white brush
+                        image_mode="P",
+                        brush=gr.Brush(colors=["#000000", "#FFFFFF"]),
                     )
                     img2 = gr.Image(label="Image 2", type="pil", visible=False)
                     img3 = gr.Image(label="Image 3", type="pil", visible=False)
@@ -155,6 +150,92 @@ def launch_20b_sketch_app(model_path,dtype):
                 quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
                 generate_btn = gr.Button("Transform Sketch")
                 steps = gr.Slider(1, 50, value=4, step=1, label="Inference Steps", visible=False)
+                guidance = gr.Slider(0.1, 10.0, value=1.0, step=0.1, label="Guidance Scale", visible=False)
+            with gr.Column():
+                output_image = gr.Image(label="Output", type="pil")
+        generate_btn.click(
+            fn=generate_image,
+            inputs=[prompt, img1, img2, img3, steps, guidance],
+            outputs=output_image,
+        )
+    block.launch()
+
+def launch_20b_sketch_dual_app(model_path,dtype):
+    transformer = NunchakuQwenImageTransformer2DModel.from_pretrained(
+        model_path
+    )
+    text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        "callgg/qi-decoder",
+        subfolder="text_encoder",
+        # torch_dtype=torch.bfloat16
+        dtype=dtype
+    )
+    vae = AutoencoderKLQwenImage.from_pretrained(
+        "callgg/qi-decoder",
+        subfolder="vae",
+        torch_dtype=dtype
+    )
+    pipe = QwenImageEditPlusPipeline.from_pretrained(
+        "callgg/image-edit-plus",
+        transformer=transformer,
+        text_encoder=text_encoder,
+        vae=vae,
+        torch_dtype=dtype
+    )
+    if get_gpu_vram() > 18:
+        pipe.enable_model_cpu_offload()
+    else:
+        transformer.set_offload(
+            True, use_pin_memory=False, num_blocks_on_gpu=1
+        )
+        pipe._exclude_from_cpu_offload.append("transformer")
+        pipe.enable_sequential_cpu_offload()
+    def generate_image(prompt, img1, img2, img3, steps, guidance):
+        images = []
+        for img in [img1, img2, img3]:
+            if img is not None:
+                images.append(repack_image(img))
+        if not images:
+            return None
+        inputs = {
+            "image": images,
+            "prompt": prompt,
+            "true_cfg_scale": guidance,
+            "negative_prompt": " ",
+            "num_inference_steps": steps,
+            "num_images_per_prompt": 1,
+        }
+        with torch.inference_mode():
+            output = pipe(**inputs)
+            return output.images[0]
+    sample_prompts = ['turn the hand drawing into realistic object',
+                    'color the black and white hand drawing']
+    sample_prompts = [[x] for x in sample_prompts]
+    block = gr.Blocks(title="gguf").queue()
+    with block:
+        gr.Markdown("## 🖼️ Sketch (dual mode) 🐷")
+        with gr.Row():
+            with gr.Column():
+                with gr.Row():
+                    img1 = gr.ImageEditor(
+                        type="pil",
+                        label="Draw here!",
+                        # image_mode="L", # grayscale mode
+                        image_mode="P", # color mode
+                        brush=gr.Brush(colors=["#000000", "#FFFFFF"]),
+                    )
+                    img2 = gr.ImageEditor(
+                        type="pil",
+                        label="Draw here!",
+                        image_mode="P",
+                        brush=gr.Brush(colors=["#000000", "#FFFFFF"]),
+                    )
+                    img3 = gr.Image(label="Image 3", type="pil", visible=False)
+                prompt = gr.Textbox(label="Prompt", placeholder="Enter your prompt here (or click Sample Prompt)", value="")
+                quick_prompts = gr.Dataset(samples=sample_prompts, label='Sample Prompt', samples_per_page=1000, components=[prompt])
+                quick_prompts.click(lambda x: x[0], inputs=[quick_prompts], outputs=prompt, show_progress=False, queue=False)
+                generate_btn = gr.Button("Generate Image")
+                steps = gr.Slider(1, 50, value=4, step=1, label="Inference Steps")
                 guidance = gr.Slider(0.1, 10.0, value=1.0, step=0.1, label="Guidance Scale", visible=False)
             with gr.Column():
                 output_image = gr.Image(label="Output", type="pil")
@@ -186,7 +267,7 @@ if safetensors_files:
         if device == "cuda":
             print(f"running with: {torch.cuda.get_device_name(torch.cuda.current_device())}")
         prec = get_affordable_precision()
-        print(f"affordable precision: {prec} (note: opt a wrong precision file will return error)")
+        print(f"machine precision: {prec} (note: opt a wrong precision file will return error)")
         if prec == "fp4":
             ask=input("Use 12b model instead (Y/n)? ")
             if ask.lower() == 'y':
@@ -194,7 +275,11 @@ if safetensors_files:
             else:
                 launch_20b_sketch_app(input_path,dtype)
         else:
-            launch_20b_sketch_app(input_path,dtype)
+            ask=input("Opt dual mode (Y/n)? ")
+            if ask.lower() == 'y':
+                launch_20b_sketch_dual_app(input_path,dtype)
+            else:
+                launch_20b_sketch_app(input_path,dtype)
     except (ValueError, IndexError) as e:
         print(f"Invalid choice. Please enter a valid number. ({e})")
 else:
