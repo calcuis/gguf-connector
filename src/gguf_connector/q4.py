@@ -430,7 +430,6 @@ def launch_image_edit_lite2_app(model_path,dtype):
         torch_dtype=dtype
     )
     pipe.enable_model_cpu_offload()
-    # pipe.load_lora_weights("callgg/image-lite-lora", weight_name="lite.safetensors", adapter_name="lora")
     def generate_image(prompt, img1, img2, img3, steps, guidance):
         images = []
         for img in [img1, img2, img3]:
@@ -446,8 +445,6 @@ def launch_image_edit_lite2_app(model_path,dtype):
             "true_cfg_scale": guidance,
             "negative_prompt": " ",
             "num_inference_steps": steps,
-            # "true_cfg_scale": 1.0,
-            # "guidance_scale": guidance,
             "num_images_per_prompt": 1,
         }
         with torch.inference_mode():
@@ -524,8 +521,6 @@ def launch_image_edit_lite3_app(model_path,dtype):
             "true_cfg_scale": guidance,
             "negative_prompt": " ",
             "num_inference_steps": steps,
-            # "true_cfg_scale": 1.0,
-            # "guidance_scale": guidance,
             "num_images_per_prompt": 1,
         }
         with torch.inference_mode():
@@ -537,7 +532,7 @@ def launch_image_edit_lite3_app(model_path,dtype):
     sample_prompts = [[x] for x in sample_prompts]
     block = gr.Blocks(title="gguf").queue()
     with block:
-        gr.Markdown("## 🖼️ Image Edit Lite3 - Multi Image Composer 🐷")
+        gr.Markdown("## 🖼️ Image Edit Lite 3 - Multi Image Composer 🐷")
         with gr.Row():
             with gr.Column():
                 with gr.Row():
