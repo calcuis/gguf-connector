@@ -147,7 +147,7 @@ def launch_app(model_path1,model_path,dtype):
             output = pipe(**inputs)
             return output.images[0]
     sample_prompts = ['merge it',
-                    'color it',
+                    'remove background',
                     'use image 1 as background of image 2']
     sample_prompts = [[x] for x in sample_prompts]
     # image discrimination model
@@ -238,7 +238,7 @@ if gguf_files:
     try:
         choice_index=int(choice2)-1
         selected_model_file=gguf_files[choice_index]
-        print(f"Model file: {selected_model_file} is selected!")
+        print(f"Model file: {selected_model_file} is selectedas image recognizor!")
         selected_file_path=selected_model_file
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
@@ -270,7 +270,7 @@ if gguf_files2:
     try:
         choice_index = int(choice) - 1
         selected_file = gguf_files2[choice_index]
-        print(f'Model file: {selected_file} is selected as s3 image generator - {selected}!')
+        print(f'Model file: {selected_file} is selected as image generator!')
         input_path1 = selected_file
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
@@ -294,7 +294,7 @@ if safetensors_files:
     try:
         choice_index = int(choice) - 1
         selected_file = safetensors_files[choice_index]
-        print(f'Model file: {selected_file} is selected!')
+        print(f'Model file: {selected_file} is selected as image transformer!')
         input_path = selected_file
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
