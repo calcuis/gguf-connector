@@ -238,7 +238,7 @@ if gguf_files:
     try:
         choice_index=int(choice2)-1
         selected_model_file=gguf_files[choice_index]
-        print(f"Model file: {selected_model_file} is selectedas image recognizor!")
+        print(f"Model file: {selected_model_file} is selected as image recognizor!")
         selected_file_path=selected_model_file
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
