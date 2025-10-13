@@ -173,7 +173,7 @@ def launch_app(model_path1,model_path,dtype):
         )
         return result_text
     # UI
-    block = gr.Blocks(title="image studio").queue()
+    block = gr.Blocks(title="studio").queue()
     with block:
         gr.Markdown("## Discriminator")
         with gr.Row():
