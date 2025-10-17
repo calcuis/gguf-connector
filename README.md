@@ -434,7 +434,7 @@ Studio connector:
 ggc w9
 ```
 Opt a recognizor, a generator, and a transformer to interact with (see example [here](https://huggingface.co/calcuis/studio))
-#### api (backend)
+#### api (self-hosted backend)
 Fast sd3.5 connector:
 ```
 ggc w8
