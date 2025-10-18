@@ -57,8 +57,8 @@ if gguf_files:
         @app.post("/generate")
         def generate_image(
             prompt: str = Form(...),
-            num_steps: int = Form(8),
-            guidance: float = Form(2.5)
+            num_steps: int = Form(),
+            guidance: float = Form()
         ):
             image = pipe(
                 prompt,
