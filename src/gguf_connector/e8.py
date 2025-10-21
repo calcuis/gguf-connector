@@ -1,10 +1,10 @@
 
 filename = "backend.py"
 content = """
-import torch
+import torch, base64
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse
 from io import BytesIO
 from PIL import Image
 from transformers import T5EncoderModel
@@ -50,7 +50,7 @@ if gguf_files:
         app = FastAPI()
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"], 
+            allow_origins=["*"],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
@@ -69,10 +69,15 @@ if gguf_files:
                 num_inference_steps=num_steps,
                 true_cfg_scale=guidance_scale
             ).images[0]
-            buf = BytesIO()
-            result.save(buf, format="PNG")
-            buf.seek(0)
-            return StreamingResponse(buf, media_type="image/png")
+            buffer = BytesIO()
+            result.save(buffer, format="PNG")
+            buffer.seek(0)
+            base64_img = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            return JSONResponse(content={
+                "image": base64_img,
+                "format": "png",
+                "message": "success"
+            })
     except (ValueError, IndexError) as e:
         print(f"Invalid choice. Please enter a valid number. ({e})")
 else:
