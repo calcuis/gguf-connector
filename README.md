@@ -453,6 +453,10 @@ Fast edit connector:
 ```
 ggc e8
 ```
+Fast plus connector:
+```
+ggc e9
+```
 Frontend [gguf.org](https://gguf.org) or localhost (open a new console/terminal: `ggc a`)
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
