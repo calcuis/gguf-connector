@@ -72,7 +72,7 @@ if gguf_files:
         def describe_image(img: Image.Image, prompt, num_tokens) -> str:
             if img is None:
                 return "Please upload an image."
-            messages = [{"role": "user", "content": f"<image>\n{prompt}."}]
+            messages = [{"role": "user", "content": f"<image>{prompt}."}]
             rendered = tok.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
             pre, post = rendered.split("<image>", 1)
             pre_ids = tok(pre, return_tensors="pt", add_special_tokens=False).input_ids
