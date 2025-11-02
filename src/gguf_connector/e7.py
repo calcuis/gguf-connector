@@ -1,5 +1,5 @@
 
-filename = "backend.py"
+filename = "backend7.py"
 content = """
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -101,4 +101,4 @@ with open(filename, "w") as f:
     f.write(content)
 
 import os
-os.system("uvicorn backend:app --reload --port 8000")
+os.system("uvicorn backend7:app --reload --port 8007")
