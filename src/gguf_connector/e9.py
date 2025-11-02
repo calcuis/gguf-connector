@@ -1,5 +1,5 @@
 
-filename = "backend.py"
+filename = "backend9.py"
 content = """
 import torch, base64
 from fastapi import FastAPI, File, Form, UploadFile
@@ -107,4 +107,4 @@ with open(filename, "w") as f:
     f.write(content)
 
 import os
-os.system("uvicorn backend:app --reload --port 8000")
+os.system("uvicorn backend9:app --reload --port 8009")
