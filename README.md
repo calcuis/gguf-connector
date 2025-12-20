@@ -490,7 +490,7 @@ Computer use agent (optional: need gguf-cua to work; pip install gguf-cua):
 ```
 ggc cu
 ```
-Opt to get backend model file [here](https://huggingface.co/gguf-org/fara-7b-gguf)
+Opt to get backend model file(s) [here](https://huggingface.co/gguf-org/fara-7b-gguf)
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
