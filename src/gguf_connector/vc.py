@@ -1,5 +1,5 @@
 
-filename = "agents.config.json"
+filename = "coder.config.json"
 content = """
 {
   "coder": {
