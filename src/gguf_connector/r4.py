@@ -7,7 +7,7 @@ def list_safetensors_files():
     if not files:
         print("No .safetensors files found in the current directory.")
         return None
-    print("Select a .safetensors file to split:")
+    print("Select a .safetensors file to read metadata:")
     for idx, file in enumerate(files, 1):
         print(f"{idx}: {file}")
     while True:
