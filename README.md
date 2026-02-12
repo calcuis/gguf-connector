@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.2.9-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.3.0-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-0.1.3-blue?logo=gitforwindows)](https://github.com/calcuis/chatgpt-model-selector/releases)
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
@@ -500,6 +500,11 @@ Get the model file(s) [here](https://huggingface.co/gguf-org/fara-7b-gguf) for b
 Vibe code agent (optional: need coder to work; npm install -g @gguf/coder):
 ```
 ggc vc
+```
+#### openclaw 🦞️
+OpenClaw (optional: need openclaw to work; npm install -g openclaw):
+```
+ggc oc
 ```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
