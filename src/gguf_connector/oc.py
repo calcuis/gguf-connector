@@ -2,7 +2,6 @@
 import platform
 import subprocess
 import shutil
-import sys
 
 def windows_open_terminal():
     command = "openclaw tui"
@@ -16,27 +15,36 @@ def windows_open_terminal():
             "-d", "Ubuntu",
             "--",
             "bash",
-            "-ic", command
+            "-ic",
+            command
         ])
-        return
+    else:
+        subprocess.Popen(
+            f'wsl -d Ubuntu -- bash -ic "{command}"',
+            shell=True
+        )
 
-    # Fallback: cmd start
-    subprocess.Popen(
-        f'start "" wsl -d Ubuntu -- bash -ic "{command}"',
-        shell=True
-    )
+def macos_open_terminal():
+    # AppleScript → open new interactive Terminal window
+    cmd = 'openclaw tui'
+
+    script = f'''
+    tell application "Terminal"
+        do script "{cmd}"
+        activate
+    end tell
+    '''
+
+    subprocess.Popen(["osascript", "-e", script])
 
 def openclaw_tui():
     system = platform.system().lower()
 
     if system == "windows":
         windows_open_terminal()
-
-    elif system in ("linux", "darwin"):
+    elif system == "darwin":
+        macos_open_terminal()
+    else:  # linux
         subprocess.Popen(["bash", "-ic", "openclaw tui"])
-
-    else:
-        print("Unsupported OS")
-        sys.exit(1)
 
 openclaw_tui()
