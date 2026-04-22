@@ -29,7 +29,7 @@ ggc
 ```
 
 ### script installation - method 3
-Now, you could opt other alternative/script method(s) to install connector:
+Now, you could opt other alternative/script method(s) to install connector as well:
 ### for macOS, Linux, Git Bash, Ubuntu (WSL):
 ```
 curl -fsSL https://ggc.gguf.org/install.sh | bash
