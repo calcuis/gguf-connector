@@ -8,7 +8,7 @@ GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model 
 
 This package is a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
 
-### Ecosystem package manager (preferred)
+### Ecosystem package manager (preferred) - method 1
 Install the connector via pip (once only):
 ```
 pip install gguf-connector
@@ -18,7 +18,7 @@ Update the connector (if previous version installed) by:
 pip install gguf-connector --upgrade
 ```
 
-### npm wrapper (alternative)
+### npm wrapper (alternative) - method 2
 Install the wrapper with npm:
 ```
 npm install -g gguf-connector
@@ -28,6 +28,7 @@ Install/update connector:
 ggc
 ```
 
+### script installation -  - method 3
 Now, you could opt other alternative/script method(s) to install connector:
 ### for macOS, Linux, Git Bash, Ubuntu (WSL):
 ```
@@ -38,6 +39,7 @@ curl -fsSL https://ggc.gguf.org/install.sh | bash
 irm https://ggc.gguf.org/install.ps1 | iex
 ```
 
+---
 ### Features (partly)
 With this version, you can interact straight with the GGUF file(s) available in the same directory by a simple command.
 ### Graphical User Interface (GUI)
