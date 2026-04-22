@@ -28,7 +28,7 @@ Install/update connector:
 ggc
 ```
 
-### script installation -  - method 3
+### script installation - method 3
 Now, you could opt other alternative/script method(s) to install connector:
 ### for macOS, Linux, Git Bash, Ubuntu (WSL):
 ```
