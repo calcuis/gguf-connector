@@ -551,7 +551,7 @@ Gold agent (optional: need gold to work; see [here](https://github.com/mochiyaki
 ggc go
 ```
 #### durian 𖤓𖦹
-✷Durian (optional: need durian to work; npm install -g @gguf/durian):
+✷Durian (optional: need durian to work; `npm install -g @gguf/durian` then `gguf-durian`):
 ```
 ggc du
 ```
