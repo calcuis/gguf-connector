@@ -12,7 +12,7 @@ def get_arch_str(reader):
 
 def get_file_type(reader):
     field = reader.get_field("general.file_type")
-    ft = int(field.parts[field.data[-1]])
+    ft = int(field.parts[field.data[-1]].item())
     return LlamaFileType(ft)
 
 def remove_tensors(input_path, tensor_names_to_remove, output_path):
