@@ -1861,6 +1861,8 @@ class GGMLQuantizationType(IntEnum):
     TQ1_0   = 34
     TQ2_0   = 35
     MXFP4   = 39
+    NVFP4   = 40
+    Q1_0    = 41
 
 class ExpertGatingFuncType(IntEnum):
     SOFTMAX  = 1
@@ -1910,7 +1912,9 @@ class LlamaFileType(IntEnum):
     MOSTLY_TQ1_0         = 36  # except 1d tensors
     MOSTLY_TQ2_0         = 37  # except 1d tensors
     MOSTLY_MXFP4_MOE     = 38  # not confirmed yet
-    # MOSTLY_MXFP4         = 39  # not confirmed yet (replaced by 38)
+    # MOSTLY_MXFP4         = 39  # not confirmed (replaced by 38)
+    MOSTLY_NVFP4         = 39  # except 1d tensors
+    MOSTLY_Q1_0          = 40  # except 1d tensors
 
     GUESSED              = 1024  # not specified in the model file
 
@@ -1984,6 +1988,8 @@ GGML_QUANT_SIZES: dict[GGMLQuantizationType, tuple[int, int]] = {
     GGMLQuantizationType.TQ1_0:   (256, 2 + 4 * 13),
     GGMLQuantizationType.TQ2_0:   (256, 2 + 64),
     GGMLQuantizationType.MXFP4:   (32, 1 + 16),
+    GGMLQuantizationType.NVFP4:   (64, 4 + 32),
+    GGMLQuantizationType.Q1_0:    (128, 2 + 16),
 }
 
 # Aliases for backward compatibility.
@@ -2040,6 +2046,7 @@ KEY_TOKENIZER_EOM_ID     = Keys.Tokenizer.EOM_ID
 KEY_TOKENIZER_UNK_ID     = Keys.Tokenizer.UNK_ID
 KEY_TOKENIZER_SEP_ID     = Keys.Tokenizer.SEP_ID
 KEY_TOKENIZER_PAD_ID     = Keys.Tokenizer.PAD_ID
+# KEY_TOKENIZER_CLS_ID     = Keys.Tokenizer.CLS_ID # recently removed
 KEY_TOKENIZER_MASK_ID    = Keys.Tokenizer.MASK_ID
 KEY_TOKENIZER_HF_JSON    = Keys.Tokenizer.HF_JSON
 KEY_TOKENIZER_RWKV       = Keys.Tokenizer.RWKV
