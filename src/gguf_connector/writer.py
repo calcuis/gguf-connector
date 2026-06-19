@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging, os, shutil, struct, tempfile
+import logging, os, sys, shutil, struct, tempfile
 from dataclasses import dataclass
 from enum import Enum, auto
 from math import prod
@@ -41,6 +41,7 @@ class TensorInfo:
 class GGUFValue:
     value: Any
     type: GGUFValueType
+    sub_type: GGUFValueType | None = None
 
 class WriterState(Enum):
     NO_FILE = auto()
@@ -127,9 +128,13 @@ class GGUFWriter:
                 size = prod(shape)
 
                 if "_exps." in name:
-                    expert_params += (size // shape[-3])
-                    expert_sum += shape[-3]
-                    n_expert_tensors += 1
+                    if len(shape) >= 3:
+                        expert_count = shape[-2 if ".bias" in name else -3]
+                        expert_params += (size // expert_count)
+                        expert_sum += expert_count
+                        n_expert_tensors += 1
+                    else:
+                        shared_params += size
                 else:
                     shared_params += size
 
@@ -228,7 +233,7 @@ class GGUFWriter:
 
             for key, val in kv_data.items():
                 kv_bytes += self._pack_val(key, GGUFValueType.STRING, add_vtype=False)
-                kv_bytes += self._pack_val(val.value, val.type, add_vtype=True)
+                kv_bytes += self._pack_val(val.value, val.type, add_vtype=True, sub_type=val.sub_type)
 
             fout.write(kv_bytes)
 
@@ -258,11 +263,11 @@ class GGUFWriter:
             fout.flush()
         self.state = WriterState.TI_DATA
 
-    def add_key_value(self, key: str, val: Any, vtype: GGUFValueType) -> None:
+    def add_key_value(self, key: str, val: Any, vtype: GGUFValueType, sub_type: GGUFValueType | None = None) -> None:
         if any(key in kv_data for kv_data in self.kv_data):
-            raise ValueError(f'Duplicated key name {key!r}')
+            logger.warning(f'Duplicated key name {key!r}, overwriting it with new value {val!r} of type {vtype.name}')
 
-        self.kv_data[0][key] = GGUFValue(value=val, type=vtype)
+        self.kv_data[0][key] = GGUFValue(value=val, type=vtype, sub_type=sub_type)
 
     def add_uint8(self, key: str, val: int) -> None:
         self.add_key_value(key,val, GGUFValueType.UINT8)
@@ -358,10 +363,15 @@ class GGUFWriter:
 
     def add_tensor(
         self, name: str, tensor: np.ndarray[Any, Any], raw_shape: Sequence[int] | None = None,
-        raw_dtype: GGMLQuantizationType | None = None,
+        raw_dtype: GGMLQuantizationType | None = None, tensor_endianess: GGUFEndian | None = None
     ) -> None:
-        if self.endianess == GGUFEndian.BIG:
-            tensor.byteswap(inplace=True)
+        # if tensor endianness is not passed, assume it's native to system
+        if tensor_endianess is None:
+            tensor_endianess = GGUFEndian.BIG if sys.byteorder == 'big' else GGUFEndian.LITTLE
+
+        if tensor_endianess != self.endianess:
+            # Don't byteswap inplace since lazy copies cannot handle it
+            tensor = tensor.byteswap(inplace=False)
         if self.use_temp_file and self.temp_file is None:
             fp = tempfile.SpooledTemporaryFile(mode="w+b", max_size=256 * 1024 * 1024)
             fp.seek(0)
@@ -382,13 +392,18 @@ class GGUFWriter:
         if pad != 0:
             fp.write(bytes([0] * pad))
 
-    def write_tensor_data(self, tensor: np.ndarray[Any, Any]) -> None:
+    def write_tensor_data(self, tensor: np.ndarray[Any, Any], tensor_endianess: GGUFEndian | None = None) -> None:
         if self.state is not WriterState.TI_DATA and self.state is not WriterState.WEIGHTS:
             raise ValueError(f'Expected output file to contain tensor info or weights, got {self.state}')
         assert self.fout is not None
 
-        if self.endianess == GGUFEndian.BIG:
-            tensor.byteswap(inplace=True)
+        # if tensor endianness is not passed, assume it's native to system
+        if tensor_endianess is None:
+            tensor_endianess = GGUFEndian.BIG if sys.byteorder == 'big' else GGUFEndian.LITTLE
+
+        if tensor_endianess != self.endianess:
+            # Don't byteswap inplace since lazy copies cannot handle it
+            tensor = tensor.byteswap(inplace=False)
 
         file_id = -1
         for i, tensors in enumerate(self.tensors):
@@ -399,8 +414,7 @@ class GGUFWriter:
         fout = self.fout[file_id]
 
         # pop the first tensor info
-        # TODO: cleaner way to get the first key
-        first_tensor_name = [name for name, _ in zip(self.tensors[file_id].keys(), range(1))][0]
+        first_tensor_name = next(iter(self.tensors[file_id]))
         ti = self.tensors[file_id].pop(first_tensor_name)
         assert ti.nbytes == tensor.nbytes
 
@@ -478,11 +492,49 @@ class GGUFWriter:
         self.add_uint32(Keys.General.QUANTIZATION_VERSION, quantization_version)
 
     def add_custom_alignment(self, alignment: int) -> None:
+        if alignment <= 0 or (alignment & (alignment - 1)) != 0:
+            raise ValueError('Invalid alignment: must be a non-zero power of two')
         self.data_alignment = alignment
         self.add_uint32(Keys.General.ALIGNMENT, alignment)
 
     def add_file_type(self, ftype: int) -> None:
         self.add_uint32(Keys.General.FILE_TYPE, ftype)
+
+    def add_sampling_sequence(self, sequence: str) -> None:
+        self.add_string(Keys.General.SAMPLING_SEQUENCE, sequence)
+
+    def add_sampling_top_k(self, top_k: int) -> None:
+        self.add_int32(Keys.General.SAMPLING_TOP_K, top_k)
+
+    def add_sampling_top_p(self, top_p: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_TOP_P, top_p)
+
+    def add_sampling_min_p(self, min_p: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_MIN_P, min_p)
+
+    def add_sampling_xtc_probability(self, xtc_probability: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_XTC_PROBABILITY, xtc_probability)
+
+    def add_sampling_xtc_threshold(self, xtc_threshold: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_XTC_THRESHOLD, xtc_threshold)
+
+    def add_sampling_temp(self, temp: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_TEMP, temp)
+
+    def add_sampling_penalty_last_n(self, penalty_last_n: int) -> None:
+        self.add_int32(Keys.General.SAMPLING_PENALTY_LAST_N, penalty_last_n)
+
+    def add_sampling_penalty_repeat(self, penalty_repeat: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_PENALTY_REPEAT, penalty_repeat)
+
+    def add_sampling_mirostat(self, mirostat: int) -> None:
+        self.add_int32(Keys.General.SAMPLING_MIROSTAT, mirostat)
+
+    def add_sampling_mirostat_tau(self, mirostat_tau: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_MIROSTAT_TAU, mirostat_tau)
+
+    def add_sampling_mirostat_eta(self, mirostat_eta: float) -> None:
+        self.add_float32(Keys.General.SAMPLING_MIROSTAT_ETA, mirostat_eta)
 
     def add_name(self, name: str) -> None:
         self.add_string(Keys.General.NAME, name)
@@ -622,6 +674,9 @@ class GGUFWriter:
     def add_embedding_length(self, length: int) -> None:
         self.add_uint32(Keys.LLM.EMBEDDING_LENGTH.format(arch=self.arch), length)
 
+    def add_embedding_length_out(self, length: int) -> None:
+        self.add_uint32(Keys.LLM.EMBEDDING_LENGTH_OUT.format(arch=self.arch), length)
+
     def add_features_length(self, length: int) -> None:
         self.add_uint32(Keys.LLM.FEATURES_LENGTH.format(arch=self.arch), length)
 
@@ -637,11 +692,17 @@ class GGUFWriter:
     def add_convnext_block_count(self, length: int) -> None:
         self.add_uint32(Keys.ConvNext.BLOCK_COUNT.format(arch=self.arch), length)
 
+    def add_shortconv_l_cache(self, length: int) -> None:
+        self.add_uint32(Keys.ShortConv.L_CACHE.format(arch=self.arch), length)
+
     def add_block_count(self, length: int) -> None:
         self.add_uint32(Keys.LLM.BLOCK_COUNT.format(arch=self.arch), length)
 
     def add_leading_dense_block_count(self, length: int) -> None:
         self.add_uint32(Keys.LLM.LEADING_DENSE_BLOCK_COUNT.format(arch=self.arch), length)
+
+    def add_full_attention_interval(self, interval: int) -> None:
+        self.add_uint32(Keys.LLM.FULL_ATTENTION_INTERVAL.format(arch=self.arch), interval)
 
     def add_feed_forward_length(self, length: int | Sequence[int]) -> None:
         if isinstance(length, int):
@@ -655,11 +716,29 @@ class GGUFWriter:
     def add_expert_shared_feed_forward_length(self, length: int) -> None:
         self.add_uint32(Keys.LLM.EXPERT_SHARED_FEED_FORWARD_LENGTH.format(arch=self.arch), length)
 
+    def add_expert_chunk_feed_forward_length(self, length: int) -> None:
+        self.add_uint32(Keys.LLM.EXPERT_CHUNK_FEED_FORWARD_LENGTH.format(arch=self.arch), length)
+
     def add_parallel_residual(self, use: bool) -> None:
         self.add_bool(Keys.LLM.USE_PARALLEL_RESIDUAL.format(arch=self.arch), use)
 
     def add_decoder_start_token_id(self, id: int) -> None:
         self.add_uint32(Keys.LLM.DECODER_START_TOKEN_ID.format(arch=self.arch), id)
+
+    def add_decoder_block_count(self, value: int) -> None:
+        self.add_uint32(Keys.LLM.DECODER_BLOCK_COUNT.format(arch=self.arch), value)
+
+    def add_embedding_length_per_layer_input(self, value: int) -> None:
+        self.add_uint32(Keys.LLM.EMBD_LENGTH_PER_LAYER_INP.format(arch=self.arch), value)
+
+    def add_altup_active_idx(self, val: int) -> None:
+        self.add_uint32(Keys.LLM.ALTUP_ACTIVE_IDX.format(arch=self.arch), val)
+
+    def add_altup_num_inputs(self, val: int) -> None:
+        self.add_uint32(Keys.LLM.ALTUP_NUM_INPUTS.format(arch=self.arch), val)
+
+    def add_activation_sparsity_scale(self, values: Sequence[float]) -> None:
+        self.add_array(Keys.LLM.ACTIVATION_SPARSITY_SCALE.format(arch=self.arch), values)
 
     def add_head_count(self, count: int | Sequence[int]) -> None:
         if isinstance(count, int):
@@ -685,17 +764,50 @@ class GGUFWriter:
     def add_value_length_mla(self, length: int) -> None:
         self.add_uint32(Keys.Attention.VALUE_LENGTH_MLA.format(arch=self.arch), length)
 
+    def add_key_length_swa(self, length: int) -> None:
+        self.add_uint32(Keys.Attention.KEY_LENGTH_SWA.format(arch=self.arch), length)
+
+    def add_value_length_swa(self, length: int) -> None:
+        self.add_uint32(Keys.Attention.VALUE_LENGTH_SWA.format(arch=self.arch), length)
+
+    def add_indexer_head_count(self, count: int) -> None:
+        self.add_uint32(Keys.Attention.Indexer.HEAD_COUNT.format(arch=self.arch), count)
+
+    def add_indexer_key_length(self, length: int) -> None:
+        self.add_uint32(Keys.Attention.Indexer.KEY_LENGTH.format(arch=self.arch), length)
+
+    def add_indexer_top_k(self, top_k: int) -> None:
+        self.add_uint32(Keys.Attention.Indexer.TOP_K.format(arch=self.arch), top_k)
+
     def add_max_alibi_bias(self, bias: float) -> None:
         self.add_float32(Keys.Attention.MAX_ALIBI_BIAS.format(arch=self.arch), bias)
 
     def add_clamp_kqv(self, value: float) -> None:
         self.add_float32(Keys.Attention.CLAMP_KQV.format(arch=self.arch), value)
 
+    def add_shared_kv_layers(self, value: int) -> None:
+        self.add_uint32(Keys.Attention.SHARED_KV_LAYERS.format(arch=self.arch), value)
+
+    # if input is array, true means SWA and false means full_attention for each layer
+    def add_sliding_window_pattern(self, value: int | Sequence[bool]) -> None:
+        key = Keys.Attention.SLIDING_WINDOW_PATTERN.format(arch=self.arch)
+        if isinstance(value, int):
+            self.add_uint32(key, value)
+        else:
+            self.add_array(key, value)
+
+    def add_dense_features_dims(self, dense:str, in_f:int, out_f:int) -> None:
+        self.add_uint32(Keys.LLM.DENSE_FEAT_IN_SIZE.format(arch=self.arch, dense=dense), in_f)
+        self.add_uint32(Keys.LLM.DENSE_FEAT_OUT_SIZE.format(arch=self.arch, dense=dense), out_f)
+
     def add_logit_scale(self, value: float) -> None:
         self.add_float32(Keys.LLM.LOGIT_SCALE.format(arch=self.arch), value)
 
     def add_attn_logit_softcapping(self, value: float) -> None:
         self.add_float32(Keys.LLM.ATTN_LOGIT_SOFTCAPPING.format(arch=self.arch), value)
+
+    def add_router_logit_softcapping(self, value: float) -> None:
+        self.add_float32(Keys.LLM.ROUTER_LOGIT_SOFTCAPPING.format(arch=self.arch), value)
 
     def add_final_logit_softcapping(self, value: float) -> None:
         self.add_float32(Keys.LLM.FINAL_LOGIT_SOFTCAPPING.format(arch=self.arch), value)
@@ -709,6 +821,12 @@ class GGUFWriter:
     def add_expert_shared_count(self, count: int) -> None:
         self.add_uint32(Keys.LLM.EXPERT_SHARED_COUNT.format(arch=self.arch), count)
 
+    def add_expert_group_count(self, count: int) -> None:
+        self.add_uint32(Keys.LLM.EXPERT_GROUP_COUNT.format(arch=self.arch), count)
+
+    def add_expert_group_used_count(self, count: int) -> None:
+        self.add_uint32(Keys.LLM.EXPERT_GROUP_USED_COUNT.format(arch=self.arch), count)
+
     def add_expert_weights_scale(self, value: float) -> None:
         self.add_float32(Keys.LLM.EXPERT_WEIGHTS_SCALE.format(arch=self.arch), value)
 
@@ -717,6 +835,30 @@ class GGUFWriter:
 
     def add_expert_gating_func(self, value: ExpertGatingFuncType) -> None:
         self.add_uint32(Keys.LLM.EXPERT_GATING_FUNC.format(arch=self.arch), value.value)
+
+    def add_swiglu_clamp_exp(self, values: Sequence[float]) -> None:
+        self.add_array(Keys.LLM.SWIGLU_CLAMP_EXP.format(arch=self.arch), values)
+
+    def add_swiglu_clamp_shexp(self, values: Sequence[float]) -> None:
+        self.add_array(Keys.LLM.SWIGLU_CLAMP_SHEXP.format(arch=self.arch), values)
+
+    def add_hidden_act(self, value: str) -> None:
+        self.add_string(Keys.LLM.HIDDEN_ACT.format(arch=self.arch), value)
+
+    def add_expert_group_scale(self, value: float) -> None:
+        self.add_float32(Keys.LLM.EXPERT_GROUP_SCALE.format(arch=self.arch), value)
+
+    def add_experts_per_group(self, count: int) -> None:
+        self.add_uint32(Keys.LLM.EXPERTS_PER_GROUP.format(arch=self.arch), count)
+
+    def add_moe_every_n_layers(self, value: int) -> None:
+        self.add_uint32(Keys.LLM.MOE_EVERY_N_LAYERS.format(arch=self.arch), value)
+
+    def add_moe_latent_size(self, value: int) -> None:
+        self.add_uint32(Keys.LLM.MOE_LATENT_SIZE.format(arch=self.arch), value)
+
+    def add_nextn_predict_layers(self, count: int) -> None:
+        self.add_uint32(Keys.LLM.NEXTN_PREDICT_LAYERS.format(arch=self.arch), count)
 
     def add_swin_norm(self, value: bool) -> None:
         self.add_bool(Keys.LLM.SWIN_NORM.format(arch=self.arch), value)
@@ -775,6 +917,9 @@ class GGUFWriter:
     def add_value_residual_mix_lora_rank(self, length: int) -> None:
         self.add_uint32(Keys.Attention.VALUE_RESIDUAL_MIX_LORA_RANK.format(arch=self.arch), length)
 
+    def add_rope_freq_base_swa(self, value: float) -> None:
+        self.add_float32(Keys.Rope.FREQ_BASE_SWA.format(arch=self.arch), value)
+
     def add_gate_lora_rank(self, length: int) -> None:
         self.add_uint32(Keys.Attention.GATE_LORA_RANK.format(arch=self.arch), length)
 
@@ -787,11 +932,34 @@ class GGUFWriter:
     def add_attention_scale(self, value: float) -> None:
         self.add_float32(Keys.Attention.SCALE.format(arch=self.arch), value)
 
+    def add_attn_output_scale(self, value: float) -> None:
+        self.add_float32(Keys.Attention.OUTPUT_SCALE.format(arch=self.arch), value)
+
+    def add_attn_value_scale(self, value: float) -> None:
+        self.add_float32(Keys.Attention.VALUE_SCALE.format(arch=self.arch), value)
+
+    def add_attn_temperature_length(self, value: int) -> None:
+        self.add_uint32(Keys.Attention.TEMPERATURE_LENGTH.format(arch=self.arch), value)
+
+    def add_attn_temperature_scale(self, value: float) -> None:
+        self.add_float32(Keys.Attention.TEMPERATURE_SCALE.format(arch=self.arch), value)
+
     def add_pooling_type(self, value: PoolingType) -> None:
         self.add_uint32(Keys.LLM.POOLING_TYPE.format(arch=self.arch), value.value)
 
+    def add_num_deepstack_layers(self, count: int) -> None:
+        """Add scalar deepstack layer count (qwen3vl format)"""
+        self.add_uint32(Keys.LLM.NUM_DEEPSTACK_LAYERS.format(arch=self.arch), count)
+
+    def add_deepstack_mapping(self, layers: Sequence[int]) -> None:
+        """Add per-layer deepstack projector indices (Granite4 Vision format)"""
+        self.add_array(Keys.LLM.DEEPSTACK_MAPPING.format(arch=self.arch), list(layers))
+
     def add_rope_dimension_count(self, count: int) -> None:
         self.add_uint32(Keys.Rope.DIMENSION_COUNT.format(arch=self.arch), count)
+
+    def add_rope_dimension_count_swa(self, count: int) -> None:
+        self.add_uint32(Keys.Rope.DIMENSION_COUNT_SWA.format(arch=self.arch), count)
 
     def add_rope_dimension_sections(self, dims: Sequence[int]) -> None:
         self.add_array(Keys.Rope.DIMENSION_SECTIONS.format(arch=self.arch), dims)
@@ -805,6 +973,9 @@ class GGUFWriter:
     def add_rope_scaling_factor(self, value: float) -> None:
         self.add_float32(Keys.Rope.SCALING_FACTOR.format(arch=self.arch), value)
 
+    def add_rope_scaling_alpha(self, value: float) -> None:
+        self.add_float32(Keys.Rope.SCALING_ALPHA.format(arch=self.arch), value)
+
     def add_rope_scaling_attn_factors(self, value: float) -> None:
         self.add_float32(Keys.Rope.SCALING_ATTN_FACTOR.format(arch=self.arch), value)
 
@@ -816,6 +987,18 @@ class GGUFWriter:
 
     def add_rope_scaling_yarn_log_mul(self, value: float) -> None:
         self.add_float32(Keys.Rope.SCALING_YARN_LOG_MUL.format(arch=self.arch), value)
+
+    def add_rope_scaling_yarn_ext_factor(self, value: float) -> None:
+        self.add_float32(Keys.Rope.SCALING_YARN_EXT_FACTOR.format(arch=self.arch), value)
+
+    def add_rope_scaling_yarn_attn_factor(self, value: float) -> None:
+        self.add_float32(Keys.Rope.SCALING_YARN_ATTN_FACTOR.format(arch=self.arch), value)
+
+    def add_rope_scaling_yarn_beta_fast(self, value: float) -> None:
+        self.add_float32(Keys.Rope.SCALING_YARN_BETA_FAST.format(arch=self.arch), value)
+
+    def add_rope_scaling_yarn_beta_slow(self, value: float) -> None:
+        self.add_float32(Keys.Rope.SCALING_YARN_BETA_SLOW.format(arch=self.arch), value)
 
     def add_ssm_conv_kernel(self, value: int) -> None:
         self.add_uint32(Keys.SSM.CONV_KERNEL.format(arch=self.arch), value)
@@ -829,8 +1012,14 @@ class GGUFWriter:
     def add_ssm_time_step_rank(self, value: int) -> None:
         self.add_uint32(Keys.SSM.TIME_STEP_RANK.format(arch=self.arch), value)
 
+    def add_ssm_group_count(self, value: int) -> None:
+        self.add_uint32(Keys.SSM.GROUP_COUNT.format(arch=self.arch), value)
+
     def add_ssm_dt_b_c_rms(self, value: bool) -> None:
         self.add_bool(Keys.SSM.DT_B_C_RMS.format(arch=self.arch), value)
+
+    def add_kda_head_dim(self, value: int) -> None:
+        self.add_uint32(Keys.KDA.HEAD_DIM.format(arch=self.arch), value)
 
     def add_tokenizer_model(self, model: str) -> None:
         self.add_string(Keys.Tokenizer.MODEL, model)
@@ -877,13 +1066,16 @@ class GGUFWriter:
     def add_add_eos_token(self, value: bool) -> None:
         self.add_bool(Keys.Tokenizer.ADD_EOS, value)
 
+    def add_add_sep_token(self, value: bool) -> None:
+        self.add_bool(Keys.Tokenizer.ADD_SEP, value)
+
     def add_add_space_prefix(self, value: bool) -> None:
         self.add_bool(Keys.Tokenizer.ADD_PREFIX, value)
 
     def add_remove_extra_whitespaces(self, value: bool) -> None:
         self.add_bool(Keys.Tokenizer.REMOVE_EXTRA_WS, value)
 
-    def add_precompiled_charsmap(self, charsmap: Sequence[bytes]) -> None:
+    def add_precompiled_charsmap(self, charsmap: bytes) -> None:
         self.add_array(Keys.Tokenizer.PRECOMPILED_CHARSMAP, charsmap)
 
     def add_chat_template(self, value: str | Sequence[Mapping[str, str]]) -> None:
@@ -915,11 +1107,223 @@ class GGUFWriter:
 
         self.add_string(Keys.Tokenizer.CHAT_TEMPLATE, value)
 
+    def add_suppress_tokens(self, tokens: Sequence[int]) -> None:
+        self.add_array(Keys.Tokenizer.SUPPRESS_TOKENS, tokens)
+
+    def add_normalizer_lowercase(self, value: bool) -> None:
+        self.add_bool(Keys.Tokenizer.NORMALIZER_LOWERCASE, value)
+
+    def add_normalizer_strip_accents(self, value: bool) -> None:
+        self.add_bool(Keys.Tokenizer.NORMALIZER_STRIP_ACCENTS, value)
+
     def add_eot_token_id(self, id: int) -> None:
         self.add_uint32(Keys.Tokenizer.EOT_ID, id)
 
     def add_eom_token_id(self, id: int) -> None:
         self.add_uint32(Keys.Tokenizer.EOM_ID, id)
+
+    def add_classifier_output_labels(self, labels: Sequence[str]) -> None:
+        self.add_array(Keys.Classifier.OUTPUT_LABELS.format(arch=self.arch), labels)
+
+    # for vision models
+
+    def add_clip_has_vision_encoder(self, value: bool) -> None:
+        self.add_bool(Keys.Clip.HAS_VISION_ENCODER, value)
+
+    def add_clip_has_audio_encoder(self, value: bool) -> None:
+        self.add_bool(Keys.Clip.HAS_AUDIO_ENCODER, value)
+
+    def add_clip_projector_type(self, value: str) -> None:
+        self.add_string(Keys.Clip.PROJECTOR_TYPE, value)
+
+    def add_clip_vision_projector_type(self, value: str) -> None:
+        self.add_string(Keys.ClipVision.PROJECTOR_TYPE, value)
+
+    def add_vision_projection_dim(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.PROJECTION_DIM, value)
+
+    def add_vision_patch_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.PATCH_SIZE, value)
+
+    def add_vision_embedding_length(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.EMBEDDING_LENGTH, value)
+
+    def add_vision_feed_forward_length(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.FEED_FORWARD_LENGTH, value)
+
+    def add_vision_block_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.BLOCK_COUNT, value)
+
+    def add_vision_head_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.Attention.HEAD_COUNT, value)
+
+    def add_vision_head_count_kv(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.Attention.HEAD_COUNT_KV, value)
+
+    def add_vision_attention_layernorm_eps(self, value: float) -> None:
+        self.add_float32(Keys.ClipVision.Attention.LAYERNORM_EPS, value)
+
+    def add_vision_image_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.IMAGE_SIZE, value)
+
+    def add_vision_max_pixels(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.IMAGE_MAX_PIXELS, value)
+
+    def add_vision_min_pixels(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.IMAGE_MIN_PIXELS, value)
+
+    def add_vision_preproc_max_tiles(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.PREPROC_MAX_TILES, value)
+
+    def add_vision_preproc_min_tiles(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.PREPROC_MIN_TILES, value)
+
+    def add_vision_preproc_image_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.PREPROC_IMAGE_SIZE, value)
+
+    def add_vision_projector_query_side(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.Projector.QUERY_SIDE, value)
+
+    def add_vision_projector_window_side(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.Projector.WINDOW_SIDE, value)
+
+    def add_vision_spatial_offsets(self, layers: Sequence[int]) -> None:
+        self.add_array(Keys.ClipVision.Projector.SPATIAL_OFFSETS, layers)
+
+    def add_vision_image_mean(self, values: Sequence[float]) -> None:
+        self.add_array(Keys.ClipVision.IMAGE_MEAN, values)
+
+    def add_vision_image_std(self, values: Sequence[float]) -> None:
+        self.add_array(Keys.ClipVision.IMAGE_STD, values)
+
+    def add_vision_spatial_merge_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.SPATIAL_MERGE_SIZE, value)
+
+    def add_vision_use_gelu(self, value: bool) -> None:
+        self.add_bool(Keys.ClipVision.USE_GELU, value)
+
+    def add_vision_use_silu(self, value: bool) -> None:
+        self.add_bool(Keys.ClipVision.USE_SILU, value)
+
+    def add_vision_projector_scale_factor(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.Projector.SCALE_FACTOR, value)
+
+    def add_vision_n_wa_pattern(self, value: int) -> None:
+        """Add window attention pattern interval for vision models.
+
+        This defines the pattern interval for window attention vs full attention layers.
+        For example, if n_wa_pattern=4, then layers 3, 7, 11, ... use full attention,
+        while other layers use window attention.
+
+        Used by models like Qwen2.5-VL where full attention layers follow a regular pattern.
+        """
+        self.add_uint32(Keys.ClipVision.N_WA_PATTERN, value)
+
+    def add_vision_wa_layer_indexes(self, layers: Sequence[int]) -> None:
+        """Add explicit layer indexes that use full attention in vision models.
+
+        This specifies the exact layer indices (0-based) that should use full attention
+        instead of window attention. All other layers will use window attention.
+
+        Args:
+            layers: List of layer indices that use full attention (e.g., [3, 7, 11, 15])
+
+        Used by models like YoutuVL where full attention layers are explicitly specified
+        rather than following a regular pattern.
+
+        Difference from add_vision_n_wa_pattern:
+        - n_wa_pattern: Defines a regular interval pattern (every Nth layer uses full attention)
+        - wa_layer_indexes: Explicitly lists which layers use full attention (irregular pattern)
+        """
+        self.add_array(Keys.ClipVision.WA_LAYER_INDEXES, layers)
+
+    def add_vision_is_deepstack_layers(self, layers: Sequence[bool]) -> None:
+        self.add_array(Keys.ClipVision.IS_DEEPSTACK_LAYERS, layers)
+
+    def add_vision_wa_pattern_mode(self, modes: Sequence[int]) -> None:
+        self.add_array(Keys.ClipVision.WA_PATTERN_MODE, modes)
+
+    def add_vision_window_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.WINDOW_SIZE, value)
+
+    def add_vision_feature_layers(self, layers: Sequence[int]) -> None:
+        self.add_array(Keys.ClipVision.FEATURE_LAYERS, layers)
+
+    def add_vision_image_grid_pinpoints(self, layers: Sequence[Sequence[int]]) -> None:
+        self.add_array(Keys.ClipVision.IMAGE_GRID_PINPOINTS, layers)
+
+    def add_vision_sam_layers_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.SAM.BLOCK_COUNT, value)
+
+    def add_vision_sam_embedding_length(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.SAM.EMBEDDING_LENGTH, value)
+
+    def add_vision_sam_head_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipVision.SAM.HEAD_COUNT, value)
+
+    # audio models
+
+    def add_clip_audio_projector_type(self, value: str) -> None:
+        self.add_string(Keys.ClipAudio.PROJECTOR_TYPE, value)
+
+    def add_audio_projection_dim(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.PROJECTION_DIM, value)
+
+    def add_audio_embedding_length(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.EMBEDDING_LENGTH, value)
+
+    def add_audio_feed_forward_length(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.FEED_FORWARD_LENGTH, value)
+
+    def add_audio_block_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.BLOCK_COUNT, value)
+
+    def add_audio_head_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.Attention.HEAD_COUNT, value)
+
+    def add_audio_attention_layernorm_eps(self, value: float) -> None:
+        self.add_float32(Keys.ClipAudio.Attention.LAYERNORM_EPS, value)
+
+    def add_audio_num_mel_bins(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.NUM_MEL_BINS, value)
+
+    def add_audio_stack_factor(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.Projector.STACK_FACTOR, value)
+
+    def add_audio_chunk_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.CHUNK_SIZE, value)
+
+    def add_audio_conv_kernel_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.CONV_KERNEL_SIZE, value)
+
+    def add_audio_max_pos_emb(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.MAX_POS_EMB, value)
+
+    def add_audio_projector_window_size(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.Projector.WINDOW_SIZE, value)
+
+    def add_audio_projector_downsample_rate(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.Projector.DOWNSAMPLE_RATE, value)
+
+    def add_audio_projector_head_count(self, value: int) -> None:
+        self.add_uint32(Keys.ClipAudio.Projector.HEAD_COUNT, value)
+
+    def add_xielu_alpha_p(self, values: Sequence[float]):
+        self.add_array(Keys.xIELU.ALPHA_P, values)
+
+    def add_xielu_alpha_n(self, values: Sequence[float]):
+        self.add_array(Keys.xIELU.ALPHA_N, values)
+
+    def add_xielu_beta(self, values: Sequence[float]):
+        self.add_array(Keys.xIELU.BETA, values)
+
+    def add_xielu_eps(self, values: Sequence[float]):
+        self.add_array(Keys.xIELU.EPS, values)
+
+    # diffusion models
+
+    def add_diffusion_shift_logits(self, value: bool) -> None:
+        self.add_bool(Keys.Diffusion.SHIFT_LOGITS, value)
 
     def _pack(self, fmt: str, value: Any, skip_pack_prefix: bool = False) -> bytes:
         pack_prefix = ''
@@ -927,7 +1331,7 @@ class GGUFWriter:
             pack_prefix = '<' if self.endianess == GGUFEndian.LITTLE else '>'
         return struct.pack(f'{pack_prefix}{fmt}', value)
 
-    def _pack_val(self, val: Any, vtype: GGUFValueType, add_vtype: bool) -> bytes:
+    def _pack_val(self, val: Any, vtype: GGUFValueType, add_vtype: bool, sub_type: GGUFValueType | None = None) -> bytes:
         kv_data = bytearray()
 
         if add_vtype:
@@ -948,7 +1352,9 @@ class GGUFWriter:
             if len(val) == 0:
                 raise ValueError("Invalid GGUF metadata array. Empty array")
 
-            if isinstance(val, bytes):
+            if sub_type is not None:
+                ltype = sub_type
+            elif isinstance(val, bytes):
                 ltype = GGUFValueType.UINT8
             else:
                 ltype = GGUFValueType.get_type(val[0])
@@ -961,7 +1367,7 @@ class GGUFWriter:
         else:
             raise ValueError("Invalid GGUF metadata value type or value")
 
-        return kv_data
+        return bytes(kv_data)
 
     @staticmethod
     def format_n_bytes_to_str(num: int) -> str:
