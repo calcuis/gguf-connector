@@ -500,24 +500,74 @@ def dequantize_blocks_IQ4_XS(blocks, block_size, type_size, dtype=None):
     qs = qs.squeeze(-1).to(dtype)
     return (dl * qs).reshape(n_blocks, -1)
 
-# experimental: mxfp4
+# experimental: mxfp4, nvfp4 - 4-bit; microscaling
 from .quant5b import e8m0_to_fp32_half
-# subject to test further; mxfp4/mxfp4_moe
-def dequantize_blocks_MXFP4(blocks, block_size, type_size, dtype=None):
+# def dequantize_blocks_MXFP4(blocks, block_size, type_size, dtype=None):
+#     kvalues = torch.tensor(
+#         [0, 1, 2, 3, 4, 6, 8, 12, 0, -1, -2, -3, -4, -6, -8, -12],
+#         dtype=torch.float32, device=blocks.device
+#     )
+#     n_blocks = blocks.shape[0]
+#     e, qs = split_block_dims(blocks, 1)
+#     d = e8m0_to_fp32_half(e)
+#     qs = qs.reshape((n_blocks, 1, block_size // 2)) >> torch.tensor([0, 4], device=blocks.device, dtype=torch.uint8).reshape((1, 2, 1))
+#     qs = (qs & 15)
+#     kvalues = kvalues.view(1, 1, 16)
+#     qs = qs.unsqueeze(-1)
+#     qs = torch.gather(kvalues.expand(qs.shape[0], qs.shape[1], 16), 2, qs)
+#     qs = qs.squeeze(-1).reshape(n_blocks, block_size)
+#     return d * qs
+def dequantize_blocks_MXFP4(blocks, block_size, type_size=None, dtype=None):
     kvalues = torch.tensor(
         [0, 1, 2, 3, 4, 6, 8, 12, 0, -1, -2, -3, -4, -6, -8, -12],
-        dtype=torch.float32, device=blocks.device
-    )
+        dtype=torch.float32,
+        device=blocks.device,
+    ).view(1, 1, 16)
     n_blocks = blocks.shape[0]
     e, qs = split_block_dims(blocks, 1)
     d = e8m0_to_fp32_half(e)
-    qs = qs.reshape((n_blocks, 1, block_size // 2)) >> torch.tensor([0, 4], device=blocks.device, dtype=torch.uint8).reshape((1, 2, 1))
-    qs = (qs & 15)
-    kvalues = kvalues.view(1, 1, 16)
-    qs = qs.unsqueeze(-1)
-    qs = torch.gather(kvalues.expand(qs.shape[0], qs.shape[1], 16), 2, qs)
-    qs = qs.squeeze(-1).reshape(n_blocks, block_size)
-    return d * qs
+    qs = qs.reshape(n_blocks, 1, block_size // 2)
+    shifts = torch.tensor(
+        [0, 4],
+        dtype=qs.dtype,
+        device=blocks.device,
+    ).reshape(1, 2, 1)
+    qs = (qs >> shifts) & 15
+    qs = qs.to(torch.long)
+    qs = torch.gather(
+        kvalues.expand(n_blocks, 2, 16),
+        dim=2,
+        index=qs,
+    )
+    qs = qs.reshape(n_blocks, block_size)
+    out = d * qs
+    if dtype is not None:
+        out = out.to(dtype)
+    return out
+# 4-bit; microscaling
+from .quant5b import ue4m3_to_fp32
+def dequantize_blocks_NVFP4(blocks, block_size, type_size=None, dtype=None):
+    kvalues = torch.tensor(
+        [0, 1, 2, 3, 4, 6, 8, 12, 0, -1, -2, -3, -4, -6, -8, -12],
+        dtype=torch.float32,
+        device=blocks.device,
+    ).view(1, 1, 16)
+    n_super = blocks.shape[0]
+    d_bytes, qs = split_block_dims(blocks, 4)
+    d = ue4m3_to_fp32(d_bytes).reshape(n_super, 4, 1)
+    qs = qs.reshape(n_super, 4, 8)
+    lo = qs & 15
+    hi = qs >> 4
+    vals = torch.cat([lo, hi], dim=-1).to(torch.long)
+    vals = torch.gather(
+        kvalues.expand(n_super, 4, 16),
+        dim=2,
+        index=vals,
+    )
+    out = (d * vals).reshape(n_super, 64)
+    if dtype is not None:
+        out = out.to(dtype)
+    return out
 
 dequantize_functions = {
     GGMLQuantizationType.BF16:dequantize_blocks_BF16,
@@ -533,10 +583,11 @@ dequantize_functions = {
     GGMLQuantizationType.Q2_K:dequantize_blocks_Q2_K,
     GGMLQuantizationType.TQ2_0:dequantize_blocks_TQ2_0,
     GGMLQuantizationType.TQ1_0:dequantize_blocks_TQ1_0,
-    GGMLQuantizationType.IQ2_S:dequantize_blocks_IQ2_S,
-    GGMLQuantizationType.IQ3_XXS:dequantize_blocks_IQ3_XXS,
-    GGMLQuantizationType.IQ3_S:dequantize_blocks_IQ3_S,
+    GGMLQuantizationType.IQ2_S:dequantize_blocks_IQ2_S,     # test, not a solution yet
+    GGMLQuantizationType.IQ3_XXS:dequantize_blocks_IQ3_XXS, # test, not a solution yet
+    GGMLQuantizationType.IQ3_S:dequantize_blocks_IQ3_S,     # test, not a solution yet
     GGMLQuantizationType.IQ4_NL:dequantize_blocks_IQ4_NL,
     GGMLQuantizationType.IQ4_XS:dequantize_blocks_IQ4_XS,
     GGMLQuantizationType.MXFP4:dequantize_blocks_MXFP4,
+    GGMLQuantizationType.NVFP4:dequantize_blocks_NVFP4,
     }
