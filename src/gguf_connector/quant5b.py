@@ -10,6 +10,12 @@ def split_block_dims(blocks, *args):
 def to_uint32(x):
     x = x.view(torch.uint8).to(torch.int32)
     return (x[:, 0] | x[:, 1] << 8 | x[:, 2] << 16 | x[:, 3] << 24).unsqueeze(1)
+def _to_uint32(x):
+    x = x.to(torch.int64)
+    return x[..., 0] | (x[..., 1] << 8) | (x[..., 2] << 16) | (x[..., 3] << 24)
+def _to_uint16(x):
+    x = x.to(torch.int64)
+    return x[..., 0] | (x[..., 1] << 8)
 # calculate scale min (for 4_k, 5_k, tq1_0, tq_2_0, iq4_xs, iq4_nl, etc.)
 def get_scale_min(scales):
     n_blocks = scales.shape[0]
@@ -61,3 +67,22 @@ def ue4m3_to_fp32(x):
         raw * 0.5,
     )
     return out
+# new grid builder
+def build_grid(grid_hex, grid_shape, grid_map):
+    data = bytes.fromhex(grid_hex.decode("ascii"))
+    b = torch.tensor(list(data), dtype=torch.int64).unsqueeze(-1)
+    shifts = torch.tensor([0, 2, 4, 6], dtype=torch.int64)
+    idx = (b >> shifts) & 0x03  # (n_bytes, 4)
+    # pad grid_map to 4 entries so an (unused) index of 3 can't crash
+    kmap = torch.tensor(list(grid_map) + [0], dtype=torch.float32)
+    return kmap[idx.reshape(-1)].reshape(grid_shape)
+def _build_grid(grid_hex, grid_shape, grid_map):
+    data = bytes.fromhex(grid_hex.decode("ascii"))
+    b = torch.tensor(list(data), dtype=torch.int64).unsqueeze(-1)
+    bits_per_elem = max(1, (len(grid_map) - 1).bit_length())
+    elems_per_byte = 8 // bits_per_elem
+    shifts = torch.arange(elems_per_byte, dtype=torch.int64) * bits_per_elem
+    idx = (b >> shifts) & ((1 << bits_per_elem) - 1)
+    pad = (1 << bits_per_elem) - len(grid_map)
+    kmap = torch.tensor(list(grid_map) + [0] * pad, dtype=torch.float32)
+    return kmap[idx.reshape(-1)].reshape(grid_shape)
