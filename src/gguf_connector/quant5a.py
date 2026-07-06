@@ -603,7 +603,7 @@ IQ1_S_GRID_HEX = (
     b"19a921a925a941a950a955a95aa961a966a969a990a996a900aa02aa08aa0aaa"
     b"20aa22aa28aa2aaa51aa54aa56aa80aa82aa88aa8aaa95aaa0aaa2aaa8aaaaaa"
 )
-from .quant5b import build_grid, _build_grid
+from .quant5b import _build_grid
 # per-(kind, device) cache of constant tensors
 _IQ2_CONST_CACHE = {}
 def _iq_consts(kind, device):  # renamed from _iq2_consts; update existing callers
@@ -611,11 +611,11 @@ def _iq_consts(kind, device):  # renamed from _iq2_consts; update existing calle
     c = _IQ2_CONST_CACHE.get(key)
     if c is None:
         if kind == "iq2_xxs":
-            grid = build_grid(IQ2_XXS_GRID_HEX, IQ2_XXS_GRID_SHAPE, IQ2_GRID_MAP)
+            grid = _build_grid(IQ2_XXS_GRID_HEX, IQ2_XXS_GRID_SHAPE, IQ2_GRID_MAP)
         elif kind == "iq2_xs":
-            grid = build_grid(IQ2_XS_GRID_HEX, IQ2_XS_GRID_SHAPE, IQ2_GRID_MAP)
+            grid = _build_grid(IQ2_XS_GRID_HEX, IQ2_XS_GRID_SHAPE, IQ2_GRID_MAP)
         elif kind == "iq2_s":
-            grid = build_grid(IQ2_S_GRID_HEX, IQ2_S_GRID_SHAPE, IQ2_GRID_MAP)
+            grid = _build_grid(IQ2_S_GRID_HEX, IQ2_S_GRID_SHAPE, IQ2_GRID_MAP)
         elif kind == "iq3_xxs":
             grid = _build_grid(IQ3_XXS_GRID_HEX, IQ3_XXS_GRID_SHAPE, IQ3_XXS_GRID_MAP)
         elif kind == "iq3_s":
