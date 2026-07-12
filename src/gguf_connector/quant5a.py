@@ -1,5 +1,5 @@
 import torch # need torch to work; pip install torch
-from .quant5 import dequantize as gq
+from .quant import dequantize as gq
 from .reader import GGMLQuantizationType, GGML_QUANT_SIZES
 from tqdm import tqdm
 TORCH_COMPATIBLE_QTYPES = {None, GGMLQuantizationType.F32,
