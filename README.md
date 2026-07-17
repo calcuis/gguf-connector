@@ -7,7 +7,7 @@ GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model 
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
-This package is not merely a wrapper, it provides write, reader, dequantizer, etc., foundamental codebase without external dependecies to work, though it state/serves as a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
+This package is not merely a wrapper, it provides write, read, dequantize, etc., foundamental codebase without external dependecies to work, though it state/serves as a simple graphical user interface (GUI) application that uses the ctransformers or llama.cpp to interact with a chat model for generating responses.
 
 ### ecosystem package manager (preferred) - method 1
 Install the connector via pip (once only):
