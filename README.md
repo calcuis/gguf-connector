@@ -559,10 +559,11 @@ ggc go
 ggc du
 ```
 #### editor
-Editor (optional: need gguf-editor to work; `pip install gguf-editor`):
+Editor plus *quantizer (optional: need gguf-editor to work; `pip install gguf-editor`):
 ```
 ggc et
 ```
+Select a gguf file in your current directory to edit/quantize; *support CUDA, ROCm, Metal, see [gguf-editor](https://pypi.org/project/gguf-editor/) for details
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
