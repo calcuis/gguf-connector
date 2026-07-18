@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.6.0-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.6.1-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
@@ -557,6 +557,11 @@ ggc go
 ✷Durian (optional: need durian to work; `npm install -g @gguf/durian` then `gguf-durian`):
 ```
 ggc du
+```
+#### editor
+Editor (optional: need gguf-editor to work; `pip install gguf-editor`):
+```
+ggc et
 ```
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
