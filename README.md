@@ -581,7 +581,7 @@ Unified engine (optional: need gguf-cpp to work; `pip install gguf-cpp`):
 ```
 ggc gp
 ```
-Server, diffuser and editor panels, all-in-one, see [gguf-server](https://pypi.org/project/gguf-cpp/) for details
+Server, diffuser and editor panels, all-in-one, see [here](https://pypi.org/project/gguf-cpp/) for details
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
