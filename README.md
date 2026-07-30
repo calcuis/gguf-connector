@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.6.7-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.6.8-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
@@ -558,18 +558,18 @@ ggc go
 ```
 ggc du
 ```
-#### diffusion
-Diffusion panel (optional: need gguf-diffusion to work; `pip install gguf-diffusion`):
-```
-ggc fu
-```
-Get the testing files and details [here](https://huggingface.co/gguf-org/diffusion)
 #### server
 Launch a local server (optional: need gguf-server to work; `pip install gguf-server`):
 ```
 ggc sv
 ```
 Support vision, tool call, etc., see [gguf-server](https://pypi.org/project/gguf-server/) for details
+#### diffuser
+Diffuser (optional: need gguf-diffuser to work; `pip install gguf-diffuser`):
+```
+ggc fu
+```
+Get the testing files and details [here](https://huggingface.co/gguf-org/diffusion/tree/main)
 #### editor
 Editor plus *quantizer (optional: need gguf-editor to work; `pip install gguf-editor`):
 ```
