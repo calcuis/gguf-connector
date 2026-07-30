@@ -1,2 +1,2 @@
 import os
-os.system("gguf-diffusion")
+os.system("gguf-diffuser")
