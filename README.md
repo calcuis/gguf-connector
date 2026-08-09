@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.6.8-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.6.9-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
@@ -582,6 +582,12 @@ Unified engine (optional: need gguf-cpp to work; `pip install gguf-cpp`):
 ggc gp
 ```
 Server, diffuser and editor panels, all-in-one, see [here](https://pypi.org/project/gguf-cpp/) for details
+#### g kernel
+gk powered engine (optional: need ggk to work; `pip install ggk`):
+```
+ggc gk
+```
+Get example [here](https://huggingface.co/gguf-org/ggk) and/or see [here](https://pypi.org/project/ggk/) for details
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
