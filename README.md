@@ -587,7 +587,19 @@ gk powered engine (optional: need ggk to work; `pip install ggk`):
 ```
 ggc gk
 ```
-Get example [here](https://huggingface.co/gguf-org/ggk) and/or see [here](https://pypi.org/project/ggk/) for details
+Once `ggk` installed, you could launch each panel separately, i.e., server GUI
+```
+ggk server
+```
+Diffuser GUI
+```
+ggk diffuser
+```
+Editor GUI
+```
+ggk editor
+```
+Get example [here](https://huggingface.co/gguf-org/ggk) and/or see [here](https://pypi.org/project/ggk/) for details, i.e., how to script and call each engine directly from the CLI
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
