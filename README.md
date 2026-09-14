@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.7.1-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.7.2-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
@@ -600,6 +600,12 @@ Editor GUI
 ggk editor
 ```
 Get example [here](https://huggingface.co/gguf-org/ggk) and/or see [here](https://pypi.org/project/ggk/) for details, i.e., how to script and call each engine directly from the CLI
+#### trainer
+Train an adapter for pig-clip (optional: need gguf-trainer to work; `pip install gguf-trainer`):
+```
+ggc tr
+```
+Get student [here](https://huggingface.co/gguf-org/trainer/blob/main/pig_clip-f16.gguf) and/or see [here](https://pypi.org/project/gguf-trainer/) for details
 ### Menu
 Enter the main menu for selecting a connector or getting pre-trained trial model(s).
 ```
