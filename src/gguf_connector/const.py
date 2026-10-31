@@ -1823,6 +1823,10 @@ class RopeScalingType(Enum):
     YARN     = 'yarn'
     LONGROPE = 'longrope'
 
+class RopeSectionOrder(Enum):
+    TYXZ = 'tyxz'
+    ZYXT = 'zyxt'
+
 class PoolingType(IntEnum):
     NONE = 0
     MEAN = 1
