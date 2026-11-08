@@ -3,7 +3,7 @@
 GGUF (GPT-Generated Unified Format) is a successor of GGML (GPT-Generated Model Language), it was released on August 21, 2023; by the way, GPT stands for Generative Pre-trained Transformer.
 
 [<img src="https://raw.githubusercontent.com/calcuis/gguf-connector/master/gguf.gif" width="128" height="128">](https://github.com/calcuis/gguf-connector)
-[![Static Badge](https://img.shields.io/badge/version-3.7.6-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
+[![Static Badge](https://img.shields.io/badge/version-3.7.7-green?logo=github)](https://github.com/calcuis/gguf-connector/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-blue?logo=gitforwindows)](https://github.com/gguf-org/editor/releases)
 [![Static Badge](https://img.shields.io/badge/version-1.0.0-orange?logo=linux)](https://github.com/gguf-org/gguf-desktop/releases)
 
@@ -582,11 +582,6 @@ Unified engine (optional: need gguf-cpp to work; `pip install gguf-cpp`):
 ggc gp
 ```
 Server, diffuser and editor panels, all-in-one, see [here](https://pypi.org/project/gguf-cpp/) for details
-#### q3t tokenizer
-Get a q3t tokenizer
-```
-ggc q3t
-```
 #### cantonese tts
 Get a cantonese model
 ```
