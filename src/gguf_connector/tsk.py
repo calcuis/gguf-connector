@@ -1,5 +1,5 @@
 import os
-os.system("git clone https://huggingface.co/callgg/tts-tokenizer-12hz")
+os.system("git clone https://huggingface.co/cantonese-dev/tts-tokenizer-12hz")
 
 filename = "ttsk.py"
 content = """
